@@ -47,6 +47,14 @@ def play_human_vs_ai():
     game = TicTacToe()
     running = True
 
+    def ai_move():
+        # AI 执 X（先手），每次轮到 X 就自动落子（含开局第一步）
+        if not game.is_over and game.current_player == 1:
+            action = ai_agent.choose_action(game)
+            game.step(action)
+
+    ai_move()  # AI 先手第一步
+
     def draw_board():
         screen.fill((255, 255, 255))
         # 画线
@@ -85,14 +93,11 @@ def play_human_vs_ai():
                     c, r = x // 200, y // 200
                     if (r, c) in game.get_valid_actions():
                         game.step((r, c))
-
-                        # AI 回合
-                        if not game.is_over:
-                            ai_action = ai_agent.choose_action(game)
-                            game.step(ai_action)
+                        ai_move()  # 人类落子后轮到 AI
 
             if event.type == pygame.MOUSEBUTTONDOWN and game.is_over:
                 game.reset()  # 点击重新开始
+                ai_move()  # 新对局 AI 再次先手
 
     pygame.quit()
 

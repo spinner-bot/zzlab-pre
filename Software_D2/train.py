@@ -48,14 +48,16 @@ class QLearningAgent:
         if state_key not in self.q_table or random.random() < current_eps:
             return random.choice(valid_actions)
 
+        # Q 表按展平格子下标 (row*3+col) 索引，因此把 (r,c) 转成整数下标再查表
         q_values = self.q_table[state_key]
-        valid_q = [(action, q_values[action]) for action in valid_actions]
+        valid_q = [(action, q_values[action[0] * 3 + action[1]]) for action in valid_actions]
         max_q = max(val for _, val in valid_q)
         best_actions = [act for act, val in valid_q if val == max_q]
         return random.choice(best_actions)
 
     def update_history(self, state_key, action):
-        self.history.append((state_key, action))
+        # 统一将 (r,c) 元组转为展平下标 (row*3+col)，与 Q 表索引一致
+        self.history.append((state_key, action[0] * 3 + action[1]))
 
     def learn(self, reward):
         # 【核心逻辑】如果处于冻结状态，不更新Q表，只清空历史
@@ -63,14 +65,14 @@ class QLearningAgent:
             self.history = []
             return
 
-        for i, (state_key, action) in enumerate(reversed(self.history)):
+        for i, (state_key, action_idx) in enumerate(reversed(self.history)):
             if state_key not in self.q_table:
                 self.q_table[state_key] = [0.0] * 9
 
-            current_q = self.q_table[state_key][action]
+            current_q = self.q_table[state_key][action_idx]
             step_reward = reward * (self.gamma ** i)
             new_q = current_q + self.lr * (step_reward - current_q)
-            self.q_table[state_key][action] = new_q
+            self.q_table[state_key][action_idx] = new_q
         self.history = []
 
     def save_model(self):
@@ -110,7 +112,7 @@ def run_ai_vs_ai_training(episodes=5000, window_size=100):
             game.step(action)
 
         # 结算与更新
-        r_x, r_o = (1, -1) if game.winner == 1 else ((-1, 1) if game.winner == -1 else (0.1, 0.1))
+        r_x, r_o = (1, -1) if game.winner == 1 else ((-1, 1) if game.winner == -1 else (0.0, 0.0))
         agent_x.learn(r_x)
         agent_o.learn(r_o)
 
