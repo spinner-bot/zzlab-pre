@@ -1,0 +1,964 @@
+<!-- Part 1/5: Head + CSS + Sidebar + Hero -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实验室服务器安全与效率规范</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #fafaf7; color: #333; line-height: 1.8; display: flex;
+}
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
+  background: linear-gradient(180deg, #1a0000 0%, #2d0a0a 100%);
+  color: #ccc; overflow-y: auto; z-index: 100;
+  padding: 24px 0; font-size: 0.88rem;
+  box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+}
+.sidebar-header {
+  text-align: center; padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 12px;
+}
+.sidebar-header h2 { color: #fff; font-size: 1.1rem; margin-top: 8px; }
+.sidebar-header .lx-icon {
+  width: 48px; height: 48px; background: linear-gradient(135deg, #ff6b6b, #d32f2f); border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 24px; color: #fff; font-weight: bold;
+}
+.sidebar-nav { padding: 0 12px; }
+.sidebar-nav a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 8px; color: #b0a0a0;
+  text-decoration: none; transition: all 0.2s; margin-bottom: 2px;
+}
+.sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(255,107,107,0.1); color: #ffcccc; }
+.sidebar-nav a .nav-emoji { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+.sidebar-nav a .nav-num { font-size: 0.7rem; color: #ff6b6b; font-weight: 700; width: 20px; flex-shrink: 0; }
+.sidebar-nav .nav-section { color: #665555; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 16px 12px 6px; }
+.sidebar-footer {
+  text-align: center; padding: 20px; color: #665555; font-size: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.06); margin-top: 20px;
+}
+.main { margin-left: 280px; flex: 1; min-height: 100vh; }
+.hero {
+  background: linear-gradient(135deg, #1a0000 0%, #3d0505 40%, #d32f2f 100%);
+  color: #fff; padding: 60px 48px 48px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero h1 { font-size: 2.5rem; font-weight: 800; position: relative; }
+.hero .subtitle { font-size: 1.1rem; opacity: 0.85; margin-top: 12px; position: relative; }
+.hero .badges { margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; position: relative; }
+.hero .badges img { height: 22px; }
+.content { max-width: 900px; margin: 0 auto; padding: 40px 48px 60px; }
+h2 {
+  font-size: 1.7rem; color: #1a0000; margin: 48px 0 20px;
+  padding-bottom: 10px; border-bottom: 3px solid #d32f2f;
+  display: flex; align-items: center; gap: 10px;
+}
+h3 { font-size: 1.25rem; color: #3d0505; margin: 32px 0 14px; }
+h4 { font-size: 1.05rem; color: #444; margin: 20px 0 8px; }
+p { margin: 12px 0; }
+a { color: #c62828; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  background: #fff; border: 1px solid #e0d8d8; border-radius: 4px;
+  padding: 2px 6px; font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.88em; color: #c7254e;
+}
+pre {
+  background: #1a0a0a; color: #e0c0c0; border-radius: 10px;
+  padding: 20px 24px; overflow-x: auto; margin: 16px 0;
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.86rem; line-height: 1.65;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+thead { background: #1a0000; color: #ffcccc; }
+th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.9rem; }
+td { padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+tbody tr { background: #fff; transition: background 0.15s; }
+tbody tr:hover { background: #fff0f0; }
+tbody tr:nth-child(even) { background: #fdf9f9; }
+tbody tr:nth-child(even):hover { background: #fff0f0; }
+blockquote {
+  border-left: 4px solid #d32f2f; background: #fff5f5;
+  margin: 16px 0; padding: 14px 20px; border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+blockquote p { margin: 4px 0; }
+blockquote.tip { border-left-color: #2e7d32; background: #e8f5e9; }
+blockquote.warning { border-left-color: #f57c00; background: #fff3e0; }
+blockquote.danger { border-left-color: #c62828; background: #ffebee; }
+.callout {
+  padding: 16px 20px; margin: 16px 0; border-radius: 10px;
+  display: flex; gap: 10px; align-items: flex-start;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.callout .callout-icon { font-size: 1.3rem; flex-shrink: 0; }
+.callout.note { background: #e3f2fd; border: 1px solid #bbdefb; }
+.callout.warn { background: #fff8e1; border: 1px solid #ffe082; }
+.callout.danger { background: #ffebee; border: 1px solid #ffcdd2; }
+.callout.success { background: #e8f5e9; border: 1px solid #c8e6c9; }
+.mermaid {
+  background: #fdf9f9; border-radius: 10px; padding: 24px;
+  margin: 20px 0; text-align: center;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05); overflow-x: auto;
+}
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: 0.78rem; font-weight: 600; color: #fff;
+}
+.badge-green { background: #2e7d32; }
+.badge-yellow { background: #f57c00; }
+.badge-red { background: #c62828; }
+.badge-purple { background: #6a1b9a; }
+.cmd-card {
+  background: #fff; border-radius: 12px; padding: 24px; margin: 24px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05); border: 1px solid #f0e0e0;
+  transition: box-shadow 0.2s;
+}
+.cmd-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.cmd-card .cmd-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.cmd-card .cmd-name {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 1.2rem; font-weight: 700; color: #1a0000;
+  background: #fff5f5; padding: 4px 12px; border-radius: 6px;
+}
+.cmd-card .cmd-header .badges-row { display: flex; gap: 6px; }
+.cmd-card .formula {
+  background: #fff5f5; border-left: 3px solid #d32f2f;
+  padding: 10px 16px; margin: 12px 0; border-radius: 0 6px 6px 0;
+  font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.9rem;
+}
+.cmd-card .one-liner { color: #666; font-style: italic; margin-bottom: 16px; }
+
+/* Danger highlight box */
+.danger-box {
+  background: #fff5f5; border: 2px solid #c62828; border-radius: 12px;
+  padding: 20px 24px; margin: 20px 0;
+  box-shadow: 0 2px 12px rgba(198,40,40,0.12);
+}
+.danger-box h4 { color: #c62828; margin-top: 0; }
+.rule-box {
+  background: #fffff0; border-left: 4px solid #f57c00; border-radius: 0 8px 8px 0;
+  padding: 14px 18px; margin: 14px 0;
+}
+.rule-box.good { border-left-color: #2e7d32; background: #f0fff0; }
+
+hr { border: none; border-top: 1px solid #e8d8d8; margin: 32px 0; }
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .hero { padding: 40px 24px; }
+  .hero h1 { font-size: 1.6rem; }
+  .content { padding: 24px 20px; }
+}
+</style>
+<script>
+mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose',
+  themeVariables: {
+    primaryColor: '#ffcdd2', primaryBorderColor: '#c62828',
+    secondaryColor: '#fff3e0', secondaryBorderColor: '#f57c00',
+    tertiaryColor: '#c8e6c9', tertiaryBorderColor: '#2e7d32',
+    lineColor: '#555', textColor: '#333', fontSize: '14px'
+  }
+});
+</script>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="lx-icon">⚠️</div>
+    <h2>服务器规范手册</h2>
+    <p style="color:#966;font-size:0.8rem;">安全 · 效率 · 协作</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">📖 正文</div>
+    <a href="#s0"><span class="nav-num">0</span>阅读导航</a>
+    <a href="#s1"><span class="nav-num">1</span>🚨 安全红线 13 条</a>
+    <a href="#s2"><span class="nav-num">2</span>📁 文件与磁盘</a>
+    <a href="#s3"><span class="nav-num">3</span>🖥️ GPU 使用规范</a>
+    <a href="#s4"><span class="nav-num">4</span>⚡ 进程与资源</a>
+    <a href="#s5"><span class="nav-num">5</span>📦 环境管理</a>
+    <a href="#s6"><span class="nav-num">6</span>💾 数据安全</a>
+    <a href="#s7"><span class="nav-num">7</span>🚀 效率提升</a>
+    <a href="#s8"><span class="nav-num">8</span>🆘 应急处理</a>
+    <div class="nav-section">📎 附录</div>
+    <a href="#sa"><span class="nav-num">A</span>每日检查清单</a>
+    <a href="#sb"><span class="nav-num">B</span>安全口诀</a>
+    <a href="#sc"><span class="nav-num">C</span>快速配置模板</a>
+  </nav>
+  <div class="sidebar-footer">安全无小事<br>保持敬畏之心</div>
+</aside>
+
+<main class="main">
+
+<section class="hero">
+  <h1>⚠️ 实验室服务器安全与效率规范</h1>
+  <p class="subtitle">保护昂贵的计算资源&emsp;——&emsp;一次事故可能让全组停摆数周</p>
+  <div class="badges">
+    <img src="https://img.shields.io/badge/安全-第一要务-c62828?style=for-the-badge&logo=linux&logoColor=white" alt="Safety First">
+    <img src="https://img.shields.io/badge/适用-多用户共享服务器-red?style=flat-square" alt="multi-user">
+    <img src="https://img.shields.io/badge/必读-所有实验室成员-brightgreen?style=flat-square" alt="required">
+    <img src="https://img.shields.io/badge/更新-2025--07--10-orange?style=flat-square" alt="date">
+  </div>
+</section>
+
+<div class="content">
+<!-- L1_END -->
+
+<!-- ===== SECTION 0: 阅读导航 ===== -->
+<h2 id="s0">🧭 阅读导航</h2>
+
+<div class="danger-box">
+  <h4>⚠️ 在阅读正文之前，请先理解</h4>
+  <p style="margin:8px 0 0 0;">这台 GPU 服务器的价值可能超过你一年的学费。它对全组几十位同学同时提供服务。<br>
+  <strong>你的一个疏忽，可能导致所有人的实验中断、数据丢失、甚至硬件损坏。</strong><br>
+  以下规范不是你「可选的建议」——而是<strong>必须遵守的规则</strong>。</p>
+</div>
+
+<h3>📑 完整目录</h3>
+<ol>
+  <li><a href="#s1">🚨 安全红线 13 条</a> — 绝对禁止的操作清单，每条都附有真实后果说明</li>
+  <li><a href="#s2">📁 文件与磁盘</a> — 目录结构约定 · 大文件存放 · 磁盘清理 · 空间监控</li>
+  <li><a href="#s3">🖥️ GPU 使用规范</a> — 显存查询 · 指定 GPU · 多用户协调 · 长期占用礼仪</li>
+  <li><a href="#s4">⚡ 进程与资源</a> — CPU/内存 · tmux 规范 · nohup · 后台任务管理</li>
+  <li><a href="#s5">📦 环境管理</a> — conda 命名 · 不污染系统环境 · 依赖冲突避免</li>
+  <li><a href="#s6">💾 数据安全</a> — 备份策略 · 重要数据保护 · 定期清理 · 误删恢复</li>
+  <li><a href="#s7">🚀 效率提升</a> — 别名配置 · 自动化脚本 · 资源监控面板 · 日志规范</li>
+  <li><a href="#s8">🆘 应急处理</a> — OOM 处理 · 进程卡死 · 磁盘满 · 误删文件恢复</li>
+</ol>
+<p><strong>附录</strong>：<a href="#sa">A. 每日检查清单</a> · <a href="#sb">B. 安全口诀</a> · <a href="#sc">C. 快速配置模板</a></p>
+
+<h3>🎨 阅读指南</h3>
+<table>
+  <thead><tr><th>读者</th><th>必读章节</th></tr></thead>
+  <tbody>
+    <tr><td>🆕 <strong>新进实验室同学</strong></td><td>第 1 章（全部 13 条红线！）、第 2、3、5 章</td></tr>
+    <tr><td>📝 <strong>日常使用者</strong></td><td>第 3 章（GPU 规范）、第 4 章（资源管理）、第 7 章（效率）</td></tr>
+    <tr><td>🚨 <strong>遇到紧急情况</strong></td><td>直接跳第 8 章应急处理</td></tr>
+    <tr><td>👨‍🏫 <strong>管理员/导师</strong></td><td>全文 + 附录 A（检查清单）</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ===== SECTION 1: 安全红线 ===== -->
+<h2 id="s1">1. 🚨 安全红线 13 条</h2>
+<blockquote class="danger"><strong>以下任何一条的违反，都可能导致服务器宕机、全组数据丢失、甚至硬件损坏。</strong><br>每一条红线后面都标注了「违反后果」——这不是吓唬你，这些都是真实发生过的事故。</blockquote>
+
+<div class="danger-box">
+<h4>🔴 红线 #1：严禁 sudo rm -rf / 或任何涉及系统目录的强制删除</h4>
+<p><strong>禁止示例</strong>：</p>
+<pre><code>sudo rm -rf /              # ☠️ 删除整个系统 → 服务器立刻变砖
+sudo rm -rf /etc/*          # ☠️ 删除所有配置文件 → 系统不可用
+sudo rm -rf /boot/*         # ☠️ 删除内核 → 无法启动，需重装系统
+sudo rm -rf /home/*         # ☠️ 删除所有用户主目录 → 全组数据灭失</code></pre>
+<p><strong>违反后果</strong>：服务器不可逆损坏，需请 IT 部门重装系统，<strong>全组停工 3-7 天</strong>，所有未备份数据永久丢失。</p>
+<p><strong>防护措施</strong>：</p>
+<ul>
+  <li>执行 <code>rm</code> 之前，养成先说一遍完整路径的习惯：「我要删除 /data/tmp/下的 old_logs」</li>
+  <li><strong>绝对禁止</strong>：在 sudo 下使用 <code>rm -rf</code> + 通配符（如 <code>rm -rf /tmp/*</code>）</li>
+  <li>推荐用 <code>trash-cli</code>（回收站工具）：<code>pip install trash-cli; trash-put file</code></li>
+</ul>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #2：严禁强制重启服务器</h4>
+<p><strong>禁止操作</strong>：</p>
+<pre><code>sudo reboot                 # ☠️ 直接重启 → 所有人的训练进程被强制中断
+sudo shutdown -r now        # ☠️ 同上
+sudo reboot -f              # ☠️ 强制重启（跳过所有优雅关闭过程，可能损坏文件系统）</code></pre>
+<p><strong>违反后果</strong>：所有同学正在运行的训练（可能已跑了几周）全部报废，文件系统可能损坏，磁盘需要 fsck 修复。</p>
+<p><strong>正确做法</strong>：如果服务器确实需要重启（如内核安全更新），必须：<br>
+① 提前 24 小时在全组群通知<br>
+② 确认所有人的训练已保存 checkpoint<br>
+③ 由<strong>管理员</strong>执行重启操作</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #3：严禁占满磁盘（/ 或 /home 分区）</h4>
+<p><strong>磁盘占满的危害</strong>：</p>
+<ul>
+  <li>操作系统无法写入日志 → 服务异常</li>
+  <li>SSH 无法登录（sshd 需要写日志）</li>
+  <li>数据库/调度器停止工作 → 全组无法使用</li>
+  <li>用户自己的训练 checkpoint 写入失败 → 训练白跑</li>
+</ul>
+<p><strong>违反后果</strong>：服务器不可用，需管理员介入清理，可能需物理接触服务器才能抢救。</p>
+<p><strong>防护</strong>：<code>df -h</code> 每周至少看一次；个人数据不要超过配额；不把大规模数据集直接放在 /home 下。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #4：严禁修改系统级文件（除非你是管理员并清楚后果）</h4>
+<pre><code># ☠️ 禁止随意修改的文件/目录
+/etc/fstab                 # 改了可能导致无法启动
+/etc/ssh/sshd_config       # 改错可能导致所有人（包括你）无法登录
+/etc/sudoers               # 改错可能导致无法 sudo
+/boot/*                    # 内核文件——碰都不要碰
+/usr/bin/*                 # 系统命令——不要替换或删除
+/lib/*                     # 系统库——删错会导致系统命令全部不可用</code></pre>
+<p><strong>违反后果</strong>：轻则部分功能不可用，重则服务器需要重装。</p>
+<p><strong>原则</strong>：如果不确定一个文件是干什么的——<strong>不要改它。先查、先问。</strong></p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #5：严禁用 root 跑日常任务</h4>
+<pre><code># ☠️ 危险行为
+sudo python train.py       # 脚本中的 bug 可能损坏系统
+sudo pip install xxx        # 可能覆盖系统的 Python 包
+sudo jupyter notebook       # web 服务以 root 运行 → 巨大安全漏洞
+
+# ✅ 正确做法
+python train.py             # 用普通用户权限运行
+pip install --user xxx      # 安装到用户目录</code></pre>
+<p><strong>违反后果</strong>：代码中的 bug（如无限写日志）在 root 权限下可能造成不可挽回的系统损坏。root 权限就像拿着一把上了膛的枪——<strong>没有必要时，不要拿它</strong>。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #6：严禁占用全部 CPU 核心跑多进程（除非确认无人使用）</h4>
+<pre><code># ☠️ 危险行为
+python train.py --num_workers=64    # DataLoader 开 64 个进程霸占全部 CPU
+# 或
+for i in {1..100}; do python task.py &amp; done   # 一次性 fork 100 个后台任务
+
+# ✅ 正确做法
+# 先用 htop/top 确认 CPU 空闲核心数
+# DataLoader workers 不要超过 CPU 核心数的一半
+python train.py --num_workers=8</code></pre>
+<p><strong>违反后果</strong>：其他同学的 SSH 终端卡顿、训练变慢、甚至整机响应超时被误判为宕机。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #7：严禁占用全部内存（RAM）</h4>
+<pre><code># ☠️ 危险行为
+import numpy as np
+huge_array = np.zeros((500000, 500000))  # 试图分配 2TB —— OOM Killer 出动
+
+# 内存耗尽 → Linux OOM Killer 随机杀进程
+# 可能杀掉别人的训练、SSH 服务、甚至数据库</code></pre>
+<p><strong>违反后果</strong>：触发 OOM Killer，随机杀掉系统中的进程——<strong>可能是你自己的，也可能是别人的关键服务</strong>。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #8：严禁在共享服务器上跑死循环 / fork 炸弹</h4>
+<pre><code># ☠️ fork 炸弹（绝对禁止！）
+:(){ :|:& };:
+
+# ☠️ 无限制写文件
+while true; do echo "log" >> /home/user/huge.log; done   # → 占满磁盘</code></pre>
+<p><strong>违反后果</strong>：CPU 100% → 整机瘫痪；磁盘占满 → 服务器不可用。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #9：严禁在未指定 GPU 的情况下跑大模型训练</h4>
+<pre><code># ☠️ PyTorch 默认使用 GPU 0！
+# 如果你不指定，所有人的训练都挤在 GPU 0 上，而 GPU 1-7 空着
+
+# ✅ 必须显式指定
+CUDA_VISIBLE_DEVICES=3 python train.py</code></pre>
+<p><strong>违反后果</strong>：GPU 0 被所有人挤爆（OOM），而其他 GPU 白白浪费。<strong>一台 8 卡服务器被人用成了单卡服务器</strong>。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #10：严禁在 /tmp 下放重要文件</h4>
+<p><code>/tmp</code> 在大多数 Linux 系统中<strong>重启后会被清空</strong>。不要把训练 checkpoint、代码、脚本放在这里。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #11：严禁长期霸占 GPU 显存不释放</h4>
+<pre><code># ☠️ 错误示范
+python train.py   # 训练跑完了，但进程没退出 → GPU 显存一直被占用
+# 或者：开着 jupyter notebook，kernel 占着 20GB 显存，三天不用
+
+# ✅ 正确做法
+# 训练结束 → 立刻退出 Python 进程
+# Jupyter 用完 → Kernel → Shutdown
+# 定期检查自己的 GPU 进程
+gpustat -apu | grep $(whoami)</code></pre>
+<p><strong>违反后果</strong>：GPU 显存被空进程占着，真正需要训练的人用不了。<strong>一周下来相当于浪费了几十小时的 GPU 时间</strong>。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #12：严禁不打招呼就 kill 别人的进程</h4>
+<p>如果发现某块 GPU 被占着但利用率很低（可能是 bug），<strong>先在群里问一声</strong>。不要直接 kill。</p>
+<p><strong>正确流程</strong>：gpustat 查看 → 找到进程主人的用户名 → 在群里 @对方：「同学你的 GPU 利用率显示 0%，确认下是否还在用？」→ 对方回复后再操作。</p>
+</div>
+
+<div class="danger-box">
+<h4>🔴 红线 #13：严禁在服务器上下载盗版 / 涉密 / 违规内容</h4>
+<p>实验室服务器的 IP 通常在学校校园网内。下载盗版软件、论文代写工具、翻墙工具、涉密资料等行为可能导致<strong>学校网络中心封锁 IP</strong>，全组无法访问服务器。</p>
+</div>
+
+<!-- L2_END -->
+
+<!-- ===== SECTION 2: 文件与磁盘 ===== -->
+<h2 id="s2">2. 📁 文件与磁盘操作规范</h2>
+
+<h3>2.1 推荐目录结构</h3>
+<pre><code>/home/用户名/               # 你的主目录：代码、配置、小型脚本
+├── projects/               # 各项目代码
+│   ├── project-A/
+│   │   ├── code/
+│   │   ├── checkpoints/    # ⚠️ 定期清理旧 checkpoint！
+│   │   └── logs/
+│   └── project-B/
+├── .ssh/                   # SSH 密钥（权限必须 700/600！）
+├── .bashrc                 # 个人环境配置
+└── .conda/                 # conda 环境（也可以放 /data 下）
+
+/data/用户名/               # ⭐ 大数据集、大型模型文件放这里
+├── datasets/
+├── pretrained_models/
+└── large_outputs/
+
+# ⚠️ 不要把 ImageNet/COCO 这样的大数据集直接解压到 /home！
+# 100GB 数据集放到 /home 可能占满分区，让全组无法登录</code></pre>
+
+<h3>2.2 磁盘监控（每周必做）</h3>
+<pre><code># ① 查看各分区剩余空间
+df -h
+# 重点看 / 和 /home 的 Use% 是否超过 80%
+
+# ② 查看自己占了多大空间
+du -sh /home/$(whoami) /data/$(whoami) 2>/dev/null
+
+# ③ 找出自己目录下的 Top 10 大文件
+du -ah /home/$(whoami) 2>/dev/null | sort -rh | head -10
+
+# ④ 查看 inode 使用（小文件太多也会耗尽文件系统）
+df -i
+
+# ⑤ 找大文件（>1GB）
+find /home/$(whoami) -type f -size +1G -exec ls -lh {} \; 2>/dev/null</code></pre>
+
+<h3>2.3 清理策略</h3>
+<table>
+  <thead><tr><th>文件类型</th><th>保留策略</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>模型 checkpoint</td><td>只保留 best + 最近 3 个 epoch</td><td>每个 checkpoint 可能几百 MB~几 GB</td></tr>
+    <tr><td>训练日志</td><td>保留 30 天，之后压缩归档</td><td><code>gzip *.log</code> 压缩率可达 90%</td></tr>
+    <tr><td>TensorBoard event 文件</td><td>任务结束后删除</td><td>这类文件非常占空间</td></tr>
+    <tr><td>下载的数据集压缩包</td><td>解压后删除压缩包</td><td>.tar.gz 和内容同时存在 = 占双倍空间</td></tr>
+    <tr><td>Python cache 文件</td><td>随时可删</td><td><code>find . -type d -name __pycache__ -exec rm -rf {} +</code></td></tr>
+    <tr><td>conda 缓存</td><td>每月清理</td><td><code>conda clean --all</code></td></tr>
+    <tr><td>pip 缓存</td><td>每月清理</td><td><code>pip cache purge</code></td></tr>
+  </tbody>
+</table>
+
+<div class="rule-box good">
+  <strong>✅ 好习惯</strong>：在 checkpoint 保存代码中只保留最优模型 + 最近 3 个：
+  <pre><code># 每个 epoch 保存后，删除旧的 checkpoint
+import os, glob
+ckpts = sorted(glob.glob('ckpt_epoch_*.pth'))
+for old in ckpts[:-3]:   # 只保留最近 3 个
+    os.remove(old)</code></pre>
+</div>
+
+
+<!-- ===== SECTION 3: GPU 使用规范 ===== -->
+<h2 id="s3">3. 🖥️ GPU 使用规范</h2>
+
+<h3>3.1 使用前必查：选一块空闲的 GPU</h3>
+<pre><code># ⭐ 最推荐：gpustat（信息最全）
+# 先安装：pip install gpustat
+gpustat -apu
+# 输出示例：
+# gpu01  Fri Jul 10 15:00:00 2025  550.90.07
+# [0] GeForce RTX 4090 | 35°C,  95 % | 22000 / 24564 MB | zhang-san:train.py/12345(21500MB)
+# [1] GeForce RTX 4090 | 40°C,   0 % |     0 / 24564 MB | (无进程)
+#   → GPU 1 空闲，用 CUDA_VISIBLE_DEVICES=1
+
+# 也可以看详细信息
+nvidia-smi
+
+# 查看 GPU 利用率（谁在用但实际没跑任务）
+nvidia-smi --query-gpu=index,utilization.gpu,memory.used,name --format=csv</code></pre>
+
+<h3>3.2 指定 GPU 的四种方式</h3>
+<pre><code># 方式一：命令行指定（⭐ 最推荐，每次运行显式指定）
+CUDA_VISIBLE_DEVICES=2 python train.py
+
+# 方式二：在代码开头指定（必须在 import torch 之前）
+import os; os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+import torch
+
+# 方式三：临时对当前 shell 生效
+export CUDA_VISIBLE_DEVICES=0,1    # 使用 GPU 0 和 1
+
+# 方式四：在 .bashrc 中设置默认值（⚠️ 容易忘记改，不推荐）
+# echo 'export CUDA_VISIBLE_DEVICES=1' >> ~/.bashrc</code></pre>
+
+<h3>3.3 显存管理最佳实践</h3>
+<table>
+  <thead><tr><th>技巧</th><th>代码</th><th>效果</th></tr></thead>
+  <tbody>
+    <tr><td><strong>混合精度训练</strong></td><td><code>with torch.amp.autocast('cuda'):</code></td><td>显存减少 ~40%，速度提升 30-50%</td></tr>
+    <tr><td><strong>梯度累积</strong></td><td><code>loss.backward()</code> 每 N 步才 <code>optimizer.step()</code></td><td>小显存也能跑大 batch</td></tr>
+    <tr><td><strong>手动释放显存</strong></td><td><code>del var; torch.cuda.empty_cache()</code></td><td>释放不再用的显存</td></tr>
+    <tr><td><strong>梯度检查点</strong></td><td><code>from torch.utils.checkpoint import checkpoint</code></td><td>用计算换显存，节省 50%+</td></tr>
+    <tr><td><strong>batch_size 选择</strong></td><td>先用小 batch_size 跑通，再逐渐加大</td><td>避免一开始就 OOM</td></tr>
+    <tr><td><strong>推理时 no_grad</strong></td><td><code>with torch.no_grad():</code></td><td>不存计算图，大幅省显存</td></tr>
+  </tbody>
+</table>
+
+<h3>3.4 多用户 GPU 使用礼仪</h3>
+<div class="rule-box">
+  <strong>⚠️ GPU 使用黄金法则</strong>：
+  <ol>
+    <li><strong>先查后用</strong>：每次跑训练前必须 gpustat 确认 GPU 空闲</li>
+    <li><strong>只占用明确需要的 GPU</strong>：用 CUDA_VISIBLE_DEVICES 显式选择</li>
+    <li><strong>训练结束后立即释放</strong>：不要让空闲进程占着显存</li>
+    <li><strong>长时间训练（&gt;24h）在群里通知</strong>：告知占用的 GPU 编号和预计时长</li>
+    <li><strong>不抢占别人还在用的 GPU</strong>：即使利用率很低也先问一声</li>
+    <li><strong>不要同时占用全部 GPU</strong>：给其他人留至少 1-2 块</li>
+    <li><strong>训练完了在群里说一声</strong>：让排队的人可以接着用</li>
+  </ol>
+</div>
+
+
+<!-- ===== SECTION 4: 进程与资源管理 ===== -->
+<h2 id="s4">4. ⚡ 进程与资源管理</h2>
+
+<h3>4.1 tmux 使用规范（强制）</h3>
+<blockquote class="warning">任何预计运行超过 10 分钟的任务，<strong>必须放到 tmux/screen 中运行</strong>。否则你的 SSH 一断，进程就没了。</blockquote>
+
+<pre><code># 命名规范：用你的名字+任务名，方便别人识别
+tmux new -s zhangsan-train-resnet    # ✅ 好
+tmux new -s test                     # ❌ 太模糊，不知道是谁的
+
+# 完整工作流
+tmux new -s myname-task
+conda activate torch-gpu
+CUDA_VISIBLE_DEVICES=3 python train.py
+# Ctrl+B, D → 安全脱离（训练继续跑）
+
+# 下次回来看：
+tmux ls                    # 列出所有 session
+tmux attach -t myname-task # 重新连接
+
+# 训练完成 → 清理你的 session！
+tmux kill-session -t myname-task     # 或用 exit</code></pre>
+
+<h3>4.2 CPU 与内存管理</h3>
+<pre><code># 查看自己占用的资源
+top -u $(whoami)
+
+# 查看自己的所有进程
+ps aux | grep $(whoami)
+
+# 批量清理自己的僵尸进程
+ps aux | grep $(whoami) | grep defunct | awk '{print $2}' | xargs kill
+
+# DataLoader workers：不要超过 CPU 核心数/GPU 数量
+n_cpu=$(nproc)
+n_gpu=$(nvidia-smi -L | wc -l)
+# 单 GPU 训练：num_workers 设为 4-8 即可
+# 多 GPU 训练：num_workers 不超过 n_cpu/(2*n_gpu)</code></pre>
+
+<h3>4.3 后台任务规范</h3>
+<pre><code># ✅ tmux（首选！）
+tmux new -s task; python train.py; Ctrl+B D
+
+# ✅ nohup（备用，简单的单次任务）
+nohup python train.py > train.log 2>&1 &
+# 退出后进程继续运行，输出重定向到 train.log
+
+# ❌ 直接 &（ssh 断开后进程可能被 kill）
+python train.py &
+
+# 查看后台任务
+jobs -l</code></pre>
+
+<!-- L3_END -->
+
+<!-- ===== SECTION 5: 环境管理 ===== -->
+<h2 id="s5">5. 📦 环境管理规范</h2>
+
+<h3>5.1 Conda 环境命名与隔离</h3>
+<pre><code># ✅ 好的命名（见名知意）
+conda create -n torch-gpu-py311 python=3.11
+conda create -n project-llm python=3.10
+conda create -n tf2-gpu python=3.9
+
+# ❌ 差的命名
+conda create -n test
+conda create -n myenv
+conda create -n temp
+
+# ⚠️ 绝不污染 base 环境！
+# base 环境不要装任何项目相关的包
+# 每个项目/任务创建独立 conda 环境</code></pre>
+
+<h3>5.2 依赖管理</h3>
+<pre><code># 导出环境（给他人复现）
+conda env export --no-builds > environment.yml
+# 或精确导出（含 build 信息）
+conda env export > environment_exact.yml
+
+# pip 依赖
+pip freeze > requirements.txt
+
+# 从文件创建环境
+conda env create -f environment.yml
+pip install -r requirements.txt</code></pre>
+
+<div class="rule-box good">
+  <strong>✅ 好习惯</strong>：每个项目的 README 中注明 conda 环境名和依赖：
+  <pre><code>## 环境
+conda activate torch-gpu-py311
+# 首次使用：pip install -r requirements.txt</code></pre>
+</div>
+
+
+<!-- ===== SECTION 6: 数据安全 ===== -->
+<h2 id="s6">6. 💾 数据安全与备份</h2>
+
+<h3>6.1 备份策略</h3>
+<div class="mermaid">
+graph LR
+    CODE["💻 代码<br/>(GitHub/GitLab)"] -->|"git push<br/>（每次改动后）"| REMOTE["☁️ 远程仓库"]
+    CKPT["📦 重要 Checkpoint<br/>(best model)"] -->|"rsync<br/>（每周）"| STORAGE["🗄️ 存储服务器/<br/>个人备份盘"]
+    LOGS["📋 日志"] -->|"保留30天<br/>之后删除"| TRASH["🗑️"]
+</div>
+
+<table>
+  <thead><tr><th>数据类型</th><th>备份方式</th><th>频率</th></tr></thead>
+  <tbody>
+    <tr><td>代码</td><td>⭐ git push（GitHub/GitLab/校内 Git）</td><td>每次改动后</td></tr>
+    <tr><td>重要 checkpoint</td><td>rsync 到个人硬盘或 NAS</td><td>每周</td></tr>
+    <tr><td>修改过的配置文件</td><td>git 或手动备份到 ~/backups/</td><td>修改后</td></tr>
+    <tr><td>实验记录/笔记</td><td>云笔记 或 git 仓库</td><td>持续</td></tr>
+    <tr><td>数据集</td><td>保留原始下载链接（比备份数据本身更高效）</td><td>下载时</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <span class="callout-icon">⚠️</span>
+  <div><strong>血的教训</strong>：<br>
+  • 代码只在服务器上存着，没 push 到 git → 服务器磁盘故障 → <strong>代码永远丢失</strong><br>
+  • Checkpoint 没有备份 → 训练跑了两周，结果被自己误删 → <strong>两周白干</strong><br>
+  • <strong>记住：服务器上的数据不等于备份。磁盘会坏，人会误删。</strong></div>
+</div>
+
+<h3>6.2 误删恢复</h3>
+<pre><code># 如果文件刚被 rm 删除（且是 ext4 文件系统）
+# ① 立刻停止对该分区的一切写操作！
+# ② 尝试用 extundelete 或 testdisk 恢复
+sudo extundelete --restore-file /home/user/deleted_file.txt /dev/sda1
+
+# 但恢复成功率不是 100%。最好的保护是：
+# ✅ 代码用 git 管理
+# ✅ 重要数据定期备份
+# ✅ 用 trash-cli 替代 rm（有回收站）</code></pre>
+
+
+<!-- ===== SECTION 7: 效率提升 ===== -->
+<h2 id="s7">7. 🚀 效率提升技巧</h2>
+
+<h3>7.1 推荐别名配置（~/.bashrc）</h3>
+<pre><code># === 安全 rm（移到回收站而非直接删除）===
+alias rm='rm -i'                 # 删除前确认
+# 或装 trash-cli: pip install trash-cli; alias rm='trash-put'
+
+# === GPU 快速查看 ===
+alias gs='gpustat -apu'          # ⭐ 最常用
+alias gsw='watch -n 1 gpustat -cP'  # 实时监控
+alias ns='nvidia-smi'
+
+# === 磁盘 ===
+alias dfh='df -h'
+alias duh='du -sh * | sort -rh | head -20'
+alias mydisk='du -sh /home/$(whoami) /data/$(whoami) 2>/dev/null'
+
+# === 进程 ===
+alias myps='ps aux | grep $(whoami)'
+alias mytop='top -u $(whoami)'
+
+# === tmux ===
+alias tl='tmux ls'
+alias ta='tmux attach -t'
+alias tn='tmux new -s'
+
+# === conda ===
+alias ca='conda activate'
+alias cel='conda env list'</code></pre>
+
+<h3>7.2 训练脚本模板（含监控和安全检查）</h3>
+<pre><code>#!/bin/bash
+# train.sh — 安全的训练启动脚本模板
+set -euo pipefail
+
+# 参数
+GPU_ID=${1:-0}              # 默认 GPU 0
+BATCH_SIZE=${2:-32}
+EPOCHS=${3:-100}
+
+# 训练前检查
+echo "=== 训练前检查 ==="
+echo "GPU 状态："
+gpustat -i $GPU_ID | tail -2
+
+echo "磁盘剩余空间："
+df -h /home | tail -1
+
+# 启动训练（tmux 中）
+SESSION="train-$(date +%m%d-%H%M)"
+tmux new -d -s $SESSION \
+    "CUDA_VISIBLE_DEVICES=$GPU_ID python train.py --batch_size $BATCH_SIZE --epochs $EPOCHS 2>&1 | tee logs/train-$(date +%Y%m%d-%H%M).log"
+
+echo "训练已在 tmux session '$SESSION' 中启动"
+echo "查看：tmux attach -t $SESSION"
+echo "GPU: $GPU_ID | Batch: $BATCH_SIZE | Epochs: $EPOCHS"</code></pre>
+
+<h3>7.3 日志规范</h3>
+<pre><code># 使用时间戳命名的日志文件
+python train.py 2>&1 | tee logs/train_$(date +%Y%m%d_%H%M%S).log
+
+# 在 Python 代码中记录关键信息
+import logging, time, torch, socket
+logging.basicConfig(level=logging.INFO)
+logging.info(f"Host: {socket.gethostname()}")
+logging.info(f"GPU: {os.environ.get('CUDA_VISIBLE_DEVICES', 'auto')}")
+logging.info(f"PyTorch: {torch.__version__}, CUDA: {torch.version.cuda}")
+logging.info(f"Start time: {time.strftime('%Y-%m-%d %H:%M:%S')}")</code></pre>
+
+<h3>7.4 远程监控面板（本地查看）</h3>
+<pre><code># 在本地 ~/.bashrc 中添加函数
+function gpu-watch() {
+    ssh "$1" "watch -n 2 'echo === GPU ===; gpustat -cP; echo; echo === Top CPU ===; ps aux --sort=-%cpu | head -6'"
+}
+# 使用：gpu-watch gpu01
+
+function gpu-usage() {
+    ssh "$1" "gpustat -apu --no-header" | grep "$(whoami)"
+}
+# 使用：gpu-usage gpu01 → 只看自己的 GPU 占用</code></pre>
+
+
+<!-- ===== SECTION 8: 应急处理 ===== -->
+<h2 id="s8">8. 🆘 应急处理指南</h2>
+
+<h3>8.1 我的训练 OOM 了</h3>
+<pre><code># ① 确认 OOM
+dmesg | tail -20 | grep -i "out of memory"
+
+# ② 减小 batch_size，重跑
+# ③ 如果 batch_size 已经很小（如 2），考虑：
+#    - 用梯度累积模拟大 batch
+#    - 用混合精度训练（AMP）
+#    - 减小模型尺寸或输入分辨率
+
+# ④ 如果服务器整体内存不足（不是显存）：
+free -h                                  # 看谁占着内存
+ps aux --sort=-%mem | head -10</code></pre>
+
+<h3>8.2 进程卡死了，Ctrl+C 无效</h3>
+<pre><code># ① 找到进程 PID
+ps aux | grep $(whoami) | grep python
+
+# ② 温和终止（给进程清理机会）
+kill 12345                 # SIGTERM
+
+# ③ 如果 10 秒后还没退出，强制终止
+kill -9 12345              # 最后手段
+
+# ④ 如果是 tmux 中的进程卡死
+# 在 tmux 中：Ctrl+C 无效 → 关闭该 pane 或 kill-session</code></pre>
+
+<h3>8.3 磁盘满了</h3>
+<pre><code># ① 确认是哪个分区满了
+df -h
+
+# ② 找出自己的大文件
+du -ah /home/$(whoami) | sort -rh | head -20
+
+# ③ 快速清理
+conda clean --all                          # conda 缓存
+pip cache purge                            # pip 缓存
+find . -type d -name __pycache__ -exec rm -rf {} +  # Python 缓存
+rm -rf ~/.cache/pip/*
+journalctl --vacuum-size=200M 2>/dev/null || true  # systemd 日志
+
+# ④ 如果是别人占满了，在群里通知
+# "磁盘使用率已达 XX%，请大家清理一下不用的文件"</code></pre>
+
+<h3>8.4 服务器完全无响应（SSH 连不上）</h3>
+<pre><code># ① 先确认不是你的网络问题
+ping google.com
+
+# ② 确认不是跳板机问题
+ping 跳板机IP
+
+# ③ 确认是服务器挂了
+# → 联系管理员/导师（不要自己尝试处理）
+# → 记录故障前你的操作（帮助管理员排查原因）
+
+# ⚠️ 千万不要自己去机房按电源！让管理员处理！</code></pre>
+
+<h3>8.5 我不小心删了重要文件</h3>
+<pre><code># ① 立刻停止一切操作（尤其是写磁盘的操作）
+# ② 如果是代码 → git reflog / git checkout 恢复
+# ③ 如果是数据 → 尝试 extundelete（见6.2节）
+# ④ 如果有备份 → 从备份恢复
+# ⑤ 通知管理员寻求帮助
+
+# ⚠️ 恢复成功率与删除后继续操作的时间成反比！
+# 越早停止操作，恢复几率越高。</code></pre>
+
+<!-- L4_END -->
+
+<!-- ===== APPENDIX A: 每日检查清单 ===== -->
+<h2 id="sa">A. ✅ 每日检查清单</h2>
+
+<table>
+  <thead><tr><th>检查项</th><th>命令</th><th>频率</th></tr></thead>
+  <tbody>
+    <tr><td>查看 GPU 状态</td><td><code>gpustat -apu</code></td><td>每次跑训练前</td></tr>
+    <tr><td>确认磁盘空间</td><td><code>df -h</code></td><td>每天</td></tr>
+    <tr><td>检查自己的显存占用</td><td><code>gpustat -apu | grep $(whoami)</code></td><td>每次训练后</td></tr>
+    <tr><td>检查自己的进程</td><td><code>ps aux | grep $(whoami)</code></td><td>每天</td></tr>
+    <tr><td>清理僵尸 tmux session</td><td><code>tmux ls</code></td><td>每周</td></tr>
+    <tr><td>清理旧 checkpoint</td><td><code>du -sh ~/project/*/checkpoints/</code></td><td>每周</td></tr>
+    <tr><td>清理 conda/pip 缓存</td><td><code>conda clean --all; pip cache purge</code></td><td>每月</td></tr>
+    <tr><td>代码 push 到 Git</td><td><code>git status</code> → <code>git push</code></td><td>每天离开前</td></tr>
+    <tr><td>检查 SSH 密钥权限</td><td><code>ls -la ~/.ssh/</code></td><td>首次设置后</td></tr>
+    <tr><td>备份重要 checkpoint</td><td><code>rsync -avz ckpt/ backup:/path/</code></td><td>每周</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ===== APPENDIX B: 安全口诀 ===== -->
+<h2 id="sb">B. 📜 安全口诀（贴在显示器旁边）</h2>
+
+<div class="danger-box" style="text-align:center;">
+  <h3 style="color:#c62828; margin-bottom:16px; font-size:1.3rem;">🔴 服务器操作十诫</h3>
+  <table style="background:transparent; box-shadow:none;">
+    <tbody>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">1</td><td>删除之前三确认，sudo rm 是大忌</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">2</td><td>重启服务器前，全组通知先到位</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">3</td><td>磁盘空间常查看，满盘之日悔已晚</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">4</td><td>系统文件不要碰，不懂就问管理员</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">5</td><td>GPU 先查再用，占着不用最可恨</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">6</td><td>长时间训练放 tmux，断线进程不乱杀</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">7</td><td>代码每天 git push，永远不怕误删和丢</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">8</td><td>别人的进程不要 kill，群里先问一句话</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">9</td><td>root 权限如刀枪，没有理由不要拿</td></tr>
+      <tr><td style="width:40px;text-align:center;font-weight:bold;color:#c62828;">10</td><td>重要数据常备份，出事才知备份好</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout success" style="text-align:center; margin-top:20px;">
+  <span class="callout-icon">🙏</span>
+  <div><strong>一个心态：</strong>这台服务器是实验室<strong>最宝贵的公共资源</strong>之一。<br>
+  你每次登录时，旁边还有 N 个同学的实验在运行。<br>
+  操作前多想一步：「我这个操作，会不会影响别人？」<br>
+  <strong>保持敬畏，安全第一。</strong></div>
+</div>
+
+
+<!-- ===== APPENDIX C: 快速配置模板 ===== -->
+<h2 id="sc">C. 📁 快速配置模板</h2>
+
+<h3>C.1 推荐的 ~/.bashrc 追加内容</h3>
+<pre><code># ===== GPU 查询别名 =====
+alias gs='gpustat -apu'
+alias gsw='watch -n 1 gpustat -cP'
+alias ns='nvidia-smi'
+
+# ===== 磁盘查询 =====
+alias dfh='df -h'
+alias mydisk='du -sh /home/$(whoami) /data/$(whoami) 2>/dev/null'
+
+# ===== 进程管理 =====
+alias myps='ps aux | grep $(whoami) | grep -v grep'
+alias mygpu='gpustat -apu | grep $(whoami)'
+
+# ===== tmux =====
+alias tl='tmux ls'
+alias ta='tmux attach -t'
+alias tn='tmux new -s'
+
+# ===== conda =====
+alias ca='conda activate'
+alias cel='conda env list'
+
+# ===== 安全 rm（可选）=====
+alias rm='rm -i'
+
+# ===== 每次登录自动显示 GPU 状态 =====
+if command -v gpustat &> /dev/null; then
+    echo "=== GPU Status ==="
+    gpustat --no-header 2>/dev/null && gpustat -apu 2>/dev/null | head -5
+fi</code></pre>
+
+<h3>C.2 训练安全启动脚本模板</h3>
+<pre><code>#!/bin/bash
+# safe_train.sh — 带安全检查的训练启动脚本
+set -euo pipefail
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; NC='\033[0m'
+
+GPU=${1:?请指定 GPU ID (如: bash safe_train.sh 0)}
+BATCH=${2:-32}; EPOCHS=${3:-100}
+
+echo -e "${GREEN}=== 训练前安全检查 ===${NC}"
+
+# GPU 检查
+echo "GPU $GPU 状态："
+gpustat -i $GPU 2>/dev/null | tail -2 || nvidia-smi --query-gpu=index,memory.used,name --format=csv -i $GPU
+
+# 磁盘检查
+USE_PCT=$(df -h /home | tail -1 | awk '{print $5}' | sed 's/%//')
+if [ "$USE_PCT" -gt 85 ]; then
+    echo -e "${RED}⚠️  警告：磁盘使用率 ${USE_PCT}%！${NC}"
+fi
+
+# 内存检查
+FREE_MEM=$(free -g | awk '/^Mem:/{print $7}')
+echo "空闲内存: ${FREE_MEM}GB"
+
+echo -e "${GREEN}=== 启动训练 ===${NC}"
+echo "GPU=$GPU Batch=$BATCH Epochs=$EPOCHS"
+
+SESSION="train-gpu${GPU}-$(date +%m%d-%H%M)"
+tmux new -d -s "$SESSION" \
+    "CUDA_VISIBLE_DEVICES=$GPU python train.py --batch $BATCH --epochs $EPOCHS 2>&1 | tee logs/train_$(date +%Y%m%d_%H%M).log"
+
+echo "tmux session: $SESSION"
+echo "查看: tmux attach -t $SESSION"
+echo "监控: gpustat -i $GPU"</code></pre>
+
+<!-- Footer -->
+<div style="text-align:center; padding: 40px 0 20px; color: #999; font-size: 0.85rem; border-top: 1px solid #e8d8d8; margin-top: 40px;">
+  <p>⚠️ 安全无小事 | 保持敬畏之心 | 欢迎补充实验室实际案例</p>
+  <p style="margin-top:4px;">
+    <a href="https://github.com/spinner-bot/fundamentals-forge" target="_blank">GitHub</a> ·
+    <a href="#s0">返回导航顶部</a>
+  </p>
+</div>
+
+</div>
+</main>
+</body>
+</html>
+
+
+

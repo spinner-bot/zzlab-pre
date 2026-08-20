@@ -1,0 +1,1768 @@
+<!-- Part 1/7: Head + CSS + Sidebar + Hero -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSH 与跳板机原理与实践</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f0f2f5; color: #333; line-height: 1.8; display: flex;
+}
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
+  background: linear-gradient(180deg, #0a1628 0%, #112240 100%);
+  color: #ccc; overflow-y: auto; z-index: 100;
+  padding: 24px 0; font-size: 0.9rem;
+  box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+}
+.sidebar-header {
+  text-align: center; padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 12px;
+}
+.sidebar-header h2 { color: #fff; font-size: 1.15rem; margin-top: 8px; }
+.sidebar-header .lx-icon {
+  width: 48px; height: 48px; background: linear-gradient(135deg, #64ffda, #00bcd4); border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px; color: #0a1628; font-weight: bold;
+}
+.sidebar-nav { padding: 0 12px; }
+.sidebar-nav a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 8px; color: #8892b0;
+  text-decoration: none; transition: all 0.2s; margin-bottom: 2px;
+}
+.sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(100,255,218,0.08); color: #e6f1ff; }
+.sidebar-nav a .nav-emoji { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+.sidebar-nav a .nav-num { font-size: 0.7rem; color: #64ffda; font-weight: 700; width: 20px; flex-shrink: 0; }
+.sidebar-nav .nav-section { color: #555; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 16px 12px 6px; }
+.sidebar-footer {
+  text-align: center; padding: 20px; color: #555; font-size: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.06); margin-top: 20px;
+}
+.main { margin-left: 280px; flex: 1; min-height: 100vh; }
+.hero {
+  background: linear-gradient(135deg, #0a1628 0%, #112240 40%, #00bcd4 100%);
+  color: #fff; padding: 60px 48px 48px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero h1 { font-size: 2.6rem; font-weight: 800; position: relative; }
+.hero .subtitle { font-size: 1.1rem; opacity: 0.85; margin-top: 12px; position: relative; }
+.hero .badges { margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; position: relative; }
+.hero .badges img { height: 22px; }
+.content { max-width: 920px; margin: 0 auto; padding: 40px 48px 60px; }
+h2 {
+  font-size: 1.75rem; color: #0a1628; margin: 48px 0 20px;
+  padding-bottom: 10px; border-bottom: 3px solid #00bcd4;
+  display: flex; align-items: center; gap: 10px;
+}
+h3 { font-size: 1.25rem; color: #112240; margin: 32px 0 14px; }
+h4 { font-size: 1.05rem; color: #444; margin: 20px 0 8px; }
+p { margin: 12px 0; }
+a { color: #0097a7; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  background: #fff; border: 1px solid #e0e0d8; border-radius: 4px;
+  padding: 2px 6px; font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.88em; color: #c7254e;
+}
+pre {
+  background: #0d1b2a; color: #a8d8ea; border-radius: 10px;
+  padding: 20px 24px; overflow-x: auto; margin: 16px 0;
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.86rem; line-height: 1.65;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+thead { background: #0a1628; color: #e6f1ff; }
+th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.9rem; }
+td { padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+tbody tr { background: #fff; transition: background 0.15s; }
+tbody tr:hover { background: #e8f8fa; }
+tbody tr:nth-child(even) { background: #f8f9fb; }
+tbody tr:nth-child(even):hover { background: #e8f8fa; }
+blockquote {
+  border-left: 4px solid #00bcd4; background: #e8f8fa;
+  margin: 16px 0; padding: 14px 20px; border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+blockquote p { margin: 4px 0; }
+blockquote.tip { border-left-color: #2da44e; background: #e8f5e9; }
+blockquote.warning { border-left-color: #bf8700; background: #fff8e1; }
+blockquote.danger { border-left-color: #cf222e; background: #ffebee; }
+blockquote.info { border-left-color: #0969da; background: #ddf4ff; }
+.callout {
+  padding: 16px 20px; margin: 16px 0; border-radius: 10px;
+  display: flex; gap: 10px; align-items: flex-start;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.callout .callout-icon { font-size: 1.3rem; flex-shrink: 0; }
+.callout.note { background: #ddf4ff; border: 1px solid #b3dfff; }
+.callout.warn { background: #fff8e1; border: 1px solid #ffe082; }
+.callout.danger { background: #ffebee; border: 1px solid #ef9a9a; }
+.callout.success { background: #e8f5e9; border: 1px solid #a5d6a7; }
+.mermaid {
+  background: #f8f9fb; border-radius: 10px; padding: 24px;
+  margin: 20px 0; text-align: center;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05); overflow-x: auto;
+}
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: 0.78rem; font-weight: 600; color: #fff;
+}
+.badge-green { background: #2da44e; }
+.badge-yellow { background: #bf8700; }
+.badge-red { background: #cf222e; }
+.badge-purple { background: #8250df; }
+.badge-blue { background: #0969da; }
+.cmd-card {
+  background: #fff; border-radius: 12px; padding: 24px; margin: 24px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05); border: 1px solid #eee;
+  transition: box-shadow 0.2s;
+}
+.cmd-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.cmd-card .cmd-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.cmd-card .cmd-name {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 1.2rem; font-weight: 700; color: #0a1628;
+  background: #f0f2f5; padding: 4px 12px; border-radius: 6px;
+}
+.cmd-card .cmd-header .badges-row { display: flex; gap: 6px; }
+.cmd-card .formula {
+  background: #f8f9fb; border-left: 3px solid #00bcd4;
+  padding: 10px 16px; margin: 12px 0; border-radius: 0 6px 6px 0;
+  font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.9rem;
+}
+.cmd-card .one-liner { color: #555; font-style: italic; margin-bottom: 16px; }
+hr { border: none; border-top: 1px solid #e0e0d8; margin: 32px 0; }
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .hero { padding: 40px 24px; }
+  .hero h1 { font-size: 1.8rem; }
+  .content { padding: 24px 20px; }
+}
+</style>
+<script>
+mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose',
+  themeVariables: {
+    primaryColor: '#e0f2f1', primaryBorderColor: '#0097a7',
+    secondaryColor: '#e8eaf6', secondaryBorderColor: '#3f51b5',
+    tertiaryColor: '#d4edda', tertiaryBorderColor: '#28a745',
+    lineColor: '#555', textColor: '#333', fontSize: '14px'
+  }
+});
+</script>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="lx-icon">🔐</div>
+    <h2>SSH 与跳板机</h2>
+    <p style="color:#667;font-size:0.8rem;">原理 · 配置 · 实战</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">📖 正文</div>
+    <a href="#s0"><span class="nav-num">0</span>阅读导航</a>
+    <a href="#s1"><span class="nav-num">1</span>SSH 核心原理</a>
+    <a href="#s2"><span class="nav-num">2</span>密钥生成与管理</a>
+    <a href="#s3"><span class="nav-num">3</span>客户端配置</a>
+    <a href="#s4"><span class="nav-num">4</span>文件传输</a>
+    <a href="#s5"><span class="nav-num">5</span>跳板机原理</a>
+    <a href="#s6"><span class="nav-num">6</span>跳板机实战配置</a>
+    <a href="#s7"><span class="nav-num">7</span>实验室场景实战</a>
+    <a href="#s8"><span class="nav-num">8</span>端口转发与隧道</a>
+    <a href="#s9"><span class="nav-num">9</span>VS Code 远程开发</a>
+    <a href="#s10"><span class="nav-num">10</span>安全加固</a>
+    <a href="#s11"><span class="nav-num">11</span>故障排查</a>
+    <div class="nav-section">📎 附录</div>
+    <a href="#sa"><span class="nav-num">A</span>命令速查表</a>
+    <a href="#sb"><span class="nav-num">B</span>典型配置模板</a>
+    <a href="#sc"><span class="nav-num">C</span>术语对照</a>
+  </nav>
+  <div class="sidebar-footer">Made with ❤️<br>持续更新中</div>
+</aside>
+
+<main class="main">
+
+<section class="hero">
+  <h1>🔐 SSH 与跳板机：原理与实践</h1>
+  <p class="subtitle">从密码学到实验室实战&emsp;——&emsp;深入理解远程连接的一切</p>
+  <div class="badges">
+    <img src="https://img.shields.io/badge/SSH-Protocol%20Manual-00bcd4?style=for-the-badge&logo=openssh&logoColor=white" alt="SSH Manual">
+    <img src="https://img.shields.io/badge/版本-OpenSSH%209.0+-blue?style=flat-square" alt="version">
+    <img src="https://img.shields.io/badge/语言-中文-brightgreen?style=flat-square" alt="lang">
+    <img src="https://img.shields.io/badge/更新-2025--07--10-orange?style=flat-square" alt="date">
+  </div>
+</section>
+
+<div class="content">
+<!-- P1_END -->
+
+<!-- ===== SECTION 0: 阅读导航 ===== -->
+<h2 id="s0">🧭 阅读导航</h2>
+
+<h3>📑 完整目录</h3>
+<ol>
+  <li><a href="#s1">🔐 SSH 核心原理</a> — 对称/非对称加密 · DH 密钥交换 · 认证流程 · 完整连接时序</li>
+  <li><a href="#s2">🔑 密钥生成与管理</a> — <code>ssh-keygen</code> · Ed25519 vs RSA · <code>authorized_keys</code> · ssh-agent</li>
+  <li><a href="#s3">⚙️ 客户端配置</a> — <code>~/.ssh/config</code> · 别名 · 免密登录 · 连接保活</li>
+  <li><a href="#s4">📁 文件传输</a> — <code>scp</code> · <code>rsync</code> · <code>sftp</code> · 通过跳板机传文件</li>
+  <li><a href="#s5">🏗️ 跳板机原理</a> — 网络拓扑 · 安全模型 · 为什么需要跳板机 · dmz 概念</li>
+  <li><a href="#s6">🔗 跳板机实战配置</a> — <code>ProxyJump</code> · <code>ProxyCommand</code> · 多层跳板 · 免密链</li>
+  <li><a href="#s7">🧪 实验室场景实战</a> — 典型拓扑 · 内网穿透 · 远程 Jupyter · 多级跳板场景</li>
+  <li><a href="#s8">🌐 端口转发与隧道</a> — 本地转发(-L) · 远程转发(-R) · 动态转发(-D/SOCKS) · 实战案例</li>
+  <li><a href="#s9">💻 VS Code 远程开发</a> — Remote-SSH · 跳板机连接 · <strong>🔥 PyTorch GPU 远程训练全流程</strong> · 断点调试 · GPU 监控</li>
+  <li><a href="#s10">🛡️ 安全加固</a> — 禁用密码登录 · fail2ban · 防火墙 · 最小权限 · 审计日志</li>
+  <li><a href="#s11">🔧 故障排查</a> — 常见错误 · <code>ssh -vvv</code> 调试 · 日志分析 · 连接超时排查</li>
+</ol>
+<p><strong>附录</strong>：<a href="#sa">A. 命令速查表</a> · <a href="#sb">B. 典型配置模板集合</a> · <a href="#sc">C. 术语对照</a></p>
+
+<h3>🎨 阅读指南</h3>
+<table>
+  <thead><tr><th>读者类型</th><th>推荐路径</th></tr></thead>
+  <tbody>
+    <tr><td>🆕 <strong>零基础新手</strong></td><td>顺序阅读，重点看第 1-4 章掌握基础，再跳第 7 章看实战</td></tr>
+    <tr><td>📝 <strong>会用 SSH 但不懂原理</strong></td><td>第 1 章（原理），第 5 章（跳板机原理）</td></tr>
+    <tr><td>🔧 <strong>实验室学生/运维</strong></td><td>第 3、6、7、8、9 章 — 配置、跳板机、隧道、VS Code（🔥 9.4 PyTorch GPU 必读！）</td></tr>
+    <tr><td>🛡️ <strong>关注安全</strong></td><td>第 10 章完整阅读，配合附录 B 配置模板</td></tr>
+    <tr><td>🚨 <strong>遇到连接问题</strong></td><td>直接跳到第 11 章故障排查</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ===== SECTION 1: SSH 核心原理 ===== -->
+<h2 id="s1">1. 🔐 SSH 核心原理</h2>
+<blockquote class="info">
+  SSH（Secure Shell）不是"一个加密的命令行工具"，而是一套完整的<strong>网络协议</strong>。<br>
+  它工作在 TCP/IP 协议栈的<strong>应用层</strong>，默认端口 <strong>22</strong>，为不安全的网络提供安全的远程登录、命令执行和文件传输能力。
+</blockquote>
+
+<h3>1.1 SSH 协议栈</h3>
+<div class="mermaid">
+graph TD
+    APP["<b>应用层</b> — SSH 协议"]
+    TRANS["<b>传输层</b> — TCP（端口 22）"]
+    NET["<b>网络层</b> — IP"]
+    LINK["<b>链路层</b> — 以太网 / Wi-Fi"]
+    APP --> TRANS --> NET --> LINK
+    subgraph "SSH 三大子协议"
+        TP["<b>SSH-TRANS</b><br/>传输层协议<br/>密钥交换 + 加密 + 完整性校验"]
+        AUTH["<b>SSH-AUTH</b><br/>用户认证协议<br/>密码/密钥/其他方式"]
+        CONN["<b>SSH-CONN</b><br/>连接协议<br/>多路复用通道(shell/scp/sftp/forward)"]
+    end
+    APP --> TP --> AUTH --> CONN
+</div>
+
+<h3>1.2 加密基础：两种加密的巧妙配合</h3>
+<blockquote>SSH 的安全性建立在<strong>对称加密</strong>和<strong>非对称加密</strong>的混合使用上 — 各取所长。</blockquote>
+
+<table>
+  <thead><tr><th>特性</th><th>对称加密</th><th>非对称加密</th></tr></thead>
+  <tbody>
+    <tr><td><strong>密钥数量</strong></td><td>1 把密钥（加解密用同一把）</td><td>2 把密钥（公钥加密，私钥解密）</td></tr>
+    <tr><td><strong>速度</strong></td><td>⚡ 非常快</td><td>🐢 慢 100~1000 倍</td></tr>
+    <tr><td><strong>密钥分发</strong></td><td>❌ 难题：如何安全地把密钥给对方？</td><td>✅ 简单：公钥可以随便公开</td></tr>
+    <tr><td><strong>SSH 中的角色</strong></td><td>💪 加密真正的会话数据（传输效率高）</td><td>🔑 验证身份 + 安全协商对称密钥</td></tr>
+    <tr><td><strong>典型算法</strong></td><td>AES-256-GCM, ChaCha20-Poly1305</td><td>RSA, Ed25519, ECDSA</td></tr>
+  </tbody>
+</table>
+
+<div class="callout note">
+  <span class="callout-icon">💡</span>
+  <div><strong>SSH 的精妙设计</strong>：用非对称加密做"钥匙交换"（安全但慢），商定一把临时的对称密钥后，后续所有数据都用对称加密传输（快速而安全）。这就是<strong>混合加密</strong>的思想。</div>
+</div>
+
+<h3>1.3 SSH 连接的完整过程（分三阶段）</h3>
+
+<h4>阶段一：TCP 连接 + 协议版本协商</h4>
+<pre><code>Client ──TCP SYN──→ Server (port 22)
+Client ←─TCP SYN/ACK── Server
+Client ──TCP ACK──→ Server
+
+# 双方交换协议版本字符串
+Client → "SSH-2.0-OpenSSH_9.6"
+Server → "SSH-2.0-OpenSSH_9.3"</code></pre>
+
+<h4>阶段二：密钥交换（最关键的安全基础）</h4>
+<div class="mermaid">
+sequenceDiagram
+    participant C as "💻 客户端"
+    participant S as "🖥️ 服务器"
+    Note over C,S: 密钥交换（DH 算法）
+    C->>S: 发送支持的加密算法列表
+    S->>C: 选择算法 + 发送服务器公钥(Host Key)
+    C->>C: 验证 Host Key 指纹
+    C->>S: DH 密钥交换参数
+    S->>C: DH 密钥交换响应
+    Note over C,S: 🔑 双方独立计算出相同的 Session Key
+    Note over C,S: ✅ 后续全部用 Session Key 对称加密
+</div>
+
+<p><strong>DH（Diffie-Hellman）密钥交换的核心魔法</strong>：双方在不安全的信道上各自做数学运算，最终<strong>得出相同的共享密钥</strong>—而窃听者即使看到所有通信内容也无法计算出这个密钥。</p>
+
+<h4>阶段三：用户认证</h4>
+<table>
+  <thead><tr><th>认证方式</th><th>原理</th><th>安全性</th><th>推荐度</th></tr></thead>
+  <tbody>
+    <tr><td><strong>密码认证</strong></td><td>客户端把密码加密后发给服务器，服务器验证</td><td>⚠️ 中等：密码可被暴力破解</td><td>❌ 不推荐</td></tr>
+    <tr><td><strong>公钥认证（⭐）</strong></td><td>服务器用你的公钥加密一个随机数，只有你能用私钥解密并返回</td><td>✅ 高：无法暴力破解私钥</td><td>⭐ 强烈推荐</td></tr>
+    <tr><td><strong>Keyboard-Interactive</strong></td><td>服务器提问，客户端回答（常用于 2FA）</td><td>✅ 高：可结合 TOTP</td><td>✅ 推荐</td></tr>
+    <tr><td><strong>GSSAPI</strong></td><td>基于 Kerberos 的企业单点登录</td><td>✅ 高</td><td>企业环境</td></tr>
+  </tbody>
+</table>
+
+<h4>公钥认证详细过程</h4>
+<div class="mermaid">
+sequenceDiagram
+    participant C as "客户端"
+    participant S as "服务器"
+    C->>S: 1. 发送认证请求（含公钥指纹）
+    S->>S: 2. 查 ~/.ssh/authorized_keys 匹配公钥
+    S->>C: 3. "请证明你有对应的私钥"（发送随机挑战）
+    C->>C: 4. 用本地私钥对挑战做数字签名
+    C->>S: 5. 返回签名结果
+    S->>S: 6. 用公钥验证签名
+    S->>C: 7. ✅ 认证通过 / ❌ 拒绝
+</div>
+
+<div class="callout warn">
+  <span class="callout-icon">⚠️</span>
+  <div><strong>Host Key 验证的意义</strong>：第一次连接时 SSH 会让你确认服务器的指纹 — <strong>这不是走形式！</strong>它是防止中间人攻击（MITM）的唯一防线。<br>
+  如果你点了"yes"但连到了黑客的假服务器，后面输入的所有内容（包括密码和密钥）都可能被窃取。<br>
+  <strong>正确做法</strong>：第一次连接前，通过安全渠道（当面/电话/内部 wiki）获取服务器的指纹并手动比对。</div>
+</div>
+
+
+<!-- ===== SECTION 2: 密钥生成与管理 ===== -->
+<h2 id="s2">2. 🔑 密钥生成与管理</h2>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 ssh-keygen 密钥生成</span>
+    <span class="badges-row"><span class="badge badge-green">基础</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：生成公私钥对 — 私钥自己保管（等同于密码），公钥放到服务器上。</p>
+
+  <h4>密钥类型对比</h4>
+  <table>
+    <thead><tr><th>类型</th><th>安全性</th><th>速度</th><th>密钥大小</th><th>推荐?</th></tr></thead>
+    <tbody>
+      <tr><td><code>ed25519</code></td><td>🔒🔒🔒 极高</td><td>⚡ 快</td><td>~68 字符（极小）</td><td>⭐ 强烈推荐</td></tr>
+      <tr><td><code>ecdsa</code></td><td>🔒🔒 中等</td><td>⚡ 快</td><td>较小</td><td>✅ 可用</td></tr>
+      <tr><td><code>rsa 4096</code></td><td>🔒🔒🔒 高</td><td>🐢 较慢</td><td>~740 字符</td><td>✅ 兼容性最好</td></tr>
+      <tr><td><code>rsa 2048</code></td><td>🔒🔒 中等</td><td>🐢 较慢</td><td>~380 字符</td><td>⚠️ 不推荐（已不够安全）</td></tr>
+      <tr><td><code>dsa</code></td><td>🔒 低</td><td>—</td><td>—</td><td>❌ 已废弃</td></tr>
+    </tbody>
+  </table>
+
+  <h4>生成命令（推荐 Ed25519）</h4>
+  <pre><code># 最推荐：Ed25519（安全 + 快速 + 密钥小）
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+# 兼容性最好：RSA 4096（旧服务器可能不支持 Ed25519）
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+# 指定输出文件（多密钥管理）
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_lab -C "lab_server_key"
+
+# 参数说明：
+# -t : 密钥类型
+# -b : 密钥位数（RSA用）
+# -C : 注释（方便识别，一般填邮箱）
+# -f : 输出文件路径</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 公钥部署到服务器</span>
+    <span class="badges-row"><span class="badge badge-green">基础</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：把你的公钥内容追加到服务器上 <code>~/.ssh/authorized_keys</code> 文件中。</p>
+
+  <pre><code># 方法一：一键复制（推荐，自动处理权限）
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@server
+
+# 方法二：手动复制（当没有 ssh-copy-id 时）
+cat ~/.ssh/id_ed25519.pub | ssh user@server "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+
+# 方法三：完全手动
+# 1. 查看本地公钥
+cat ~/.ssh/id_ed25519.pub
+# 2. SSH 密码登录服务器后，把公钥内容追加到 authorized_keys
+echo "ssh-ed25519 AAAAC3NzaC1lZ..." >> ~/.ssh/authorized_keys
+
+# ⚠️ 重要：确保权限正确！
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys</code></pre>
+
+  <div class="callout danger">
+    <span class="callout-icon">🔴</span>
+    <div><strong>权限是 SSH 公钥认证的常见陷阱</strong>：<br>
+    • <code>~/.ssh/</code> 必须是 <code>700</code>（只有你能读写）<br>
+    • <code>~/.ssh/authorized_keys</code> 必须是 <code>600</code>（只有你能读写）<br>
+    • 权限不对 → SSH 会<strong>静默忽略</strong>你的公钥，回退到密码认证（或不让你登录）<br>
+    • 排查时看 <code>ssh -vvv</code> 的输出中是否有权限警告</div>
+  </div>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 ssh-agent：密钥管家</span>
+    <span class="badges-row"><span class="badge badge-yellow">进阶</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：<code>ssh-agent</code> 在后台帮你记住私钥的密码（passphrase），这样每天只需要输入一次密码即可反复使用密钥。</p>
+
+  <pre><code># 启动 agent（现代系统通常自动启动）
+eval "$(ssh-agent -s)"
+
+# 添加密钥到 agent（输入一次 passphrase 后由 agent 托管）
+ssh-add ~/.ssh/id_ed25519
+
+# 列出 agent 中已加载的密钥
+ssh-add -l
+
+# 删除所有已加载的密钥
+ssh-add -D
+
+# 锁定/解锁 agent（让已加载的密钥暂时不可用）
+ssh-add -x        # 锁定
+ssh-add -X        # 解锁
+
+# macOS：自动记住 passphrase 到钥匙串
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519</code></pre>
+
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><strong>passphrase 是什么？</strong>生成密钥时可以给它加一层密码保护。即使私钥文件泄露，没有 passphrase 也无法使用。ssh-agent 让你不用每次都输入它。</div>
+  </div>
+</div>
+
+<!-- P2_END -->
+
+<!-- ===== SECTION 3: 客户端配置 ===== -->
+<h2 id="s3">3. ⚙️ 客户端配置（~/.ssh/config）</h2>
+<blockquote class="tip"><code>~/.ssh/config</code> 是 SSH 最被低估但最强大的功能之一。它让你用简短的别名替代一长串命令，同时透明地处理跳板机、端口转发、密钥选择等。</blockquote>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 配置文件语法与基础项</span>
+    <span class="badges-row"><span class="badge badge-green">核心</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：<code>Host</code> 定义一组配置，缩进（可选）表示从属关系，匹配到的第一个 Host 生效。</p>
+
+  <pre><code># ~/.ssh/config 完整示例
+# 全局默认值（对所有 Host 生效）
+Host *
+    ServerAliveInterval 60          # 每 60s 发心跳包防断连
+    ServerAliveCountMax 5           # 连续 5 次无响应才判定断开
+    TCPKeepAlive yes
+    Compression yes                 # 开启压缩（慢网络有用）
+    IdentitiesOnly yes              # 只用显式指定的密钥
+
+# 实验室跳板机
+Host bastion
+    HostName 202.120.xx.xx          # 跳板机公网 IP 或域名
+    Port 22
+    User zhang-san                   # 你的用户名
+    IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 30
+
+# 内网 GPU 服务器（通过跳板机连接）
+Host gpu01
+    HostName 192.168.1.101           # 内网 IP
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyJump bastion                # ⭐ 通过跳板机
+    # 等价旧写法: ProxyCommand ssh -W %h:%p bastion</code></pre>
+
+  <h4>Host 匹配规则（重要！）</h4>
+  <table>
+    <thead><tr><th>模式</th><th>匹配</th><th>示例</th></tr></thead>
+    <tbody>
+      <tr><td><code>Host myserver</code></td><td>精确匹配</td><td><code>ssh myserver</code></td></tr>
+      <tr><td><code>Host gpu*</code></td><td>通配符匹配</td><td>gpu01, gpu02, gpu-train</td></tr>
+      <tr><td><code>Host *</code></td><td>匹配所有（放最后做默认值）</td><td>全局设置</td></tr>
+      <tr><td><code>Host !pattern</code></td><td>排除匹配</td><td><code>Host * !bastion</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 常用配置项速查</span>
+    <span class="badges-row"><span class="badge badge-green">核心</span></span>
+  </div>
+  <table>
+    <thead><tr><th>配置项</th><th>作用</th><th>推荐值</th></tr></thead>
+    <tbody>
+      <tr><td><code>HostName</code></td><td>服务器真实 IP 或域名</td><td><code>192.168.1.100</code></td></tr>
+      <tr><td><code>Port</code></td><td>SSH 端口（默认22）</td><td><code>22</code></td></tr>
+      <tr><td><code>User</code></td><td>登录用户名</td><td><code>zhangsan</code></td></tr>
+      <tr><td><code>IdentityFile</code></td><td>私钥路径（可多次指定：备选密钥）</td><td><code>~/.ssh/id_ed25519</code></td></tr>
+      <tr><td><code>ProxyJump</code></td><td>跳板机（⭐ 推荐）</td><td><code>bastion</code></td></tr>
+      <tr><td><code>ServerAliveInterval</code></td><td>心跳间隔（秒），防断连</td><td><code>60</code></td></tr>
+      <tr><td><code>ServerAliveCountMax</code></td><td>最大心跳无响应次数</td><td><code>5</code></td></tr>
+      <tr><td><code>ForwardAgent</code></td><td>是否转发 ssh-agent 到服务器</td><td><code>no</code>（安全）/ <code>yes</code>（方便）</td></tr>
+      <tr><td><code>LocalForward</code></td><td>本地端口转发</td><td><code>8888 localhost:8888</code></td></tr>
+      <tr><td><code>RemoteForward</code></td><td>远程端口转发</td><td><code>0.0.0.0:6000 localhost:22</code></td></tr>
+      <tr><td><code>DynamicForward</code></td><td>动态 SOCKS 代理</td><td><code>1080</code></td></tr>
+      <tr><td><code>StrictHostKeyChecking</code></td><td>首次连接是否询问</td><td><code>accept-new</code>（安全又方便）</td></tr>
+      <tr><td><code>LogLevel</code></td><td>日志详细度</td><td><code>INFO</code> / 调试时 <code>DEBUG3</code></td></tr>
+      <tr><td><code>Compression</code></td><td>是否压缩传输</td><td><code>yes</code>（慢网络）/ <code>no</code>（局域网）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 免密登录链</span>
+    <span class="badges-row"><span class="badge badge-yellow">进阶</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：跳板机+内网服务器的完整免密链，需要把公钥分别部署到每一跳。</p>
+
+  <pre><code># 步骤 1: 生成密钥（只需一次）
+ssh-keygen -t ed25519 -C "lab-key"
+
+# 步骤 2: 把公钥放到跳板机
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@bastion
+
+# 步骤 3: 把公钥也放到内网服务器
+# 方法 A — 从本地直接放（如果网络可达）
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@gpu01
+
+# 方法 B — 从跳板机转发（如果内网不通本地）
+ssh bastion "cat >> ~/.ssh/authorized_keys" < ~/.ssh/id_ed25519.pub
+# 然后从跳板机 ssh-copy-id 到内网
+ssh bastion
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@gpu01
+
+# 验证免密链
+ssh gpu01   # 应直接登录（本机→跳板机→内网服务器，全程免密）</code></pre>
+</div>
+
+
+<!-- ===== SECTION 4: 文件传输 ===== -->
+<h2 id="s4">4. 📁 文件传输</h2>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 scp（安全复制）</span>
+    <span class="badges-row"><span class="badge badge-green">基础</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：基于 SSH 的安全文件复制命令，语法类似 <code>cp</code>，支持本地↔远程双向。</p>
+
+  <pre><code># 基本语法
+scp [选项] 源 目标
+
+# 上传：本地 → 远程
+scp data.csv user@server:/home/user/data/
+scp -r model/ user@server:/home/user/          # -r 递归复制目录
+
+# 下载：远程 → 本地
+scp user@server:/logs/app.log ./
+scp -r user@server:/home/user/results/ ./      # 下载整个目录
+
+# 常用选项
+scp -P 2222 file user@server:/path/            # 指定端口（大写 P！）
+scp -C large_file user@server:/path/            # 压缩传输
+scp -v file user@server:/path/                  # 显示详细信息（调试用）
+scp -p file user@server:/path/                  # 保留文件时间戳和权限</code></pre>
+
+  <h4>通过跳板机传输文件</h4>
+  <pre><code># 方法 1：如果你配置了 ~/.ssh/config 中的 ProxyJump
+scp data.csv gpu01:/home/user/data/    # 直接用别名！与普通 scp 完全一样
+
+# 方法 2：显式指定跳板机
+scp -o ProxyJump=bastion data.csv gpu01:/home/user/
+
+# 方法 3：通过跳板机中转（笨办法，但能理解原理）
+scp data.csv bastion:/tmp/             # 先传到跳板机
+ssh bastion "scp /tmp/data.csv gpu01:/home/user/"  # 再从跳板机传到内网</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 rsync（增量同步）</span>
+    <span class="badges-row"><span class="badge badge-yellow">进阶</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：比 scp 更智能的同步工具 — 只传差异部分，支持断点续传，适合大数据集和代码同步。</p>
+
+  <pre><code># 基本用法（-a 归档模式 = 保留权限+时间戳+递归, -v 详细, -z 压缩）
+rsync -avz src_dir/ user@server:dst_dir/
+
+# ⚠️ 注意：src/ 和 src 的区别！
+rsync -avz data/ user@server:data/     # 同步 data/ 目录<strong>里的内容</strong> 到远程 data/
+rsync -avz data user@server:data/      # 同步 data 目录<strong>本身</strong> 到远程
+
+# 常用组合
+rsync -avz --progress data/ user@server:data/   # 显示进度
+rsync -avz --delete src/ dst/                    # ⚠️ 镜像同步（目标多余文件会被删）
+rsync -avz --exclude='*.pyc' --exclude='__pycache__/' src/ dst/  # 排除文件
+rsync -avz --max-size=100m src/ dst/             # 只传 ≤100MB 的文件
+rsync -avz --dry-run src/ dst/                   # 试运行：只显示会做什么，不实际执行
+rsync -avz -e "ssh -p 2222" src/ user@host:dst/ # 指定 SSH 选项
+
+# 通过跳板机同步
+rsync -avz -e "ssh -J bastion" src/ gpu01:dst/  # -J 指定跳板机
+# 或者配置了 ProxyJump 后直接用别名
+rsync -avz src/ gpu01:dst/</code></pre>
+
+  <h4>scp vs rsync 选哪个？</h4>
+  <table>
+    <thead><tr><th>场景</th><th>推荐</th><th>原因</th></tr></thead>
+    <tbody>
+      <tr><td>传几个小文件</td><td>scp</td><td>简单直接</td></tr>
+      <tr><td>传大文件 / 数据集</td><td>rsync</td><td>断点续传，不怕中断</td></tr>
+      <tr><td>同步项目代码</td><td>rsync</td><td>只传变更部分，快得多</td></tr>
+      <tr><td>定期备份目录</td><td>rsync</td><td>增量+去重，效率最高</td></tr>
+      <tr><td>简单的一次性复制</td><td>scp</td><td>少打几个字母</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 sftp（交互式文件管理）</span>
+    <span class="badges-row"><span class="badge badge-green">实用</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：基于 SSH 的交互式文件管理器，类似 FTP，支持 ls/cd/get/put 等命令。许多 GUI 文件管理器也基于 SFTP。</p>
+
+  <pre><code># 连接到服务器
+sftp user@server
+
+# sftp 内的常用命令
+sftp> ls                     # 列出远程目录
+sftp> cd /remote/path        # 切换远程目录
+sftp> lcd /local/path        # 切换本地目录
+sftp> get file.txt           # 下载（远程→本地）
+sftp> get -r dir/            # 递归下载目录
+sftp> put file.txt           # 上传（本地→远程）
+sftp> put -r dir/            # 递归上传
+sftp> rm file.txt            # 删除远程文件
+sftp> pwd                    # 显示远程当前目录
+sftp> lpwd                   # 显示本地当前目录
+sftp> !command               # 执行本地命令（如 !ls）
+
+# 通过跳板机也可以
+sftp -J bastion gpu01</code></pre>
+</div>
+
+<!-- P3_END -->
+
+<!-- ===== SECTION 5: 跳板机原理 ===== -->
+<h2 id="s5">5. 🏗️ 跳板机原理</h2>
+<blockquote class="info">
+  跳板机（Jump Host / Bastion Host）是<strong>内外网之间的安全桥梁</strong>。它不是"多了一步麻烦的障碍"——而是在"公网可达"和"内网安全"之间做的一个必要权衡。
+</blockquote>
+
+<h3>5.1 为什么需要跳板机？</h3>
+
+<h4>典型的实验室网络拓扑</h4>
+<div class="mermaid">
+graph TB
+    subgraph "🏠 你的位置（校外/宿舍/咖啡厅）"
+        LAPTOP["💻 你的电脑<br/><i>没有公网 IP</i>"]
+    end
+    subgraph "🌐 公网"
+        INTERNET["Internet"]
+    end
+    subgraph "🏫 实验室（校内部署）"
+        subgraph "DMZ 区域"
+            BASTION["🛡️ <b>跳板机 / Bastion</b><br/><i>有公网 IP (202.120.xx.xx)<br/>唯一暴露在公网的入口</i>"]
+        end
+        subgraph "内网（无公网 IP）"
+            GPU["🖥️ GPU 服务器<br/><i>192.168.1.101</i>"]
+            STORAGE["🗄️ 存储服务器<br/><i>192.168.1.102</i>"]
+            CLUSTER["⚙️ 计算集群节点<br/><i>192.168.1.103~120</i>"]
+        end
+    end
+    LAPTOP -->|"SSH :22<br/>（唯一的入口）"| INTERNET
+    INTERNET -->|"只有这个能访问！"| BASTION
+    BASTION -->|"SSH :22<br/>（内网间自由通信）"| GPU
+    BASTION --> STORAGE
+    BASTION --> CLUSTER
+</div>
+
+<h3>5.2 跳板机的安全意义</h3>
+<table>
+  <thead><tr><th>如果没有跳板机</th><th>有跳板机</th></tr></thead>
+  <tbody>
+    <tr><td>❌ 每台服务器都暴露在公网 → 每个都是攻击目标</td><td>✅ 只有一台暴露在公网，其余隐藏在内网</td></tr>
+    <tr><td>❌ SSH 端口被全网扫描，暴力破解 24/7 不间断</td><td>✅ 内网服务器完全不受公网扫描影响</td></tr>
+    <tr><td>❌ 任何一台被攻破 → 内网全部沦陷</td><td>✅ 跳板机成为控制点，可以集中审计和防护</td></tr>
+    <tr><td>❌ 修改防火墙规则要逐台操作</td><td>✅ 只需管理跳板机的访问控制</td></tr>
+    <tr><td>❌ 难以审计谁在什么时间登录了哪台机器</td><td>✅ 所有 SSH 会话必经跳板机 → 集中审计</td></tr>
+  </tbody>
+</table>
+
+<h3>5.3 跳板机的工作模式</h3>
+<div class="mermaid">
+sequenceDiagram
+    participant C as "💻 你的电脑"
+    participant J as "🛡️ 跳板机"
+    participant T as "🖥️ 内网服务器"
+    Note over C,T: 方式一：Jump（推荐 — 透明隧道）
+    C->>J: 1. SSH 连接跳板机（认证）
+    C->>J: 2. 请求：请帮我转发到 gpu01:22
+    J->>T: 3. 跳板机向内网 gpu01 发起 TCP 连接
+    T-->>J: 4. gpu01 的 SSH 服务响应
+    Note over C,T: 5. SSH 连接在 C↔T 之间端到端加密建立！
+    Note over C,T: ⭐ 跳板机只做转发，看不到加密内容
+</div>
+
+<div class="callout note">
+  <span class="callout-icon">🔑</span>
+  <div><strong>关键认知：跳板机看不到你的数据</strong><br>
+  使用 <code>ProxyJump</code>（-J）时，SSH 连接在你和最终服务器之间<strong>端到端加密</strong>。跳板机只是在 TCP 层面做数据转发，<strong>无法看到 SSH 会话的内容</strong>。这与先 SSH 到跳板机再手动 SSH 到内网（跳板机可以看到你的操作）有本质区别。</div>
+</div>
+
+
+<!-- ===== SECTION 6: 跳板机实战配置 ===== -->
+<h2 id="s6">6. 🔗 跳板机实战配置</h2>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 三种连接方式对比</span>
+    <span class="badges-row"><span class="badge badge-green">核心</span></span>
+  </div>
+  <table>
+    <thead><tr><th>方式</th><th>写法</th><th>端到端加密?</th><th>推荐?</th></tr></thead>
+    <tbody>
+      <tr><td><strong>ProxyJump (-J)</strong></td><td><code>ssh -J bastion gpu01</code></td><td>✅ 是</td><td>⭐ 强烈推荐</td></tr>
+      <tr><td><strong>ProxyCommand</strong></td><td><code>ssh -o ProxyCommand="ssh -W %h:%p bastion" gpu01</code></td><td>✅ 是</td><td>✅ 旧版兼容</td></tr>
+      <tr><td><strong>手动二次 SSH</strong></td><td>先 <code>ssh bastion</code>，再 <code>ssh gpu01</code></td><td>❌ 否（跳板机能看到内容）</td><td>⚠️ 仅应急</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 ProxyJump 配置（最推荐）</span>
+    <span class="badges-row"><span class="badge badge-green">核心</span></span>
+  </div>
+
+  <h4>命令行方式</h4>
+  <pre><code># 单次使用（-J = ProxyJump）
+ssh -J user@bastion:22 user@gpu01
+
+# 多层跳板（用逗号分隔，从左到右）
+ssh -J bastion,gpu01 user@storage   # 本机→bastion→gpu01→storage</code></pre>
+
+  <h4>配置文件方式（⭐ 使用一次，受益终身）</h4>
+  <pre><code># ~/.ssh/config
+Host bastion
+    HostName 202.120.xx.xx
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519
+
+Host gpu01
+    HostName 192.168.1.101
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyJump bastion              # ⭐ 一行搞定！
+
+Host gpu02
+    HostName 192.168.1.102
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyJump bastion
+
+# 配置完后，连接内网服务器就跟直连一样简单
+ssh gpu01      # 自动通过跳板机，完全透明！
+scp data.csv gpu01:~/data/   # scp 也透明
+rsync -avz results/ gpu01:~/results/  # rsync 也透明</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 多层跳板实战</span>
+    <span class="badges-row"><span class="badge badge-yellow">进阶</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：部分实验室有"公网→学校VPN→学院跳板机→实验室网关→GPU服务器"这样的多级网络。ProxyJump 支持用逗号串联多层。</p>
+
+  <h4>场景：三级跳板</h4>
+  <pre><code># 你的电脑 → 学校 VPN 入口 → 学院跳板机 → GPU 服务器
+# ~/.ssh/config 配置
+Host campus-vpn
+    HostName vpn.university.edu.cn
+    User student_id
+    IdentityFile ~/.ssh/id_ed25519
+
+Host dept-bastion
+    HostName 10.10.0.1             # VPN 内网 IP
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyJump campus-vpn            # 第一跳
+
+Host lab-gpu01
+    HostName 192.168.1.101
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyJump dept-bastion          # 第二跳（底层自动：campus-vpn→dept-bastion）
+
+# 使用：一行命令穿透三层
+ssh lab-gpu01
+
+# 等价命令行写法
+ssh -J campus-vpn,dept-bastion zhang-san@192.168.1.101</code></pre>
+
+  <h4>跳板机免密链配置</h4>
+  <pre><code># 关键：每一跳之间都需要认证。确保：
+# 1. 你的电脑 → 跳板机：已部署公钥 ✅
+# 2. 跳板机 → 内网服务器：需要在<strong>跳板机上</strong>也生成密钥并部署到内网
+
+# 在跳板机上（只需做一次）
+ssh bastion
+ssh-keygen -t ed25519 -C "bastion-to-internal"
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@192.168.1.101
+
+# 或者：从本地转发密钥（让 ProxyJump 使用你本地的密钥）
+# ~/.ssh/config 中用 ForwardAgent yes（需谨慎，见安全章节）</code></pre>
+</div>
+
+
+<!-- ===== SECTION 7: 实验室场景实战 ===== -->
+<h2 id="s7">7. 🧪 实验室场景实战</h2>
+<blockquote class="tip">本章面向最真实的场景：你人在宿舍/家/咖啡厅，需要连回实验室的 GPU 服务器跑实验。我们将逐一覆盖从登录到开发的全流程。</blockquote>
+
+<h3>7.1 典型场景全景</h3>
+<div class="mermaid">
+graph LR
+    subgraph "场景一"
+        A1["📝 训练代码在本地<br/>→ rsync 同步到 GPU"]
+    end
+    subgraph "场景二"
+        A2["🖥️ 远程 SSH 到 GPU<br/>→ 运行训练脚本"]
+    end
+    subgraph "场景三"
+        A3["📓 远程 Jupyter Notebook<br/>→ 本地浏览器打开"]
+    end
+    subgraph "场景四"
+        A4["💻 VS Code Remote-SSH<br/>→ 直接在 GPU 上写代码"]
+    end
+    subgraph "场景五"
+        A5["📊 TensorBoard 远程<br/>→ 本地浏览器查看"]
+    end
+</div>
+
+<h3>7.2 场景一 & 二：代码同步 + 远程训练</h3>
+<pre><code># 1. 在本地写完代码 → 同步到 GPU 服务器
+rsync -avz --exclude='__pycache__/' --exclude='*.pyc' \
+    --exclude='.git/' --exclude='data/' \
+    ~/project/ gpu01:~/project/
+
+# 2. SSH 到 GPU，启动训练
+ssh gpu01
+cd ~/project
+
+# 3. 用 tmux/screen 保持会话，防止断线后训练中断
+tmux new -s train               # 创建名为 train 的会话
+python train.py                 # 启动训练
+
+# 按 Ctrl+B 然后 D → 脱离 tmux（训练继续运行）
+# 退出 SSH 后，下次登录用 tmux attach -t train 恢复
+
+# 4. 监控训练
+ssh gpu01 "tail -f ~/project/logs/train.log"  # 远程查看日志
+ssh gpu01 "nvidia-smi"                         # 远程查看 GPU 使用情况
+watch -n 5 "ssh gpu01 'nvidia-smi'"            # 本地每 5 秒刷新 GPU 状态</code></pre>
+
+<h3>7.3 场景三：远程 Jupyter Notebook</h3>
+<pre><code># 在 GPU 服务器上启动 Jupyter（无浏览器模式）
+ssh gpu01
+jupyter notebook --no-browser --port=8888
+
+# 然后在本地做端口转发（另开一个终端）
+ssh -N -L 8888:localhost:8888 gpu01
+# -N : 不执行远程命令，只做转发
+# -L : 本地端口:远程地址:远程端口
+
+# 在本地浏览器打开
+# http://localhost:8888
+
+# ⭐ 一步到位：一条命令启动+转发（配置文件方式见附录B）
+# ~/.ssh/config 中对应的 gpu01 加上：
+#   LocalForward 8888 localhost:8888
+# 然后 ssh gpu01 就能自动转发</code></pre>
+
+<h3>7.4 场景四：远程 TensorBoard / 其他 Web 服务</h3>
+<pre><code># GPU 服务器上启动 TensorBoard
+ssh gpu01
+tensorboard --logdir=./logs --port=6006 --bind_all
+
+# 本地端口转发
+ssh -N -L 6006:localhost:6006 gpu01
+
+# 浏览器打开
+# http://localhost:6006
+
+# ⭐ 甚至可以同时转发多个端口
+ssh -N -L 8888:localhost:8888 -L 6006:localhost:6006 gpu01</code></pre>
+
+<h3>7.5 tmux/screen：断线保护（必学！）</h3>
+<blockquote class="warning">在远程服务器上跑长时间训练，<strong>没有 tmux/screen = 自找苦吃</strong>。网络一断，你的训练进程就没了。</blockquote>
+
+<table>
+  <thead><tr><th>操作</th><th>tmux 命令</th><th>screen 命令（备选）</th></tr></thead>
+  <tbody>
+    <tr><td>创建会话</td><td><code>tmux new -s train</code></td><td><code>screen -S train</code></td></tr>
+    <tr><td>脱离会话</td><td><code>Ctrl+B, 然后 D</code></td><td><code>Ctrl+A, 然后 D</code></td></tr>
+    <tr><td>列出会话</td><td><code>tmux ls</code></td><td><code>screen -ls</code></td></tr>
+    <tr><td>重新连接</td><td><code>tmux attach -t train</code></td><td><code>screen -r train</code></td></tr>
+    <tr><td>分屏</td><td><code>Ctrl+B, 然后 " 或 %</code></td><td><code>Ctrl+A, 然后 S 或 |</code></td></tr>
+    <tr><td>杀死会话</td><td><code>tmux kill-session -t train</code></td><td><code>screen -XS train quit</code></td></tr>
+    <tr><td>滚动查看</td><td><code>Ctrl+B, 然后 [</code>（之后用方向键）</td><td><code>Ctrl+A, 然后 Esc</code></td></tr>
+  </tbody>
+</table>
+
+<!-- P4_END -->
+
+<!-- ===== SECTION 8: 端口转发与隧道 ===== -->
+<h2 id="s8">8. 🌐 端口转发与隧道</h2>
+<blockquote class="info">SSH 不仅能转发命令行 — 它可以转发<strong>任何 TCP 流量</strong>。这是做内网穿透、远程调试、安全代理的利器。</blockquote>
+
+<h3>8.1 三种转发模式对比</h3>
+<div class="mermaid">
+graph LR
+    subgraph "本地转发 -L"
+        L1["🏠 本地<br/>localhost:8080"] -->|"SSH 加密隧道"| L2["🖥️ 远程<br/>目标服务:80"]
+    end
+    subgraph "远程转发 -R"
+        R1["🖥️ 远程服务器<br/>监听 9090"] -->|"SSH 加密隧道<br/>(反向)"| R2["🏠 本地<br/>localhost:3000"]
+    end
+    subgraph "动态转发 -D"
+        D1["🏠 本地<br/>SOCKS :1080"] -->|"SSH 加密隧道"| D2["🖥️ 跳板机<br/>→ 访问任意目标"]
+    end
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 本地转发 (-L)：把远程端口"搬"到本地</span>
+    <span class="badges-row"><span class="badge badge-green">核心</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：访问你本机的 <code>localhost:某个端口</code>，就等于访问远程服务器的某个端口。最常见的用法：远程 Jupyter / Web 服务 / 数据库。</p>
+
+  <h4>格式</h4>
+  <pre><code>ssh -L [本地地址:]本地端口:目标地址:目标端口 [跳板机] 最终服务器</code></pre>
+
+  <h4>实战场景</h4>
+  <pre><code># 场景 1：访问内网服务器的 Jupyter（经典！）
+ssh -N -L 8888:localhost:8888 gpu01
+# 解释：本机 8888 → gpu01 的 localhost:8888
+
+# 场景 2：访问内网另一台机器（不是 gpu01 本身）的 Web 服务
+ssh -N -L 8080:192.168.1.50:80 gpu01
+# 解释：本机 8080 → 通过 gpu01 → 192.168.1.50:80
+
+# 场景 3：通过跳板机访问内网的 MySQL 数据库
+ssh -N -L 3306:192.168.1.100:3306 bastion
+# 然后在本地用 mysql -h 127.0.0.1 -P 3306 连接
+
+# 场景 4：同时转发多个端口
+ssh -N -L 8888:localhost:8888 -L 6006:localhost:6006 gpu01
+
+# -N 参数：不执行远程命令，只做端口转发（很重要）</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 远程转发 (-R)：把你本地服务"暴露"到远程</span>
+    <span class="badges-row"><span class="badge badge-yellow">进阶</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：让远程服务器上的某个端口接收的请求，通过 SSH 隧道转发到你本地。常用于：让远程同事访问你本机的开发环境；或让内网服务"回连"到你的电脑。</p>
+
+  <pre><code># 场景：你本机跑了一个 Web 服务在 localhost:3000
+# 想让远程服务器 gpu01 的 9090 端口也能访问它
+
+ssh -R 9090:localhost:3000 gpu01
+# 之后在 gpu01 上访问 localhost:9090 = 你本机的 localhost:3000
+
+# ⚠️ 默认只绑定到 localhost，要让其他机器也能访问：
+# 需要在服务器端 /etc/ssh/sshd_config 设置：
+# GatewayPorts yes
+# 然后：
+ssh -R 0.0.0.0:9090:localhost:3000 gpu01
+# 这样内网其他机器也能通过 gpu01:9090 访问你本机的服务</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 动态转发 (-D)：SOCKS 代理</span>
+    <span class="badges-row"><span class="badge badge-purple">进阶</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：在你本机开一个 SOCKS5 代理端口，把浏览器/APP 的流量通过跳板机转发。相当于把你的电脑"变成"在内网中。</p>
+
+  <pre><code># 在本机开启 SOCKS 代理
+ssh -D 1080 -N bastion
+
+# 然后配置你的浏览器/应用使用 SOCKS5 代理：
+#   地址：localhost
+#   端口：1080
+#   类型：SOCKS5
+
+# 使用场景举例：
+# • 访问只能在学校内网打开的学术资源/数据库
+# • 通过实验室网络下载论文（IP 认证的期刊）
+# • 调试只能内网访问的 Web 应用
+
+# ⭐ Chrome 快捷方式（只代理当前窗口）
+# chrome --proxy-server="socks5://localhost:1080" --user-data-dir=/tmp/chrome-ssh</code></pre>
+
+  <h4>端口转发对照表</h4>
+  <table>
+    <thead><tr><th>类型</th><th>参数</th><th>数据流</th><th>最常用于</th></tr></thead>
+    <tbody>
+      <tr><td>本地转发</td><td><code>-L 本地:目标:端口</code></td><td>本地监听 → 远程目标</td><td>⭐ Jupyter、TensorBoard、数据库</td></tr>
+      <tr><td>远程转发</td><td><code>-R 远程:目标:端口</code></td><td>远程监听 → 本地目标</td><td>内网穿透、远程调试本地服务</td></tr>
+      <tr><td>动态转发</td><td><code>-D 本地端口</code></td><td>SOCKS → 远程任意目标</td><td>代理上网、访问内网资源</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===== SECTION 9: VS Code 远程开发 ===== -->
+<h2 id="s9">9. 💻 VS Code Remote-SSH 开发</h2>
+<blockquote class="tip">Remote-SSH 让你在本地的 VS Code 里拥有远程服务器上的完整开发体验 — 代码运行在 GPU 服务器，但编辑器体验和本地一样流畅。</blockquote>
+
+<h3>9.1 基本配置（直连服务器）</h3>
+<pre><code># 1. 安装 Remote-SSH 插件（ms-vscode-remote.remote-ssh）
+
+# 2. 配置 ~/.ssh/config（同上文）
+Host gpu01
+    HostName 192.168.1.101
+    User zhang-san
+    ProxyJump bastion
+    IdentityFile ~/.ssh/id_ed25519
+
+# 3. VS Code: Ctrl+Shift+P → "Remote-SSH: Connect to Host..." → 选 gpu01
+
+# 4. 打开远程文件夹：File → Open Folder → /home/zhang-san/project</code></pre>
+
+<h3>9.2 跳板机连接（ProxyJump 自动处理）</h3>
+<pre><code># 如果你已经在 ~/.ssh/config 中配置了 ProxyJump bastion
+# VS Code Remote-SSH 会<strong>自动识别并使用跳板机</strong>，无需额外配置！
+
+# 你的 ~/.ssh/config：
+Host bastion
+    HostName 202.120.xx.xx
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519
+
+Host gpu01
+    HostName 192.168.1.101
+    User zhang-san
+    ProxyJump bastion              # ← VS Code 自动识别
+
+# VS Code 中直接选 gpu01 连接，跳板机对你是<strong>完全透明的</strong></code></pre>
+
+<h3>9.3 常见问题</h3>
+<table>
+  <thead><tr><th>问题</th><th>解决方案</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Remote-SSH 连接超时</strong></td><td>SSH config 加 <code>ConnectTimeout 30</code>；检查 VS Code Server 能否下载</td></tr>
+    <tr><td><strong>远程插件不安装</strong></td><td>插件需在远程侧单独安装：点插件旁边的 "Install in SSH: gpu01"</td></tr>
+    <tr><td><strong>连不上跳板机</strong></td><td>先在终端 <code>ssh gpu01</code> 确认通，再排查 VS Code</td></tr>
+    <tr><td><strong>无网络无法下载 VS Code Server</strong></td><td>手动上传 vscode-server 到 <code>~/.vscode-server/</code></td></tr>
+    <tr><td><strong>远程终端字体/键盘异常</strong></td><td>在 VS Code 远程设置中调整 terminal.integrated.* 配置</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ===== 9.4 PyTorch GPU 远程开发全流程 ===== -->
+<h3>9.4 🔥 PyTorch GPU 远程开发全流程</h3>
+<blockquote class="tip">这是实验室最核心的工作流：在你自己电脑的 VS Code 里写代码，代码<strong>无缝运行在远程 GPU 服务器上</strong>，感受和本地开发一模一样，但拥有服务器的全部算力。</blockquote>
+
+<h4>9.4.1 连接前的准备：确认服务器 GPU 环境</h4>
+<pre><code># 先用普通 SSH 登录一次，确认环境
+ssh gpu01
+
+# ① 确认 CUDA 驱动可用
+nvidia-smi
+# 输出示例：
+# +-----------------------------------------------------------------------------+
+# | NVIDIA-SMI 550.90.07    Driver Version: 550.90.07    CUDA Version: 12.4     |
+# |-------------------------------+----------------------+----------------------+
+# |   0  NVIDIA GeForce RTX 4090     Off | 00000000:01:00.0 Off |                  |
+# | 30%   35C    P8     28W /  450W |      0MiB /  24564MiB |      0%      Default |
+# +-------------------------------+----------------------+----------------------+
+#                               ↑ 关键信息：驱动版本 + CUDA版本 + 显存使用量
+
+# ② 确认 PyTorch 能否看到 GPU
+python3 -c "import torch; print(f'CUDA可用: {torch.cuda.is_available()}'); print(f'GPU数量: {torch.cuda.device_count()}'); print(f'GPU型号: {torch.cuda.get_device_name(0)}')"
+
+# ③ 确认 CUDA 版本与 PyTorch 版本兼容
+python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA: {torch.version.cuda}'); print(f'cuDNN: {torch.backends.cudnn.version()}')"</code></pre>
+
+<h4>9.4.2 VS Code Remote-SSH 连接 GPU 服务器</h4>
+<pre><code># ① 确保 ~/.ssh/config 已配置（含 ProxyJump）
+# ② VS Code: Ctrl+Shift+P → "Remote-SSH: Connect to Host..."
+# ③ 选择 gpu01（或你配置的别名）
+# ④ 左下角状态栏出现绿色的 "SSH: gpu01" = 连接成功
+# ⑤ File → Open Folder → 选择你的项目目录（如 /home/zhang-san/project）
+# ⑥ Ctrl+` 打开远程终端 → 就已经在 GPU 服务器上了！
+
+# ⭐ 此时在 VS Code 中打开的所有终端、文件、Python 交互窗口
+# 都运行在远程 GPU 服务器上，代码直接使用服务器的 GPU</code></pre>
+
+<h4>9.4.3 配置远程 PyTorch 开发环境（conda）</h4>
+<pre><code># === 在 VS Code 的远程终端中执行 ===
+
+# ① 确认 conda 可用（没有则先装 miniconda）
+which conda
+
+# ② 创建专用环境（指定 Python 版本）
+conda create -n torch-gpu python=3.11 -y
+
+# ③ 激活环境
+conda activate torch-gpu
+
+# ④ 安装 PyTorch（⭐ 关键：去 pytorch.org 查对应的 CUDA 版本命令！）
+# 例如 CUDA 12.4 对应：
+conda install pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia -y
+# 或用 pip（先确认 CUDA 版本再选）：
+# pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+
+# ⑤ 安装其他常用库
+pip install numpy pandas matplotlib jupyter tensorboard tqdm gpustat
+
+# ⑥ 验证 GPU 可用
+python3 -c "
+import torch
+x = torch.randn(1000, 1000, device='cuda')
+y = x @ x.T
+print(f'张量在: {y.device}')
+print(f'运算结果: {y[0,0].item():.4f}')
+print('✅ GPU 运算测试通过！')
+"</code></pre>
+
+<h4>9.4.4 在 VS Code 中选择远程 Python 解释器</h4>
+<pre><code># ① Ctrl+Shift+P → "Python: Select Interpreter"
+# ② 选择你刚创建的 conda 环境路径，例如：
+#    /home/zhang-san/miniconda3/envs/torch-gpu/bin/python
+# ③ 如果没看到该环境，手动输入路径或重启 VS Code
+
+# ④ 打开任意 .py 文件，左下角状态栏应显示：
+#    🐍 torch-gpu (SSH: gpu01)  ← 确认是这个！
+
+# ⑤ 验证：新建 test.py，输入 import torch
+#    如果没有红色波浪线 + 有智能提示 = 配置成功</code></pre>
+
+<h4>9.4.5 编写并运行 PyTorch 训练代码</h4>
+<pre><code># 在 VS Code 中新建 train.py，编写如下测试代码：
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# 检查 GPU
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Using device: {device}")
+print(f"GPU: {torch.cuda.get_device_name(0)}")
+
+# 简单模型
+model = nn.Sequential(
+    nn.Linear(784, 256),
+    nn.ReLU(),
+    nn.Linear(256, 10)
+).to(device)
+
+# 假数据
+X = torch.randn(512, 784, device=device)
+y = torch.randint(0, 10, (512,), device=device)
+
+# 训练几步测试
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+model.train()
+for step in range(10):
+    optimizer.zero_grad()
+    output = model(X)
+    loss = criterion(output, y)
+    loss.backward()
+    optimizer.step()
+    print(f"Step {step+1}: Loss = {loss.item():.4f}")
+
+print("✅ GPU 训练测试完成！")</code></pre>
+
+<p><strong>运行方式：</strong></p>
+<table>
+  <thead><tr><th>方法</th><th>操作</th><th>适用场景</th></tr></thead>
+  <tbody>
+    <tr><td><strong>直接运行</strong></td><td>Ctrl+F5 或右上角 ▶️ 按钮</td><td>快速测试脚本</td></tr>
+    <tr><td><strong>在终端运行</strong></td><td><code>Ctrl+`</code> 打开终端 → <code>python train.py</code></td><td>带命令行参数; watch 输出</td></tr>
+    <tr><td><strong>Run Selection</strong></td><td>选中代码 → Shift+Enter</td><td>⭐ 逐段测试（最像 Jupyter）</td></tr>
+    <tr><td><strong>调试模式</strong></td><td>F5（需配 launch.json）</td><td>设断点排查问题</td></tr>
+  </tbody>
+</table>
+
+<h4>9.4.6 使用交互式 Python 窗口（类似 Jupyter，但更好）</h4>
+<p>VS Code 内置了 Python Interactive Window，可以像 Jupyter 一样逐 cell 执行，但文件仍然是 .py 格式（可版本控制）。</p>
+<pre><code># 在 .py 文件中用 # %% 标记 cell：
+# %% [markdown]
+# # 数据准备 Cell
+
+# %%
+import torch
+device = torch.device('cuda')
+x = torch.randn(1000, 784, device=device)
+print(f"x shape: {x.shape}, device: {x.device}")
+
+# %% [markdown]
+# # 模型定义 Cell
+
+# %%
+model = torch.nn.Sequential(
+    torch.nn.Linear(784, 10)
+).to(device)
+print(model)
+
+# 操作：Shift+Enter → 运行当前 cell → 结果显示在右侧交互窗口
+# 每个 cell 的变量在后续 cell 中可用（状态保持，但 GPU 显存不会释放！）
+
+# ⭐ 也可以直接在 .py 文件右键 → "Run Current File in Interactive Window"</code></pre>
+
+<h4>9.4.7 远程调试 PyTorch 代码（断点 + 检查张量）</h4>
+<blockquote class="info">VS Code Remote-SSH 支持在远程 GPU 服务器上<strong>断点调试</strong> PyTorch 代码 — 可以暂停在任意行，检查张量的 shape/dtype/device/grad，甚至可视化。</blockquote>
+
+<pre><code># ① 创建 .vscode/launch.json（在远程项目根目录）
+# Ctrl+Shift+P → "Debug: Add Configuration" → "Python Debugger"
+
+# .vscode/launch.json:
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PyTorch GPU Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"      // 指定 GPU
+            },
+            "justMyCode": false                    // 可进入库代码
+        }
+    ]
+}
+
+# ② 设断点：在 train.py 的 loss.backward() 行号左边单击 → 红点
+# ③ 按 F5 启动调试
+# ④ 程序暂停在断点处，左侧面板可以：
+#    - VARIABLES → 看到 loss, output, model 的实时值
+#    - WATCH → 添加 output.shape, torch.cuda.memory_allocated()
+#    - DEBUG CONSOLE → 输入任意 PyTorch 代码：
+#      > model.fc1.weight.grad   # 查看梯度
+#      > torch.cuda.memory_summary()  # 查看显存
+#      > output.argmax(dim=1)    # 计算预测结果
+
+# ⑤ F5 继续执行，F10 单步跳过，F11 单步进入</code></pre>
+
+<h4>9.4.8 GPU 资源监控（不离开 VS Code）</h4>
+<pre><code># 方法一：在 VS Code 终端中定时查看 GPU
+watch -n 1 nvidia-smi
+# 或更友好的：
+watch -n 1 "nvidia-smi --query-gpu=index,temperature.gpu,utilization.gpu,memory.used,memory.total --format=csv"
+
+# 方法二：安装 gpustat（推荐！）
+pip install gpustat
+watch -n 1 gpustat -cP       # 彩色输出，每 1 秒刷新
+# 输出示例：
+# gpu01  Fri Jul 10 15:32:00 2025  550.90.07
+# [0] GeForce RTX 4090 | 45°C,  85 % | 18432 / 24564 MB | zhang-san:python/12345(18200MB)
+
+# 方法三：VS Code 扩展 "GPU Monitor"（搜索安装）
+# 在状态栏实时显示 GPU 利用率/显存
+
+# 方法四：在 Python 代码中内嵌 GPU 监控
+import subprocess, time
+def show_gpu():
+    result = subprocess.run(
+        ['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total',
+         '--format=csv,noheader,nounits'],
+        capture_output=True, text=True
+    )
+    print(f"GPU: {result.stdout.strip()}")
+
+
+# ⭐ 在训练循环中加入显存检查（防 OOM）
+if step % 100 == 0:
+    allocated = torch.cuda.memory_allocated() / 1e9
+    reserved = torch.cuda.memory_reserved() / 1e9
+    print(f"显存: 已分配 {allocated:.2f}GB, 已缓存 {reserved:.2f}GB")</code></pre>
+
+<h4>9.4.9 长时间训练：VS Code + tmux 黄金组合</h4>
+<blockquote class="warning">VS Code 的远程终端在<strong>关闭窗口或网络中断时</strong>会终止其中的进程。长时间训练必须配合 tmux 使用。</blockquote>
+
+<h4>推荐工作流</h4>
+<pre><code># === 步骤一：在 VS Code 远程终端中创建 tmux 会话 ===
+tmux new -s train
+
+# === 步骤二：在 tmux 中启动训练 ===
+conda activate torch-gpu
+python train.py
+# Ctrl+B, D → 脱离 tmux（训练继续在后台跑）
+
+# === 步骤三：关闭 VS Code，回家，重新打开 VS Code ===
+# 连接 gpu01 后，在终端中恢复 tmux
+tmux attach -t train
+# 看到训练仍在运行！✅
+
+# === ⭐ 进阶：tmux 窗口分屏监控 ===
+# Ctrl+B, " → 横分屏（上面看日志，下面看 GPU）
+# Ctrl+B, % → 竖分屏（左边代码，右边 nvidia-smi）
+# Ctrl+B, 方向键 → 切换 pane
+# Ctrl+B, 按住 Ctrl+方向键 → 调整 pane 大小</code></pre>
+
+<h4>9.4.10 多 GPU 选择与环境变量</h4>
+<pre><code># 方法一：命令行指定（最直接）
+CUDA_VISIBLE_DEVICES=0,1 python train.py       # 只用 GPU 0 和 1
+CUDA_VISIBLE_DEVICES=2 python train.py          # 只用 GPU 2（跳过 0,1）
+
+# 方法二：在 Python 代码中指定（必须在 import torch 之前！）
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # 只用第 2 块 GPU
+# ⚠️ 这行必须在 import torch 之前！之后设置无效！
+
+import torch
+print(f"可见 GPU 数量: {torch.cuda.device_count()}")  # → 1
+
+# 方法三：在 ~/.bashrc 中设置默认值（不推荐，容易忘记）
+export CUDA_VISIBLE_DEVICES=0
+
+# ⭐ 实验室多用户礼仪：
+# - 先用 gpustat 查看哪块 GPU 空闲
+# - 显式指定 CUDA_VISIBLE_DEVICES 避免抢占
+# - 训练结束后及时释放 GPU 显存
+
+# 查看谁在用 GPU（从 gpustat 输出）
+gpustat -apu
+# 输出含用户名和进程名 → 方便协商 GPU 使用</code></pre>
+
+<h4>9.4.11 常见 PyTorch GPU 远程开发问题排查</h4>
+<table>
+  <thead><tr><th>问题现象</th><th>原因</th><th>解决方法</th></tr></thead>
+  <tbody>
+    <tr><td><code>torch.cuda.is_available() = False</code></td><td>① PyTorch 装的是 CPU 版 ② CUDA 版本不匹配 ③ 驱动问题</td><td><code>pip list | grep torch</code> 确认版本；去 pytorch.org 重装对应 CUDA 版本的 wheel</td></tr>
+    <tr><td><code>RuntimeError: CUDA out of memory</code></td><td>显存不够</td><td>减小 batch_size；用混合精度 AMP；<code>del var; torch.cuda.empty_cache()</code></td></tr>
+    <tr><td>远程 Python 解释器找不到 conda 环境</td><td>VS Code 没有扫描到 conda 路径</td><td>手动输入完整路径：<code>/home/user/miniconda3/envs/torch-gpu/bin/python</code></td></tr>
+    <tr><td>代码在 GPU 上但非常慢</td><td>数据在 CPU，每步都在 CPU↔GPU 拷贝</td><td>确保数据和模型都在 device 上：<code>x = x.to(device)</code></td></tr>
+    <tr><td>VS Code 终端里 conda 未激活</td><td>VS Code 的终端可能不自动加载 .bashrc</td><td>在终端手动 <code>conda activate torch-gpu</code>，或在 VS Code 设置 <code>"terminal.integrated.shellArgs.linux": ["-i"]</code></td></tr>
+    <tr><td><code>No module named 'torch'</code> 但终端 python 正常</td><td>VS Code 选了错误的 Python 解释器</td><td>Ctrl+Shift+P → Select Interpreter 重选 conda 环境</td></tr>
+    <tr><td>训练跑着跑着 VS Code 断连了</td><td>SSH 连接空闲超时</td><td>在 ~/.ssh/config 加 <code>ServerAliveInterval 60</code></td></tr>
+    <tr><td>import torch 超慢 / 卡住</td><td>磁盘 I/O 或共享库加载缓慢</td><td>等（正常现象，尤其第一次）；若超过 2 分钟，检查 CUDA 驱动是否正常</td></tr>
+  </tbody>
+</table>
+
+<div class="callout success">
+  <span class="callout-icon">✅</span>
+  <div><strong>完整工作流总结</strong>：<br>
+  ① 在本地 VS Code 写代码 → ② Ctrl+S 保存（自动同步到远程，因为 Remote-SSH 本质就是编辑远程文件）→ ③ 远程终端里 <code>python train.py</code> 运行 → ④ GPU 跑起来 → ⑤ <code>Ctrl+B D</code> 脱离 tmux → ⑥ 关电脑回家 → ⑦ 到家 SSH 回去 <code>tmux attach</code> 看结果。<br><br>
+  全程代码写在本机的 VS Code 里，<strong>运行在 GPU 服务器上</strong>，体感几乎零延迟。</div>
+</div>
+
+<!-- P6_INSERT -->
+<!-- ===== SECTION 10: 安全加固 ===== -->
+<h2 id="s10">10. 🛡️ 安全加固</h2>
+<blockquote class="danger">
+  SSH 暴露在公网 = 全天候被全球攻击者扫描和暴力破解。以下措施不是可选项，是<strong>必选项</strong>。
+</blockquote>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 服务端安全配置（/etc/ssh/sshd_config）</span>
+    <span class="badges-row"><span class="badge badge-red">重要</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：修改 sshd 配置后必须 <code>sudo systemctl reload sshd</code>。改之前<strong>保持另一个 SSH 窗口打开</strong>，防止把自己锁在外面！</p>
+
+  <pre><code># === 最核心的安全设置 ===
+# 禁止 root 直接 SSH 登录（用普通用户登录后 sudo）
+PermitRootLogin no
+
+# 禁用密码认证（只允许密钥登录！）
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+
+# 只允许特定用户/组登录
+AllowUsers zhang-san lisi
+AllowGroups ssh-users
+
+# 限制认证尝试次数
+MaxAuthTries 3
+
+# 空闲超时自动断开（秒）
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+# === 其他强化 ===
+# 限制同时连接数
+MaxSessions 5
+MaxStartups 10:30:100
+
+# 关闭不用的功能
+X11Forwarding no                     # 不需要 X11 就关
+AllowTcpForwarding yes               # 需要端口转发则保留
+
+# 修改后重载
+sudo systemctl reload sshd</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 fail2ban：自动封禁暴力破解 IP</span>
+    <span class="badges-row"><span class="badge badge-yellow">进阶</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：fail2ban 监控 SSH 日志，发现某个 IP 短时间内多次认证失败 → 自动在防火墙封禁该 IP。从被动防护变为主动防御。</p>
+
+  <pre><code># 安装
+sudo apt install fail2ban
+
+# 创建本地配置（不要直接改默认配置）
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+# 编辑 /etc/fail2ban/jail.local，确保以下配置生效：
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 5                 # 5 次失败后封禁
+bantime = 3600               # 封禁 1 小时（单位秒）
+findtime = 600               # 10 分钟内
+ignoreip = 127.0.0.1/8 202.120.xx.xx/32  # 白名单
+
+# 启动
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# 查看被禁 IP
+sudo fail2ban-client status sshd
+sudo fail2ban-client get sshd banned
+
+# 手动解封某个 IP
+sudo fail2ban-client set sshd unbanip 1.2.3.4</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 安全审计与日志</span>
+    <span class="badges-row"><span class="badge badge-yellow">进阶</span></span>
+  </div>
+  <table>
+    <thead><tr><th>检查项</th><th>命令</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>查看登录成功记录</td><td><code>sudo grep "Accepted" /var/log/auth.log</code></td><td>谁、什么时间、从哪个 IP 登录成功</td></tr>
+      <tr><td>查看登录失败记录</td><td><code>sudo grep "Failed" /var/log/auth.log</code></td><td>暴力破解痕迹</td></tr>
+      <tr><td>查看当前登录用户</td><td><code>who</code> 或 <code>w</code></td><td>谁现在连着</td></tr>
+      <tr><td>查看历史登录</td><td><code>last</code> 或 <code>lastlog</code></td><td>所有用户的登录历史</td></tr>
+      <tr><td>踢掉某个 SSH 会话</td><td><code>sudo pkill -u username sshd</code></td><td>断开指定用户的所有 SSH</td></tr>
+      <tr><td>查看失败 IP 排行</td><td><code>sudo grep "Failed password" /var/log/auth.log | grep -oP 'from \K\S+' | sort | uniq -c | sort -rn | head</code></td><td>找出暴力破解源 IP Top 10</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 个人使用安全守则</span>
+    <span class="badges-row"><span class="badge badge-green">必读</span></span>
+  </div>
+  <table>
+    <thead><tr><th>守则</th><th>为什么</th></tr></thead>
+    <tbody>
+      <tr><td>🔑 <strong>私钥设密码（passphrase）</strong></td><td>即使私钥文件泄露，没有 passphrase 也无法使用</td></tr>
+      <tr><td>🔒 <strong>私钥永远不分享、不上传</strong></td><td>私钥 = 你的密码，泄露 = 所有部署该公钥的服务器都不安全</td></tr>
+      <tr><td>📋 <strong>不用 ForwardAgent，除非确有必要</strong></td><td>ForwardAgent 让远程服务器可以使用你本地的 ssh-agent。如果远程服务器被黑，攻击者可以<strong>冒充你</strong>登录其他机器</td></tr>
+      <tr><td>🔍 <strong>定期检查 authorized_keys</strong></td><td>确保没有你不再使用的旧公钥残留</td></tr>
+      <tr><td>🚫 <strong>不在公用电脑上存私钥</strong></td><td>实验室公用电脑上的私钥 = 所有人的私钥</td></tr>
+      <tr><td>🔄 <strong>定期更换密钥</strong></td><td>建议至少每年更换一次</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===== SECTION 11: 故障排查 ===== -->
+<h2 id="s11">11. 🔧 故障排查</h2>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 ssh -vvv：万能调试开关</span>
+    <span class="badges-row"><span class="badge badge-green">核心</span></span>
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>：SSH 连接出问题时，第一个要做的不是百度/Google，而是加 <code>-vvv</code> 看详细日志。</p>
+
+  <pre><code># 基本调试（输出非常详细，包括每一步的认证过程）
+ssh -vvv user@server
+
+# 跳板机调试
+ssh -vvv -J bastion gpu01
+
+# 关键日志行解读：
+# debug1: Connecting to 192.168.1.101 [192.168.1.101] port 22.
+#   → TCP 连接成功
+# debug1: Connection established.
+#   → SSH 连接建立
+# debug1: Host 'xxx' is known and matches the ED25519 host key.
+#   → 主机密钥验证通过
+# debug1: Authentications that can continue: publickey,password
+#   → 服务器支持的认证方式
+# debug1: Trying private key: /home/user/.ssh/id_ed25519
+# debug1: Authentication succeeded (publickey).
+#   → ✅ 密钥认证成功
+
+# 如果是权限问题：
+# debug1: /home/user/.ssh/id_ed25519: bad permissions
+# debug1: Could not open authorized keys '/home/user/.ssh/authorized_keys': Permission denied
+#   → 权限错误！检查 chmod 700 .ssh 和 chmod 600 authorized_keys</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 常见错误速查与解决</span>
+    <span class="badges-row"><span class="badge badge-green">实用</span></span>
+  </div>
+  <table>
+    <thead><tr><th>错误</th><th>原因</th><th>解决方法</th></tr></thead>
+    <tbody>
+      <tr><td><code>Connection refused</code></td><td>SSH 服务未启动或端口不对</td><td>用 <code>telnet host 22</code> 测试端口；确认 sshd 在运行</td></tr>
+      <tr><td><code>Connection timed out</code></td><td>防火墙阻止、IP 不可达、网络不通</td><td>ping 测试；检查防火墙规则；检查是否在学校 VPN 里</td></tr>
+      <tr><td><code>Permission denied (publickey)</code></td><td>① 公钥未部署 ② 密钥路径错误 ③ 权限不对</td><td>确认 <code>~/.ssh/authorized_keys</code> 含公钥且权限 600</td></tr>
+      <tr><td><code>Host key verification failed</code></td><td>服务器密钥变了（可能重装系统或 MITM 攻击）</td><td>用 <code>ssh-keygen -R hostname</code> 删除旧指纹后重连</td></tr>
+      <tr><td><code>WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!</code></td><td>同上 — 主机指纹与 known_hosts 记录不一致</td><td>先确认服务器是否确实被重装过（安全渠道确认），再清理指纹</td></tr>
+      <tr><td><code>no matching host key type found</code></td><td>客户端/服务端算法不匹配（老客户端连新服务器）</td><td><code>-o HostKeyAlgorithms=+ssh-rsa</code> 或升级客户端</td></tr>
+      <tr><td><code>kex_exchange_identification: Connection closed by remote host</code></td><td>IP 被服务器 deny / 被 fail2ban 封禁</td><td>确认 IP 不在封禁列表；检查 <code>/etc/hosts.deny</code></td></tr>
+      <tr><td><code>channel 0: open failed: connect failed</code></td><td>跳板机无法转发到内网目标（ProxyJump 失败）</td><td>在跳板机上手动 <code>ssh gpu01</code> 看能否连通，排查内网可达性</td></tr>
+      <tr><td><code>Write failed: Broken pipe</code></td><td>连接在空闲一段时间后断开</td><td>加 <code>ServerAliveInterval 60</code> 到 SSH config</td></tr>
+      <tr><td>连接很快断开（几秒）</td><td>Shell 配置有误（.bashrc 中有 exit）</td><td>检查远程的 <code>~/.bashrc</code>、<code>~/.profile</code> 中是否有 exit</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 连接超时排查流程</span>
+    <span class="badges-row"><span class="badge badge-green">实用</span></span>
+  </div>
+  <pre><code># 1. 确认网络可达
+ping 202.120.xx.xx                  # 能通 = 网络层 OK
+
+# 2. 确认端口开放
+nc -zv 202.120.xx.xx 22             # Connection succeeded! = 端口 OK
+# 或
+telnet 202.120.xx.xx 22             # 看到 SSH-2.0-OpenSSH... = 端口 OK
+
+# 3. 带详细日志连接
+ssh -vvv user@202.120.xx.xx         # 看出错在哪一步
+
+# 4. 如果在学校外，先确保装了 VPN 且能连到学校网络
+# 5. 如果是跳板机模式，先测试能不能直接连跳板机
+ssh bastion                         # 第一跳能通？
+# 6. 跳板机能通，那从跳板机直接试内网
+ssh bastion "nc -zv 192.168.1.101 22"  # 跳板机能连内网吗？
+
+# 7. 查看服务器日志
+sudo tail -f /var/log/auth.log     # 实时看认证日志
+sudo journalctl -u ssh -f           # systemd 的 SSH 日志</code></pre>
+</div>
+
+<!-- P5_END -->
+
+<!-- ===== APPENDIX A: 命令速查表 ===== -->
+<h2 id="sa">A. 📋 命令速查表</h2>
+
+<table>
+  <thead><tr><th>分类</th><th>命令</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="3"><strong>密钥</strong></td><td><code>ssh-keygen -t ed25519 -C "email"</code></td><td>⭐ 生成 Ed25519 密钥对</td></tr>
+    <tr><td><code>ssh-copy-id -i ~/.ssh/key.pub user@host</code></td><td>⭐ 一键部署公钥</td></tr>
+    <tr><td><code>ssh-add ~/.ssh/key</code></td><td>将密钥添加到 ssh-agent</td></tr>
+    <tr><td rowspan="4"><strong>连接</strong></td><td><code>ssh user@host</code></td><td>基本连接</td></tr>
+    <tr><td><code>ssh -p 2222 user@host</code></td><td>指定端口</td></tr>
+    <tr><td><code>ssh -J bastion gpu01</code></td><td>⭐ 通过跳板机连接</td></tr>
+    <tr><td><code>ssh -vvv user@host</code></td><td>⭐ 详细调试模式</td></tr>
+    <tr><td rowspan="4"><strong>文件传输</strong></td><td><code>scp file user@host:/path/</code></td><td>上传文件</td></tr>
+    <tr><td><code>scp -r user@host:/path/ ./</code></td><td>递归下载目录</td></tr>
+    <tr><td><code>rsync -avz src/ user@host:dst/</code></td><td>⭐ 增量同步</td></tr>
+    <tr><td><code>rsync -avz -e "ssh -J bastion" src/ gpu01:dst/</code></td><td>通过跳板机同步</td></tr>
+    <tr><td rowspan="3"><strong>端口转发</strong></td><td><code>ssh -N -L 8888:localhost:8888 gpu01</code></td><td>⭐ 本地转发（Jupyter）</td></tr>
+    <tr><td><code>ssh -N -R 9090:localhost:3000 host</code></td><td>远程转发（内网穿透）</td></tr>
+    <tr><td><code>ssh -N -D 1080 bastion</code></td><td>SOCKS 动态代理</td></tr>
+    <tr><td rowspan="3"><strong>安全</strong></td><td><code>sudo grep "Accepted" /var/log/auth.log</code></td><td>查看成功登录记录</td></tr>
+    <tr><td><code>sudo grep "Failed" /var/log/auth.log \| tail -20</code></td><td>查看最近失败登录</td></tr>
+    <tr><td><code>ssh-keygen -R hostname</code></td><td>清除 known_hosts 中的旧指纹</td></tr>
+    <tr><td rowspan="3"><strong>多功能</strong></td><td><code>ssh user@host "command"</code></td><td>远程执行单条命令</td></tr>
+    <tr><td><code>ssh -f -N -L 8888:localhost:8888 host</code></td><td>后台转发（-f 后台运行）</td></tr>
+    <tr><td><code>ssh -o ConnectTimeout=10 host</code></td><td>设置连接超时</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ===== APPENDIX B: 典型配置模板 ===== -->
+<h2 id="sb">B. 📁 典型配置模板集合</h2>
+
+<h3>B.1 实验室完整 ~/.ssh/config 模板</h3>
+<pre><code># ===== 全局默认 =====
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 5
+    TCPKeepAlive yes
+    IdentitiesOnly yes
+    StrictHostKeyChecking accept-new
+    ConnectTimeout 15
+
+# ===== 跳板机 =====
+Host bastion
+    HostName 202.120.xx.xx
+    Port 22
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519_lab
+
+# ===== 内网 GPU 服务器（通过跳板机）=====
+Host gpu01
+    HostName 192.168.1.101
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519_lab
+    ProxyJump bastion
+    # 自动转发常用端口
+    LocalForward 8888 localhost:8888     # Jupyter
+    LocalForward 6006 localhost:6006     # TensorBoard
+    LocalForward 8265 localhost:8265     # Ray Dashboard
+
+Host gpu02
+    HostName 192.168.1.102
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519_lab
+    ProxyJump bastion
+
+# ===== 存储服务器（两级跳板）=====
+Host storage
+    HostName 192.168.2.10
+    User zhang-san
+    IdentityFile ~/.ssh/id_ed25519_lab
+    ProxyJump gpu01      # 本机→bastion→gpu01→storage
+
+# ===== GitHub（使用独立密钥）=====
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+    IdentitiesOnly yes</code></pre>
+
+<h3>B.2 服务器 sshd_config 安全模板</h3>
+<pre><code># /etc/ssh/sshd_config 推荐配置
+Port 22
+AddressFamily inet
+
+# 认证
+PermitRootLogin no
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+MaxAuthTries 3
+
+# 会话
+ClientAliveInterval 300
+ClientAliveCountMax 2
+MaxSessions 5
+MaxStartups 10:30:100
+
+# 转发
+AllowTcpForwarding yes    # 如需端口转发
+X11Forwarding no
+AllowAgentForwarding no   # 安全：禁止 ForwardAgent
+
+# 限制
+AllowUsers zhang-san lisi wangwu
+# AllowGroups ssh-users
+
+# 日志
+LogLevel VERBOSE
+SyslogFacility AUTH</code></pre>
+
+<h3>B.3 tmux 常用配置 (~/.tmux.conf)</h3>
+<pre><code># 把前缀键从 Ctrl+B 改为 Ctrl+A（更方便）
+set -g prefix C-a
+unbind C-b
+bind C-a send-prefix
+
+# 用鼠标滚动和选择
+set -g mouse on
+
+# 分屏快捷键
+bind | split-window -h    # 竖分屏
+bind - split-window -v    # 横分屏
+
+# 256 色支持
+set -g default-terminal "screen-256color"</code></pre>
+
+
+<!-- ===== APPENDIX C: 术语对照 ===== -->
+<h2 id="sc">C. 📖 术语中英对照</h2>
+
+<table>
+  <thead><tr><th>英文</th><th>中文</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>SSH (Secure Shell)</td><td>安全外壳协议</td><td>加密的网络远程访问协议</td></tr>
+    <tr><td>OpenSSH</td><td>—</td><td>最广泛使用的 SSH 开源实现</td></tr>
+    <tr><td>Symmetric Encryption</td><td>对称加密</td><td>同一把密钥加密和解密（快，用于会话数据）</td></tr>
+    <tr><td>Asymmetric Encryption</td><td>非对称加密</td><td>公钥+私钥配对使用（安全，用于身份验证和密钥交换）</td></tr>
+    <tr><td>Public Key</td><td>公钥</td><td>可以公开分发，放在服务器上</td></tr>
+    <tr><td>Private Key</td><td>私钥</td><td>必须保密，等同于你的数字身份</td></tr>
+    <tr><td>Passphrase</td><td>密钥密码</td><td>保护私钥文件的密码，即使私钥泄露也需它才能使用</td></tr>
+    <tr><td>Key Pair</td><td>密钥对</td><td>一对匹配的公钥和私钥</td></tr>
+    <tr><td>Host Key</td><td>主机密钥</td><td>服务器的身份密钥，用于验证"你连的是正确的服务器"</td></tr>
+    <tr><td>Fingerprint</td><td>指纹</td><td>公钥的哈希值，用于简短地验证密钥身份</td></tr>
+    <tr><td>authorized_keys</td><td>授权密钥文件</td><td>服务器上存储允许登录的公钥列表</td></tr>
+    <tr><td>known_hosts</td><td>已知主机列表</td><td>客户端存储已信任的服务器 Host Key</td></tr>
+    <tr><td>DH (Diffie-Hellman)</td><td>迪菲-赫尔曼密钥交换</td><td>双方在不安全信道上安全协商共享密钥的算法</td></tr>
+    <tr><td>Jump Host / Bastion Host</td><td>跳板机 / 堡垒机</td><td>内外网之间的唯一入口服务器</td></tr>
+    <tr><td>ProxyJump (-J)</td><td>跳板代理</td><td>OpenSSH 7.3+ 内置的跳板机功能</td></tr>
+    <tr><td>Port Forwarding</td><td>端口转发</td><td>通过 SSH 隧道转发 TCP 流量</td></tr>
+    <tr><td>Local Forwarding (-L)</td><td>本地端口转发</td><td>本地端口 → 远程目标</td></tr>
+    <tr><td>Remote Forwarding (-R)</td><td>远程端口转发</td><td>远程端口 → 本地目标</td></tr>
+    <tr><td>Dynamic Forwarding (-D)</td><td>动态端口转发</td><td>SOCKS5 代理，按需转发到任意目标</td></tr>
+    <tr><td>ssh-agent</td><td>SSH 代理</td><td>后台管理私钥密码的守护进程</td></tr>
+    <tr><td>Agent Forwarding</td><td>代理转发</td><td>让远程服务器能使用你本地的 ssh-agent（有安全风险）</td></tr>
+    <tr><td>ControlMaster</td><td>连接复用</td><td>多个 SSH 会话共享同一个 TCP 连接（加速+减少认证）</td></tr>
+    <tr><td>MITM (Man-in-the-Middle)</td><td>中间人攻击</td><td>攻击者冒充真正的服务器，窃听或篡改通信</td></tr>
+    <tr><td>fail2ban</td><td>—</td><td>自动封禁暴力破解 IP 的安全工具</td></tr>
+    <tr><td>tmux / screen</td><td>终端多路复用器</td><td>让终端会话在断开后继续运行的工具</td></tr>
+    <tr><td>DMZ</td><td>隔离区 / 非军事区</td><td>介于公网和内网之间的安全缓冲区</td></tr>
+    <tr><td>SCP / SFTP</td><td>安全拷贝 / SSH 文件传输</td><td>基于 SSH 的文件传输协议</td></tr>
+    <tr><td>TOTP</td><td>基于时间的一次性密码</td><td>与 SSH 配合实现双因素认证</td></tr>
+  </tbody>
+</table>
+
+<!-- Footer -->
+<div style="text-align:center; padding: 40px 0 20px; color: #999; font-size: 0.85rem; border-top: 1px solid #e0e0d8; margin-top: 40px;">
+  <p>🔐 Made with ❤️ | 持续更新中 | 欢迎补充实验室场景和实战经验</p>
+  <p style="margin-top:4px;">
+    <a href="https://github.com/spinner-bot/fundamentals-forge" target="_blank">GitHub</a> ·
+    <a href="#s0">返回导航</a>
+  </p>
+</div>
+
+</div>
+</main>
+</body>
+</html>
+
+
+
+

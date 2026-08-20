@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git 命令对照说明书</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f5f5f0;
+  color: #333;
+  line-height: 1.75;
+  display: flex;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  color: #ccc; overflow-y: auto; z-index: 100;
+  padding: 24px 0; font-size: 0.9rem;
+  box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+}
+.sidebar-header {
+  text-align: center; padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px;
+}
+.sidebar-header h2 {
+  color: #fff; font-size: 1.15rem; margin-top: 8px;
+}
+.sidebar-header .git-icon {
+  width: 48px; height: 48px; background: #F05032; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 28px; color: #fff; font-weight: bold;
+}
+.sidebar-nav { padding: 0 12px; }
+.sidebar-nav a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 8px; color: #b0b0c0;
+  text-decoration: none; transition: all 0.2s;
+  margin-bottom: 2px;
+}
+.sidebar-nav a:hover, .sidebar-nav a.active {
+  background: rgba(255,255,255,0.08); color: #fff;
+}
+.sidebar-nav a .nav-emoji { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+.sidebar-nav a .nav-num { font-size: 0.7rem; color: #F05032; font-weight: 700; width: 20px; flex-shrink: 0; }
+.sidebar-nav .nav-section { color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 16px 12px 6px; }
+.sidebar-footer {
+  text-align: center; padding: 20px; color: #666; font-size: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.08); margin-top: 20px;
+}
+
+/* ===== Main Content ===== */
+.main { margin-left: 280px; flex: 1; min-height: 100vh; }
+
+/* ===== Hero ===== */
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 40%, #F05032 100%);
+  color: #fff; padding: 60px 48px 48px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero h1 { font-size: 2.8rem; font-weight: 800; position: relative; }
+.hero .subtitle { font-size: 1.15rem; opacity: 0.85; margin-top: 12px; position: relative; }
+.hero .badges { margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; position: relative; }
+.hero .badges img { height: 22px; }
+
+/* ===== Content Container ===== */
+.content { max-width: 900px; margin: 0 auto; padding: 40px 48px 60px; }
+
+/* ===== Typography ===== */
+h2 {
+  font-size: 1.8rem; color: #1a1a2e; margin: 48px 0 20px;
+  padding-bottom: 10px; border-bottom: 3px solid #F05032;
+  display: flex; align-items: center; gap: 10px;
+}
+h3 { font-size: 1.3rem; color: #2d1b3d; margin: 32px 0 14px; }
+h4 { font-size: 1.05rem; color: #555; margin: 20px 0 8px; }
+p { margin: 12px 0; }
+a { color: #F05032; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  background: #fff; border: 1px solid #e0e0d8; border-radius: 4px;
+  padding: 2px 6px; font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.88em; color: #d63384;
+}
+pre {
+  background: #1e1e2e; color: #cdd6f4; border-radius: 10px;
+  padding: 20px 24px; overflow-x: auto; margin: 16px 0;
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.88rem; line-height: 1.6;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+
+/* ===== Tables ===== */
+table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+thead { background: #1a1a2e; color: #fff; }
+th {
+  padding: 10px 14px; text-align: left; font-weight: 600;
+  font-size: 0.9rem;
+}
+td { padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+tbody tr { background: #fff; transition: background 0.15s; }
+tbody tr:hover { background: #fef5f3; }
+tbody tr:nth-child(even) { background: #fafaf7; }
+tbody tr:nth-child(even):hover { background: #fef5f3; }
+
+/* ===== Blockquotes / Callouts ===== */
+blockquote {
+  border-left: 4px solid #F05032; background: #fff;
+  margin: 16px 0; padding: 14px 20px; border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+blockquote p { margin: 4px 0; }
+blockquote.tip { border-left-color: #2da44e; }
+blockquote.warning { border-left-color: #bf8700; }
+blockquote.danger { border-left-color: #cf222e; }
+blockquote.info { border-left-color: #0969da; }
+
+.callout {
+  padding: 16px 20px; margin: 16px 0; border-radius: 10px;
+  display: flex; gap: 10px; align-items: flex-start;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.callout .callout-icon { font-size: 1.3rem; flex-shrink: 0; }
+.callout.note { background: #ddf4ff; border: 1px solid #b3dfff; }
+.callout.warn { background: #fff8e1; border: 1px solid #ffe082; }
+.callout.danger { background: #ffebee; border: 1px solid #ef9a9a; }
+.callout.success { background: #e8f5e9; border: 1px solid #a5d6a7; }
+
+/* ===== Mermaid ===== */
+.mermaid {
+  background: #fafaf7; border-radius: 10px; padding: 24px;
+  margin: 20px 0; text-align: center;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  overflow-x: auto;
+}
+
+/* ===== Badge tags ===== */
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: 0.78rem; font-weight: 600; color: #fff;
+}
+.badge-green { background: #2da44e; }
+.badge-yellow { background: #bf8700; }
+.badge-red { background: #cf222e; }
+.badge-purple { background: #8250df; }
+.badge-blue { background: #0969da; }
+
+/* ===== Command Card ===== */
+.cmd-card {
+  background: #fff; border-radius: 12px; padding: 24px; margin: 24px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #eee;
+  transition: box-shadow 0.2s;
+}
+.cmd-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.cmd-card .cmd-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.cmd-card .cmd-name {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 1.25rem; font-weight: 700; color: #1a1a2e;
+  background: #f5f5f0; padding: 4px 12px; border-radius: 6px;
+}
+.cmd-card .cmd-header .badges-row { display: flex; gap: 6px; }
+.cmd-card .formula {
+  background: #fafaf7; border-left: 3px solid #F05032;
+  padding: 10px 16px; margin: 12px 0; border-radius: 0 6px 6px 0;
+  font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.9rem;
+}
+.cmd-card .one-liner { color: #666; font-style: italic; margin-bottom: 16px; }
+
+/* ===== Divider ===== */
+hr { border: none; border-top: 1px solid #e0e0d8; margin: 32px 0; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .hero { padding: 40px 24px; }
+  .hero h1 { font-size: 1.8rem; }
+  .content { padding: 24px 20px; }
+}
+</style>
+<script>
+mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose',
+  themeVariables: {
+    primaryColor: '#fff3cd', primaryBorderColor: '#ffc107',
+    secondaryColor: '#d1ecf1', secondaryBorderColor: '#17a2b8',
+    tertiaryColor: '#d4edda', tertiaryBorderColor: '#28a745',
+    lineColor: '#666', textColor: '#333',
+    fontSize: '14px'
+  }
+});
+</script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="git-icon">&lt;/&gt;</div>
+    <h2>Git 说明书</h2>
+    <p style="color:#888;font-size:0.8rem;">命令对照手册</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">📖 正文</div>
+    <a href="#s0"><span class="nav-num">0</span>阅读导航</a>
+    <a href="#s1"><span class="nav-num">1</span>核心概念速览</a>
+    <a href="#s2"><span class="nav-num">2</span>基础配置篇</a>
+    <a href="#s3"><span class="nav-num">3</span>仓库操作篇</a>
+    <a href="#s4"><span class="nav-num">4</span>基本快照篇</a>
+    <a href="#s5"><span class="nav-num">5</span>分支与合并篇</a>
+    <a href="#s6"><span class="nav-num">6</span>远程协作篇</a>
+    <a href="#s7"><span class="nav-num">7</span>历史查看篇</a>
+    <a href="#s8"><span class="nav-num">8</span>标签管理篇</a>
+    <a href="#s9"><span class="nav-num">9</span>撤销与回退篇</a>
+    <a href="#s10"><span class="nav-num">10</span>高级篇</a>
+    <a href="#s11"><span class="nav-num">11</span>实用工作流</a>
+    <div class="nav-section">📎 附录</div>
+    <a href="#sa"><span class="nav-num">A</span>命令速查表</a>
+    <a href="#sb"><span class="nav-num">B</span>推荐别名</a>
+    <a href="#sc"><span class="nav-num">C</span>术语中英对照</a>
+  </nav>
+  <div class="sidebar-footer">Made with ❤️<br>持续更新中</div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+<!-- Hero -->
+<section class="hero">
+  <h1>📖 Git 命令对照说明书</h1>
+  <p class="subtitle">一份颜值与内容并重的 Git 速查手册&emsp;——&emsp;像翻电子笔记一样学 Git</p>
+  <div class="badges">
+    <img src="https://img.shields.io/badge/Git-Instruction%20Manual-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git Manual">
+    <img src="https://img.shields.io/badge/版本-2.45+-blue?style=flat-square" alt="version">
+    <img src="https://img.shields.io/badge/语言-中文-brightgreen?style=flat-square" alt="lang">
+    <img src="https://img.shields.io/badge/更新-2025--07--09-orange?style=flat-square" alt="date">
+  </div>
+</section>
+
+<div class="content">
+
+<!-- ===== SECTION 0: 阅读导航 ===== -->
+<h2 id="s0">🧭 阅读导航</h2>
+
+<h3>📑 完整目录</h3>
+<ol>
+  <li><a href="#s1">🗺️ 核心概念速览</a> — 三区模型 · 文件生命周期</li>
+  <li><a href="#s2">⚙️ 基础配置篇</a> — <code>config</code> · <code>help</code></li>
+  <li><a href="#s3">🏗️ 仓库操作篇</a> — <code>init</code> · <code>clone</code> · <code>.gitignore</code></li>
+  <li><a href="#s4">📸 基本快照篇</a> — <code>add</code> · <code>commit</code> · <code>status</code> · <code>diff</code> · <code>restore</code></li>
+  <li><a href="#s5">🌿 分支与合并篇</a> — <code>branch</code> · <code>switch</code> · <code>merge</code> · <code>rebase</code> · <code>stash</code></li>
+  <li><a href="#s6">☁️ 远程协作篇</a> — <code>remote</code> · <code>fetch</code> · <code>pull</code> · <code>push</code></li>
+  <li><a href="#s7">🔍 历史查看篇</a> — <code>log</code> · <code>show</code> · <code>blame</code> · <code>bisect</code></li>
+  <li><a href="#s8">🏷️ 标签管理篇</a> — <code>tag</code></li>
+  <li><a href="#s9">↩️ 撤销与回退篇</a> — <code>reset</code> · <code>revert</code> · <code>clean</code> · <code>reflog</code></li>
+  <li><a href="#s10">🚀 高级篇</a> — <code>submodule</code> · <code>worktree</code> · <code>archive</code></li>
+  <li><a href="#s11">📋 实用工作流</a> — 日常开发 · Feature分支 · 紧急修复</li>
+</ol>
+<p><strong>附录</strong>：<a href="#sa">A. 命令速查表</a> · <a href="#sb">B. 推荐别名</a> · <a href="#sc">C. 术语中英对照</a></p>
+
+<h3>🎨 阅读指南</h3>
+<table>
+  <thead><tr><th>读者类型</th><th>推荐路径</th></tr></thead>
+  <tbody>
+    <tr><td>🆕 <strong>零基础新手</strong></td><td>从头顺序阅读，重点看第 1、2、3、4 章</td></tr>
+    <tr><td>📝 <strong>日常使用者</strong></td><td>直接跳到第 4、5、6 章作为案头速查</td></tr>
+    <tr><td>🔧 <strong>遇到问题找方案</strong></td><td>按目录关键词定位，比如"撤销"→ 第 9 章</td></tr>
+    <tr><td>🚀 <strong>进阶提升</strong></td><td>阅读第 7、10 章和附录 B</td></tr>
+  </tbody>
+</table>
+
+<h3>📌 图例说明</h3>
+<table>
+  <thead><tr><th>标识</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td>🟢 <span class="badge badge-green">安全</span></td><td>只读或可逆操作，放心使用</td></tr>
+    <tr><td>🟡 <span class="badge badge-yellow">注意</span></td><td>需理解后再操作，有一定影响</td></tr>
+    <tr><td>🔴 <span class="badge badge-red">危险</span></td><td>不可逆或破坏性操作，谨慎使用</td></tr>
+    <tr><td>💡</td><td>实用技巧</td></tr>
+    <tr><td>⚠️</td><td>重要警告 / 常见陷阱</td></tr>
+    <tr><td>🎯</td><td>命令核心用途</td></tr>
+    <tr><td>📐</td><td>命令公式 / 语法</td></tr>
+    <tr><td>🎬</td><td>使用场景</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ===== SECTION 1: 核心概念速览 ===== -->
+<h2 id="s1">1. 🗺️ 核心概念速览</h2>
+
+<h3>1.1 Git 的三区模型</h3>
+<blockquote>Git 在你的本地维护着<b>三个逻辑区域</b>，理解它们是理解一切 Git 命令的关键。</blockquote>
+
+<div class="mermaid">
+flowchart LR
+    A["📝 <b>工作区</b><br/>Working Directory<br/><i>你正在编辑的文件</i>"] -->|"git add"| B["📦 <b>暂存区</b><br/>Staging Area / Index<br/><i>下次提交的候选清单</i>"]
+    B -->|"git commit"| C["🗄️ <b>本地仓库</b><br/>Local Repository<br/><i>永久快照存档</i>"]
+    C -->|"git push"| D["☁️ <b>远程仓库</b><br/>Remote Repository<br/><i>GitHub / GitLab / Gitee</i>"]
+    D -->|"git fetch / pull"| C
+    C -->|"git checkout / switch"| A
+</div>
+
+<table>
+  <thead><tr><th>区域</th><th>英文名</th><th>存放位置</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><strong>工作区</strong></td><td>Working Directory</td><td>你硬盘上的项目文件夹</td><td>你实际编辑、创建、删除文件的地方</td></tr>
+    <tr><td><strong>暂存区</strong></td><td>Staging Area / Index</td><td><code>.git/index</code></td><td>一个"购物车"，决定下次提交包含哪些修改</td></tr>
+    <tr><td><strong>本地仓库</strong></td><td>Repository</td><td><code>.git/objects/</code></td><td>Git 的永久数据库，存着所有提交的快照</td></tr>
+    <tr><td><strong>远程仓库</strong></td><td>Remote</td><td>GitHub / GitLab 等服务器上</td><td>团队共享的中心化副本</td></tr>
+  </tbody>
+</table>
+
+<h3>1.2 文件生命周期</h3>
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> Untracked : 新建文件
+    Untracked --> Staged : git add
+    Staged --> Committed : git commit
+    Committed --> Modified : 编辑文件
+    Modified --> Staged : git add
+    Staged --> Modified : 再次编辑
+    Committed --> [*] : 文件被删除
+    Untracked --> [*] : git clean / 手动删除
+</div>
+
+<div class="callout note">
+  <span class="callout-icon">💡</span>
+  <div><strong>一句话总结</strong>：Git 不跟踪"没 add 过的新文件"。一旦 <code>git add</code>，Git 就开始关注它了。</div>
+</div>
+
+<h3>1.3 Git 的快照哲学</h3>
+<div class="callout warn">
+  <span class="callout-icon">⚠️</span>
+  <div><strong>关键认知</strong>：Git 与其他版本控制系统（如 SVN）的根本区别在于 —— Git 存储的是<strong>快照（Snapshot）</strong>而非<strong>差异（Delta）</strong>。<br><br>
+  每次 <code>git commit</code>，Git 会把你暂存区中的<strong>全部文件拍一张照片</strong>存下来。没变的文件不会重复存储，而是引用上一次的快照（通过 SHA-1 哈希去重）。这让分支、回退、查询都极快。</div>
+</div>
+
+<!-- ===== SECTION 2: 基础配置篇 ===== -->
+<h2 id="s2">2. ⚙️ 基础配置篇</h2>
+<blockquote class="tip">🟢 <span class="badge badge-green">安全等级：安全</span> — 配置操作只影响设置，不改变代码。</blockquote>
+
+<!-- git config -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git config</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    <strong>📐 公式</strong>:<br>
+    git config [--global | --system | --local] &lt;key&gt; &lt;value&gt;<br>
+    git config [--global | --system | --local] --list<br>
+    git config [--global | --system | --local] --edit
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 设置 Git 的用户信息、编辑器偏好、别名等个性化参数。</p>
+
+  <h4>三级配置（优先级从高到低）</h4>
+  <div class="mermaid">
+graph TB
+    subgraph "覆盖关系：local 覆盖 global 覆盖 system"
+        L["🏠 <b>--local</b><br/>`.git/config`<br/>仅当前仓库"] -->|覆盖| G["👤 <b>--global</b><br/>`~/.gitconfig`<br/>当前用户所有仓库"]
+        G -->|覆盖| S["🖥️ <b>--system</b><br/>`/etc/gitconfig`<br/>整台机器所有用户"]
+    end
+  </div>
+
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>你是谁？（必做）</strong></td><td><code>git config --global user.name "Your Name"</code></td><td>你的名字，出现在提交记录中</td></tr>
+      <tr><td></td><td><code>git config --global user.email "you@example.com"</code></td><td>你的邮箱，匹配 GitHub 账户</td></tr>
+      <tr><td><strong>换默认编辑器</strong></td><td><code>git config --global core.editor "code --wait"</code></td><td>设为 VS Code（<code>--wait</code> 让 Git 等编辑器关闭）</td></tr>
+      <tr><td></td><td><code>git config --global core.editor vim</code></td><td>设为 Vim</td></tr>
+      <tr><td><strong>换默认分支名</strong></td><td><code>git config --global init.defaultBranch main</code></td><td>新仓库默认分支名从 <code>master</code> → <code>main</code></td></tr>
+      <tr><td><strong>换行符处理</strong></td><td><code>git config --global core.autocrlf input</code></td><td>Mac/Linux 用 <code>input</code></td></tr>
+      <tr><td></td><td><code>git config --global core.autocrlf true</code></td><td>Windows 用 <code>true</code>（检出转 CRLF，提交转 LF）</td></tr>
+      <tr><td><strong>设置代理</strong></td><td><code>git config --global http.proxy http://127.0.0.1:7890</code></td><td>科学上网加速 clone</td></tr>
+      <tr><td><strong>取消代理</strong></td><td><code>git config --global --unset http.proxy</code></td><td>恢复直连</td></tr>
+      <tr><td><strong>查看所有配置</strong></td><td><code>git config --list</code></td><td>列出当前生效的全部配置</td></tr>
+      <tr><td><strong>查看某一项</strong></td><td><code>git config user.name</code></td><td>查看当前用户名</td></tr>
+      <tr><td><strong>编辑配置文件</strong></td><td><code>git config --global --edit</code></td><td>用默认编辑器打开 ~/.gitconfig</td></tr>
+    </tbody>
+  </table>
+
+  <h4>🔧 常用别名（强烈推荐）</h4>
+  <pre><code># 在 ~/.gitconfig 的 [alias] 段中添加，或者下面这样一键设置：
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.st status
+git config --global alias.lg "log --oneline --graph --decorate --all"
+git config --global alias.unstage "restore --staged ."
+git config --global alias.last "log -1 HEAD"
+git config --global alias.undo "reset --soft HEAD~1"</code></pre>
+</div>
+
+<!-- git help -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git help</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git help &lt;command&gt;<br>
+    git &lt;command&gt; --help<br>
+    git &lt;command&gt; -h
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>详细手册</td><td><code>git help log</code></td><td>打开 log 命令的完整文档</td></tr>
+      <tr><td>快速参考</td><td><code>git log -h</code></td><td>只显示 log 的常用选项摘要</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== SECTION 3: 仓库操作篇 ===== -->
+<h2 id="s3">3. 🏗️ 仓库操作篇</h2>
+<blockquote class="tip">🟢 <span class="badge badge-green">安全等级：安全</span> — 创建仓库不影响已有项目。</blockquote>
+
+<!-- git init -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git init</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git init [directory]<br>
+    git init --initial-branch=main
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把普通文件夹变成 Git 仓库。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>当前目录初始化</td><td><code>git init</code></td><td>在当前位置创建 <code>.git</code> 隐藏目录</td></tr>
+      <tr><td>指定目录初始化</td><td><code>git init my-project</code></td><td>创建 <code>my-project/</code> 并初始化</td></tr>
+      <tr><td>指定默认分支</td><td><code>git init --initial-branch=main</code></td><td>默认分支命名为 main 而非 master</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><code>git init</code> 只是创建 <code>.git</code> 文件夹，<strong>不会自动提交任何东西</strong>。你还需要 <code>git add</code> + <code>git commit</code>。</div>
+  </div>
+</div>
+
+<!-- git clone -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git clone</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git clone &lt;url&gt; [directory]<br>
+    git clone --depth &lt;n&gt; &lt;url&gt;<br>
+    git clone --branch &lt;name&gt; &lt;url&gt;<br>
+    git clone --single-branch &lt;url&gt;
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把远程仓库完整（或按需）下载到本地。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>标准克隆</strong></td><td><code>git clone https://github.com/user/repo.git</code></td><td>完整克隆，默认分支为 main/master</td></tr>
+      <tr><td>克隆到指定文件夹</td><td><code>git clone &lt;url&gt; my-folder</code></td><td>不叫 repo 原名，叫 my-folder</td></tr>
+      <tr><td><strong>浅克隆（提速）</strong></td><td><code>git clone --depth 1 &lt;url&gt;</code></td><td>只拉最近 1 次提交，大仓库秒下</td></tr>
+      <tr><td>深度浅克隆</td><td><code>git clone --depth 10 &lt;url&gt;</code></td><td>拉最近 10 次提交</td></tr>
+      <tr><td>克隆指定分支</td><td><code>git clone -b develop &lt;url&gt;</code></td><td>克隆后直接切到 develop 分支</td></tr>
+      <tr><td>只克隆一个分支</td><td><code>git clone --single-branch -b main &lt;url&gt;</code></td><td>节省空间，只下载 main 分支</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div>浅克隆（<code>--depth 1</code>）下载飞快，但本地没有完整历史，后续 <code>git log</code> 只能看到浅层记录。如需完整历史，用 <code>git fetch --unshallow</code> 补全。</div>
+  </div>
+</div>
+
+<!-- .gitignore -->
+<h3>.gitignore — 忽略文件规则</h3>
+<div class="cmd-card">
+  <p class="one-liner">💡 <strong>一句话</strong>: 告诉 Git 哪些文件和文件夹不要跟踪（日志、依赖包、编译产物、密钥等）。</p>
+  <p><strong>📐 公式</strong>: 在仓库根目录创建 <code>.gitignore</code> 文件，每行一条规则。</p>
+
+  <h4>语法规则速查</h4>
+  <table>
+    <thead><tr><th>规则</th><th>含义</th><th>示例</th></tr></thead>
+    <tbody>
+      <tr><td><code>*.log</code></td><td>匹配所有 .log 文件</td><td><code>error.log</code>, <code>debug.log</code></td></tr>
+      <tr><td><code>node_modules/</code></td><td>匹配整个目录</td><td><code>node_modules/</code> 下的所有内容</td></tr>
+      <tr><td><code>/dist</code></td><td>只匹配<b>根目录</b>下的 dist</td><td><code>dist/</code>，不匹配 <code>src/dist/</code></td></tr>
+      <tr><td><code>*.txt</code> 然后 <code>!important.txt</code></td><td>先忽略所有 .txt，再取消忽略 important.txt</td><td><code>!</code> 表示例外</td></tr>
+      <tr><td><code>**/temp/</code></td><td><code>**</code> 匹配任意层级</td><td><code>a/temp/</code>, <code>a/b/temp/</code></td></tr>
+    </tbody>
+  </table>
+
+  <h4>典型模板（前端/Node 项目）</h4>
+  <pre><code># 依赖
+node_modules/
+
+# 编译产物
+dist/
+build/
+.out/
+
+# 环境变量（含密钥）
+.env
+.env.local
+.env.*.local
+
+# 编辑器配置
+.vscode/
+.idea/
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log</code></pre>
+
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div>GitHub 提供了各语言的标准 <code>.gitignore</code> 模板：<a href="https://github.com/github/gitignore" target="_blank">github.com/github/gitignore</a></div>
+  </div>
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div><code>.gitignore</code> <strong>只对未跟踪的文件生效</strong>。如果文件已经被 <code>git add</code> 过了，需要先 <code>git rm --cached &lt;file&gt;</code> 移除跟踪。</div>
+  </div>
+</div>
+
+
+<!-- ===== SECTION 4: 基本快照篇 ===== -->
+<h2 id="s4">4. 📸 基本快照篇</h2>
+<blockquote class="tip">🟢 <span class="badge badge-green">日常最高频操作区</span> — add、commit、status、diff、restore 是你每天要用几十次的命令。</blockquote>
+
+<!-- git status -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git status</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git status &emsp;&emsp;&emsp;&emsp;&ensp;# 详细模式（带提示）<br>
+    git status -s &emsp;&emsp;&emsp;&ensp;# 简短模式<br>
+    git status -sb &emsp;&emsp;&emsp;# 简短模式 + 当前分支信息
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 告诉你"谁改了、谁没跟踪、谁准备好了"，是使用频率最高的命令。</p>
+
+  <h4>解读 <code>-s</code> 简短模式的标志位</h4>
+  <pre><code>XY filename
+ ↑↑
+ │└─ Y: 暂存区状态
+ └── X: 工作区状态</code></pre>
+  <table>
+    <thead><tr><th>标志</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td><code>??</code></td><td>❓ Untracked — 新文件，未被 Git 跟踪</td></tr>
+      <tr><td><code>A </code></td><td>✅ Added — 新文件已暂存</td></tr>
+      <tr><td><code>M </code></td><td>📝 Staged — 修改已暂存（绿色，在暂存区）</td></tr>
+      <tr><td><code> M</code></td><td>📝 Modified — 修改了但未暂存（红色，仅在工作区）</td></tr>
+      <tr><td><code>D </code></td><td>🗑️ Deleted — 删除操作已暂存</td></tr>
+      <tr><td><code> D</code></td><td>🗑️ 删除了文件但未暂存</td></tr>
+      <tr><td><code>MM</code></td><td>🔄 部分修改暂存，之后又改了 — 两边都有修改</td></tr>
+      <tr><td><code>R </code></td><td>✏️ Renamed — 重命名已暂存</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>详细状态</td><td><code>git status</code></td><td>最常用，Git 甚至会告诉你下一步可以做什么</td></tr>
+      <tr><td>一行一个文件</td><td><code>git status -s</code></td><td>适合脚本处理，或快速扫一眼</td></tr>
+      <tr><td>含分支信息</td><td><code>git status -sb</code></td><td>短格式 + <code>## main...origin/main</code></td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><strong>最实用的提示</strong>：<code>git status</code> 的输出里，Git 自己会告诉你"下一步怎么撤销"——仔细看！</div>
+  </div>
+</div>
+
+<!-- git add -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git add</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-yellow">中等</span>
+    </span>
+  </div>
+  <div class="formula">
+    git add &lt;file&gt; ... &emsp;&emsp;# 暂存指定文件<br>
+    git add . &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 暂存当前目录及子目录的所有变更<br>
+    git add -A &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 暂存整个仓库的所有变更（删除/新增/修改）<br>
+    git add -p &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 交互式分块暂存（非常实用！）<br>
+    git add -i &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 交互式菜单模式<br>
+    git add -u &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 只暂存已跟踪文件的修改和删除（不包含新文件）
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把工作区的修改加到"购物车"（暂存区），准备提交。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>暂存一个文件</td><td><code>git add README.md</code></td><td>把 README 加入暂存区</td></tr>
+      <tr><td>暂存多个文件</td><td><code>git add file1.ts file2.ts</code></td><td>空格分隔即可</td></tr>
+      <tr><td><strong>暂存所有变更</strong></td><td><code>git add .</code></td><td>最常用！当前目录下的新增+修改+删除</td></tr>
+      <tr><td><strong>分块暂存（推荐！）</strong></td><td><code>git add -p</code></td><td>逐块(hunk)让你确认，s=暂存 n=跳过 q=退出</td></tr>
+      <tr><td>只暂存已跟踪文件</td><td><code>git add -u</code></td><td>修改和删除，不含新增的 untracked 文件</td></tr>
+      <tr><td>暂存全部（含上层）</td><td><code>git add -A</code></td><td>从仓库根目录开始的所有变更</td></tr>
+      <tr><td>交互式菜单</td><td><code>git add -i</code></td><td>提供菜单让你选要做什么</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><code>git add -p</code> 是高级用户的秘密武器。你改了一个文件但只想提交其中一部分改动？<code>-p</code> 让你<strong>逐块选择</strong>。每个块可选：<code>y</code> 加入、<code>n</code> 跳过、<code>s</code> 拆分更小块、<code>e</code> 手动编辑。</div>
+  </div>
+</div>
+
+<!-- git commit -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git commit</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-yellow">中等</span>
+    </span>
+  </div>
+  <div class="formula">
+    git commit -m "message" &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 最常用：带消息提交<br>
+    git commit -a -m "message" &emsp;&emsp;&emsp;&emsp;&ensp;# 跳过 add，直接提交所有已跟踪文件的修改<br>
+    git commit --amend -m "new msg" &emsp;&emsp;# 修改最后一次提交的消息<br>
+    git commit --amend --no-edit &emsp;&emsp;&emsp;&ensp;# 追加遗漏的文件到上一次提交（不改消息）
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把暂存区的快照永久保存到本地仓库。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>标准提交</strong></td><td><code>git commit -m "feat: add login page"</code></td><td>只提交暂存区里的内容</td></tr>
+      <tr><td><strong>跳过暂存直接提交</strong></td><td><code>git commit -a -m "fix: typo"</code></td><td>⚠️ 只对<strong>已跟踪</strong>文件的修改生效，新文件仍需 add</td></tr>
+      <tr><td><strong>补充遗漏文件</strong></td><td><code>git commit --amend --no-edit</code></td><td>把忘掉的文件补进上次提交里，不改消息</td></tr>
+      <tr><td><strong>改提交消息</strong></td><td><code>git commit --amend -m "better message"</code></td><td>修改上一次提交的消息</td></tr>
+      <tr><td>打开编辑器写详细消息</td><td><code>git commit</code></td><td>不带 -m，打开编辑器写标题+正文</td></tr>
+    </tbody>
+  </table>
+
+  <h4>📝 提交信息规范（Conventional Commits）</h4>
+  <pre><code>&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;          # 标题（50 字以内）
+
+&lt;body&gt;                              # 正文（72 字换行，解释为什么改）
+
+&lt;footer&gt;                            # 脚注（关联 issue 等）</code></pre>
+  <table>
+    <thead><tr><th>Type</th><th>含义</th><th>示例</th></tr></thead>
+    <tbody>
+      <tr><td><code>feat</code></td><td>新功能</td><td><code>feat(auth): add login page</code></td></tr>
+      <tr><td><code>fix</code></td><td>修 Bug</td><td><code>fix(api): handle null response</code></td></tr>
+      <tr><td><code>docs</code></td><td>文档</td><td><code>docs: update README</code></td></tr>
+      <tr><td><code>style</code></td><td>格式</td><td><code>style: format with prettier</code></td></tr>
+      <tr><td><code>refactor</code></td><td>重构</td><td><code>refactor: extract helper function</code></td></tr>
+      <tr><td><code>perf</code></td><td>性能优化</td><td><code>perf: use memoization in list</code></td></tr>
+      <tr><td><code>test</code></td><td>测试</td><td><code>test: add unit test for login</code></td></tr>
+      <tr><td><code>chore</code></td><td>杂项</td><td><code>chore: update dependencies</code></td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>关键理解</strong>：<code>git commit</code> 只提交<strong>暂存区</strong>的内容。工作区里的修改如果没 <code>git add</code>，不会进入这次提交。<br><br>
+    <code>--amend</code> <strong>不修改历史</strong>，它创建一个新的提交来替换上一次提交。如果已经 push 到远程，<strong>不要 amend</strong>，否则会搞乱协作者的仓库。🚫</div>
+  </div>
+</div>
+
+<!-- git diff -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git diff</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git diff &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 工作区 vs 暂存区（还没 add 的改动）<br>
+    git diff --staged &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 暂存区 vs 最新提交（已 add 但还没 commit 的）<br>
+    git diff HEAD &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 工作区 vs 最新提交（所有没提交的改动总和）<br>
+    git diff &lt;commit1&gt; &lt;commit2&gt; &emsp;# 两个提交之间的差异<br>
+    git diff --name-only &emsp;&emsp;&emsp;&emsp;# 只列出改了名的文件<br>
+    git diff --stat &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 只显示统计：哪些文件改了多少行
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 看"改了什么"，可以比较任意两个版本。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>我改了啥还没 add？</strong></td><td><code>git diff</code></td><td>最常用！工作区 ↔ 暂存区</td></tr>
+      <tr><td><strong>我 add 了啥准备提交？</strong></td><td><code>git diff --staged</code></td><td>暂存区 ↔ HEAD，提交前最后确认</td></tr>
+      <tr><td><strong>所有未提交的改动</strong></td><td><code>git diff HEAD</code></td><td>工作区 ↔ HEAD（含暂存+未暂存的总和）</td></tr>
+      <tr><td>比较两个分支</td><td><code>git diff main..feature</code></td><td>feature 比 main 多了什么</td></tr>
+      <tr><td>比较两个提交</td><td><code>git diff abc123..def456</code></td><td>两个 commit SHA 之间的差异</td></tr>
+      <tr><td>只看文件名</td><td><code>git diff --name-only HEAD~1</code></td><td>上次提交改了哪些文件</td></tr>
+      <tr><td>看统计数字</td><td><code>git diff --stat HEAD~1</code></td><td>+ 几行 - 几行</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><strong>输出解读</strong>：<code>-</code> 红行为删除的行，<code>+</code> 绿行为新增的行，<code>@@ -a,b +c,d @@</code> 表示旧文件从第 a 行开始共 b 行，新文件从第 c 行开始共 d 行。</div>
+  </div>
+</div>
+
+<!-- git restore -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git restore</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-yellow">中等</span>
+    </span>
+  </div>
+  <div class="formula">
+    git restore &lt;file&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 撤销工作区的修改（用暂存区覆盖工作区）<br>
+    git restore --staged &lt;file&gt; &emsp;&emsp;&emsp;# 撤销暂存（从暂存区移除，工作区修改保留）<br>
+    git restore --source &lt;commit&gt; &lt;file&gt; # 从指定提交恢复文件
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: Git 2.23+ 的新命令，专门负责"恢复"——比旧命令 <code>git checkout</code> 语义更清晰。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>撤销工作区修改</strong></td><td><code>git restore &lt;file&gt;</code></td><td>丢弃工作区的改动，恢复到暂存区的版本</td></tr>
+      <tr><td>撤销所有工作区修改</td><td><code>git restore .</code></td><td>丢弃当前目录所有改动</td></tr>
+      <tr><td><strong>取消暂存 (unstage)</strong></td><td><code>git restore --staged &lt;file&gt;</code></td><td>从暂存区移除，改动回到工作区</td></tr>
+      <tr><td>从历史版本恢复</td><td><code>git restore --source HEAD~2 &lt;file&gt;</code></td><td>把文件恢复到 2 次提交前的状态</td></tr>
+      <tr><td>从其他分支恢复</td><td><code>git restore --source main &lt;file&gt;</code></td><td>用 main 分支的版本覆盖当前文件</td></tr>
+    </tbody>
+  </table>
+
+  <h4>restore vs checkout vs reset 对比</h4>
+  <table>
+    <thead><tr><th>需求</th><th>新版命令 (Git 2.23+)</th><th>旧命令</th></tr></thead>
+    <tbody>
+      <tr><td>撤销工作区某文件</td><td><code>git restore &lt;file&gt;</code></td><td><code>git checkout -- &lt;file&gt;</code></td></tr>
+      <tr><td>取消暂存</td><td><code>git restore --staged &lt;file&gt;</code></td><td><code>git reset HEAD &lt;file&gt;</code></td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div><code>git restore &lt;file&gt;</code> <strong>会丢弃工作区的修改，不可恢复</strong>。执行前请确认。</div>
+  </div>
+</div>
+
+<!-- git rm / git mv -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git rm / git mv</span>
+    <span class="badges-row">
+      <span class="badge badge-green">入门</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git rm &lt;file&gt; &emsp;&emsp;&emsp;&emsp;&ensp;# 删除文件并暂存此删除操作<br>
+    git rm --cached &lt;file&gt; &ensp;# 只从 Git 跟踪中移除，保留本地文件<br>
+    git mv &lt;old&gt; &lt;new&gt; &emsp;&emsp;# 重命名/移动并自动暂存
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>删除文件</td><td><code>git rm old-file.ts</code></td><td>删除文件 + 暂存删除</td></tr>
+      <tr><td><strong>停止跟踪但保留文件</strong></td><td><code>git rm --cached config.json</code></td><td>文件留在硬盘，Git 不再跟踪</td></tr>
+      <tr><td>重命名</td><td><code>git mv old.ts new.ts</code></td><td>等同于 mv + git add，Git 会自动识别为重命名</td></tr>
+      <tr><td>移动文件</td><td><code>git mv src/file.ts lib/file.ts</code></td><td>移动并暂存</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><code>git rm --cached</code> 最常见的场景：你把 <code>node_modules/</code> 或 <code>.env</code> 不小心 commit 了，用它停止跟踪，再加入 <code>.gitignore</code>。</div>
+  </div>
+</div>
+
+<!-- ===== SECTION 5: 分支与合并篇 ===== -->
+<h2 id="s5">5. 🌿 分支与合并篇</h2>
+<blockquote class="warning">🟡 <span class="badge badge-yellow">安全等级：注意</span> — 分支操作是 Git 的灵魂，也是新手最容易出错的区域。</blockquote>
+
+<!-- git branch -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git branch</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git branch &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 列出本地分支<br>
+    git branch -a &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 列出所有分支（含远程跟踪分支）<br>
+    git branch &lt;name&gt; &emsp;&emsp;&emsp;&emsp;&ensp;# 创建分支（但不切换）<br>
+    git branch -d &lt;name&gt; &emsp;&emsp;&emsp;# 安全删除（已合并才允许删）<br>
+    git branch -D &lt;name&gt; &emsp;&emsp;&emsp;# 强制删除（不管是否合并）<br>
+    git branch -m &lt;old&gt; &lt;new&gt; &ensp;# 重命名分支<br>
+    git branch -v &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 显示每个分支的最新提交<br>
+    git branch --merged &emsp;&emsp;&emsp;&ensp;# 列出已合并到当前分支的分支<br>
+    git branch --no-merged &emsp;&ensp;# 列出未合并的分支
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 分支是 Git 的"平行宇宙"——在一条分支上工作不影响另一条。</p>
+  <div class="mermaid">
+gitGraph
+    commit id: "初始"
+    commit id: "登录模块"
+    branch feature-login
+    checkout feature-login
+    commit id: "添加登录"
+    commit id: "验证逻辑"
+    checkout main
+    merge feature-login
+    commit id: "首页开发"
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>列出本地分支</td><td><code>git branch</code></td><td><code>*</code> 标记当前分支</td></tr>
+      <tr><td>列出所有分支</td><td><code>git branch -a</code></td><td>含 <code>remotes/origin/xxx</code></td></tr>
+      <tr><td>创建分支</td><td><code>git branch feature-x</code></td><td>在当前提交上创建，但不切换过去</td></tr>
+      <tr><td><strong>创建+切换</strong></td><td><code>git switch -c feature-x</code></td><td>👈 推荐用这个，一步到位</td></tr>
+      <tr><td>删除已合并分支</td><td><code>git branch -d feature-x</code></td><td>安全，没合并的分支会拒绝删除</td></tr>
+      <tr><td>强制删除</td><td><code>git branch -D feature-x</code></td><td>🔴 不管有没有合并都删</td></tr>
+      <tr><td>重命名</td><td><code>git branch -m old-name new-name</code></td><td>如果已在新名字上，只需一个参数 <code>git branch -m new-name</code></td></tr>
+      <tr><td>清理远程已删分支的本地引用</td><td><code>git remote prune origin</code></td><td>别人删了远程分支，你的本地还有 <code>origin/xxx</code> 残留</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div>用 <code>-d</code>（小写）删除更安全。当 Git 警告"未合并"时停下来想想是否真的要删。确定要删再用 <code>-D</code>（大写）。</div>
+  </div>
+</div>
+
+<!-- git switch -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git switch</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git switch &lt;branch&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 切换到已有分支<br>
+    git switch -c &lt;new-branch&gt; &emsp;&ensp;# 创建并切换到新分支<br>
+    git switch -c &lt;new&gt; &lt;base&gt; &ensp;# 基于指定分支/提交创建新分支<br>
+    git switch - &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 切回上一个分支（类似 cd -）
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: Git 2.23+ 推出的专用切换命令，替代 <code>git checkout</code> 的切换功能。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>切换分支</td><td><code>git switch main</code></td><td>切到 main 分支</td></tr>
+      <tr><td><strong>创建并切换</strong></td><td><code>git switch -c feature-auth</code></td><td>新建 feature-auth 并切过去</td></tr>
+      <tr><td>基于远程分支创建</td><td><code>git switch -c feature origin/feature</code></td><td>基于远程的 origin/feature 创建本地分支</td></tr>
+      <tr><td><strong>切回上一个分支</strong></td><td><code>git switch -</code></td><td>在两个分支间快速跳转</td></tr>
+      <tr><td>基于某个提交创建</td><td><code>git switch -c hotfix abc123</code></td><td>在 abc123 这个提交上创建 hotfix 分支</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git merge -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git merge</span>
+    <span class="badges-row">
+      <span class="badge badge-yellow">进阶</span>
+      <span class="badge badge-yellow">注意</span>
+    </span>
+  </div>
+  <div class="formula">
+    git merge &lt;branch&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 将指定分支合并到当前分支<br>
+    git merge --no-ff &lt;branch&gt; &emsp;&ensp;# 禁用快进，总是创建合并提交<br>
+    git merge --squash &lt;branch&gt; &emsp;# 把所有提交压缩成一个再合并（不自动 commit）<br>
+    git merge --abort &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 合并出问题时放弃，回到合并前状态
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把另一个分支上的工作成果"吸收"到当前分支。</p>
+
+  <h4>两种合并模式图解</h4>
+  <div class="mermaid">
+flowchart TB
+    subgraph A["Fast-Forward 快进合并"]
+        direction LR
+        A1["main ●"] --> A2["main ●"] --> A3["main/feature ●"]
+    end
+    subgraph B["Three-Way Merge 三方合并"]
+        direction LR
+        B1["main ●"] --> B4["main ●─┐"]
+        B1 --> B2["│"] --> B3["feature ●"]
+        B3 --> B4
+        B4 --> B5["└─ merge commit"]
+    end
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>合并 feature 到当前分支</td><td><code>git merge feature</code></td><td>把 feature 分支的改动合进来</td></tr>
+      <tr><td>保留分支历史</td><td><code>git merge --no-ff feature</code></td><td>总是创建一个合并提交，方便追溯</td></tr>
+      <tr><td>压缩合并</td><td><code>git merge --squash feature</code></td><td>把 feature 上的一堆提交压缩成一个变更集</td></tr>
+      <tr><td><strong>放弃合并</strong></td><td><code>git merge --abort</code></td><td>冲突太多不想处理了，回到合并前</td></tr>
+    </tbody>
+  </table>
+
+  <h4>🔥 解决合并冲突</h4>
+  <p>冲突发生时，Git 会在文件中标记：</p>
+  <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+这是你当前分支（main）的内容
+=======
+这是要合进来的分支（feature）的内容
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature</code></pre>
+  <p><strong>处理步骤</strong>：</p>
+  <ol>
+    <li>手动编辑文件，删掉标记，保留正确内容</li>
+    <li>标记为已解决：<code>git add &lt;conflicted-file&gt;</code></li>
+    <li>完成合并：<code>git commit -m "merge: resolve conflict"</code></li>
+  </ol>
+  <table>
+    <thead><tr><th>工具</th><th>命令</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>查看冲突文件</td><td><code>git status</code></td><td>标红的文件就是冲突文件</td></tr>
+      <tr><td>查看冲突内容</td><td><code>git diff</code></td><td>显示双方有差异的地方</td></tr>
+      <tr><td>使用 merge 工具</td><td><code>git mergetool</code></td><td>打开可视化三方对比工具（如 VS Code）</td></tr>
+      <tr><td>接受某一方的全部</td><td><code>git checkout --theirs &lt;file&gt;</code></td><td>全盘接受要合入分支的版本</td></tr>
+      <tr><td></td><td><code>git checkout --ours &lt;file&gt;</code></td><td>坚持当前分支的版本</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git rebase -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git rebase</span>
+    <span class="badges-row">
+      <span class="badge badge-yellow">进阶</span>
+      <span class="badge badge-red">危险</span>
+    </span>
+  </div>
+  <div class="formula">
+    git rebase &lt;base-branch&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 把当前分支的提交"搬"到 base-branch 之后<br>
+    git rebase -i &lt;commit&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 交互式变基（squash/fixup/reword/reorder）<br>
+    git rebase --continue &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 解决冲突后继续<br>
+    git rebase --abort &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 放弃变基<br>
+    git rebase --onto &lt;newbase&gt; &lt;oldbase&gt; &lt;branch&gt; # 迁移一段提交
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把当前分支的提交"摘下来"，放到另一个分支的最新位置重新"种"上去——让历史像一条直线。</p>
+
+  <h4>merge vs rebase 对比</h4>
+  <div class="mermaid">
+flowchart LR
+    subgraph M["merge 结果：分叉历史"]
+        direction LR
+        M1["●"] --> M2["●"] --> M5["● merge"]
+        M1 --> M3["●"] --> M4["●"] --> M5["● merge"]
+    end
+    subgraph R["rebase 结果：线性历史"]
+        direction LR
+        R1["●"] --> R2["●"] --> R3["●"] --> R4["●"]
+    end
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>把 feature 变基到 main</td><td><code>git switch feature && git rebase main</code></td><td>feature 上的提交搬到 main 最新位置</td></tr>
+      <tr><td>同步远程最新代码</td><td><code>git pull --rebase</code></td><td>拉取远程 + 把自己的提交 rebase 上去</td></tr>
+      <tr><td><strong>交互式变基</strong></td><td><code>git rebase -i HEAD~3</code></td><td>整理最近 3 次提交：合并、改消息、调顺序</td></tr>
+      <tr><td>放弃变基</td><td><code>git rebase --abort</code></td><td>回到变基前的干净状态</td></tr>
+      <tr><td>解决冲突后继续</td><td><code>git rebase --continue</code></td><td>改完冲突文件 → add → continue</td></tr>
+    </tbody>
+  </table>
+
+  <h4>交互式 rebase 指令表</h4>
+  <table>
+    <thead><tr><th>指令</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>pick</code></td><td>保留这个提交（默认）</td></tr>
+      <tr><td><code>reword</code></td><td>改提交消息</td></tr>
+      <tr><td><code>squash</code></td><td>合并到上一个提交，消息也合并</td></tr>
+      <tr><td><code>fixup</code></td><td>合并到上一个提交，丢弃本提交的消息</td></tr>
+      <tr><td><code>drop</code></td><td>删除这个提交</td></tr>
+      <tr><td><code>edit</code></td><td>暂停让你修改这个提交的内容</td></tr>
+    </tbody>
+  </table>
+  <div class="callout danger">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>Rebase 的黄金法则：不要对已经 push 到公共仓库的提交做 rebase！</strong><br>
+    Rebase 会改写提交的 SHA，如果别人基于你的旧提交做了工作，rebase 后他们的基础就"悬空"了。只 rebase 你本地还没 push 的提交。</div>
+  </div>
+</div>
+
+<!-- git cherry-pick -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git cherry-pick</span>
+    <span class="badges-row">
+      <span class="badge badge-yellow">进阶</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git cherry-pick &lt;commit-sha&gt; &emsp;&emsp;&emsp;&emsp;# 把指定提交"复制"到当前分支<br>
+    git cherry-pick &lt;sha1&gt;..&lt;sha2&gt; &emsp;&emsp;# 复制一个范围（不含 sha1）<br>
+    git cherry-pick &lt;sha1&gt;^..&lt;sha2&gt; &emsp;# 复制一个范围（含 sha1）<br>
+    git cherry-pick --abort &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 放弃
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 只把某一次（或几次）提交的改动"搬"到当前分支，不合并整个分支。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>单次提交</td><td><code>git cherry-pick abc123</code></td><td>把 abc123 这个提交的改动应用到当前分支</td></tr>
+      <tr><td>范围复制</td><td><code>git cherry-pick abc123^..def456</code></td><td>从 abc123 到 def456（包含 abc123）</td></tr>
+      <tr><td>不自动提交</td><td><code>git cherry-pick --no-commit abc123</code></td><td>把改动放到工作区，你审核后再提交</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git stash -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git stash</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git stash &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 暂存所有改动，工作区变干净<br>
+    git stash push -m "描述" &emsp;&emsp;# 带描述信息暂存<br>
+    git stash pop &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 恢复最近一次 stash 并删除记录<br>
+    git stash apply &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 恢复最近一次 stash 但保留记录（更安全）<br>
+    git stash list &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 查看 stash 列表<br>
+    git stash drop &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 删除最近一次 stash<br>
+    git stash clear &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 清空所有 stash
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 手头工作做到一半，需要紧急切换到别的分支，又不能提交——<code>stash</code> 帮你把脏工作区"寄存"起来。</p>
+
+  <div class="mermaid">
+flowchart LR
+    subgraph "git stash 工作流"
+        A["📝 工作到一半<br/>暂存区 + 工作区有修改"] -->|"git stash"| B["🧹 工作区变干净<br/>可以安全切换分支"]
+        B --> C["🔄 切到其他分支<br/>处理紧急任务"]
+        C --> D["👈 切回来"]
+        D -->|"git stash pop"| E["📝 恢复之前的现场<br/>继续工作"]
+    end
+  </div>
+
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>紧急切换</strong></td><td><code>git stash</code></td><td>把所有未提交改动藏起来</td></tr>
+      <tr><td>带说明暂存</td><td><code>git stash push -m "登录写到一半"</code></td><td>便于之后在 stash 列表里辨认</td></tr>
+      <tr><td><strong>恢复并删除</strong></td><td><code>git stash pop</code></td><td>最常用！恢复最近一次 stash 并从列表中删除</td></tr>
+      <tr><td><strong>恢复但保留</strong></td><td><code>git stash apply</code></td><td>恢复但不删除 stash 记录（可以应用到多个分支）</td></tr>
+      <tr><td>查看暂存列表</td><td><code>git stash list</code></td><td><code>stash@{0}: WIP on feature: ...</code></td></tr>
+      <tr><td>删指定 stash</td><td><code>git stash drop stash@{1}</code></td><td>删除 stash 列表里第 2 个</td></tr>
+      <tr><td>清空全部</td><td><code>git stash clear</code></td><td>🔴 清除所有 stash，不可恢复</td></tr>
+      <tr><td>连新文件一起暂存</td><td><code>git stash -u</code></td><td>默认 stash 不包含 untracked 文件，-u 包含</td></tr>
+      <tr><td>连 ignored 也暂存</td><td><code>git stash -a</code></td><td>-u 的升级版，包含被 .gitignore 忽略的文件</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===== SECTION 6: 远程协作篇 ===== -->
+<h2 id="s6">6. ☁️ 远程协作篇</h2>
+<blockquote class="warning">🟡 <span class="badge badge-yellow">安全等级：注意</span> — 涉及与外部仓库交互，push --force 等操作需谨慎。</blockquote>
+
+<!-- git remote -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git remote</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git remote -v &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 查看所有远程仓库的 URL<br>
+    git remote add &lt;name&gt; &lt;url&gt; &emsp;&emsp;&ensp;# 添加远程仓库<br>
+    git remote remove &lt;name&gt; &emsp;&emsp;&emsp;&ensp;# 移除远程仓库<br>
+    git remote rename &lt;old&gt; &lt;new&gt; &emsp;# 重命名<br>
+    git remote show &lt;name&gt; &emsp;&emsp;&emsp;&emsp;&ensp;# 查看某个远程的详细信息<br>
+    git remote prune &lt;name&gt; &emsp;&emsp;&emsp;&ensp;# 清理远程已删除分支的本地引用
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 管理"远程仓库"这个地址簿——告诉本地 Git 远程服务器在哪。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>查看远程地址</strong></td><td><code>git remote -v</code></td><td>显示 fetch 和 push 的 URL</td></tr>
+      <tr><td><strong>关联远程仓库</strong></td><td><code>git remote add origin &lt;URL&gt;</code></td><td>origin 是约定俗成的名字</td></tr>
+      <tr><td>添加上游仓库</td><td><code>git remote add upstream &lt;URL&gt;</code></td><td>Fork 工作流：origin 是你的 fork，upstream 是源仓库</td></tr>
+      <tr><td>修改 URL</td><td><code>git remote set-url origin &lt;新URL&gt;</code></td><td>仓库搬家后更新地址</td></tr>
+      <tr><td>删除远程关联</td><td><code>git remote remove origin</code></td><td>解除关联</td></tr>
+      <tr><td>查看详情</td><td><code>git remote show origin</code></td><td>显示所有远程分支、跟踪关系</td></tr>
+      <tr><td>清理死分支引用</td><td><code>git remote prune origin</code></td><td>远程分支已删除但本地 <code>origin/xxx</code> 残留，用这个清理</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git fetch -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git fetch</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git fetch &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 从默认远程（origin）下载所有分支的更新<br>
+    git fetch &lt;remote&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 从指定远程下载<br>
+    git fetch &lt;remote&gt; &lt;branch&gt; &ensp;# 只下载指定分支<br>
+    git fetch --prune &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 下载并清理远程已删除的分支引用<br>
+    git fetch --all &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 从所有远程下载
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 去远程"看看有什么新东西"，下载到本地但不合并——只更新 <code>origin/main</code> 这样的远程跟踪分支。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>获取所有更新</td><td><code>git fetch</code></td><td>下载 origin 上所有分支的新提交</td></tr>
+      <tr><td>获取后看看有啥</td><td><code>git fetch && git log origin/main</code></td><td>看远程 main 多了什么</td></tr>
+      <tr><td>只取一个分支</td><td><code>git fetch origin main</code></td><td>只拉 main 分支的最新</td></tr>
+      <tr><td>清理死引用</td><td><code>git fetch --prune</code></td><td>同时删除远程已经不存在的分支引用</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><strong>fetch vs pull</strong>：<code>fetch</code> 是安全的"只看不摸"，<code>pull</code> = <code>fetch</code> + <code>merge</code>。推荐先用 <code>fetch</code> 看看远程有什么变化，再决定怎么合并。</div>
+  </div>
+</div>
+
+<!-- git pull -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git pull</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-yellow">注意</span>
+    </span>
+  </div>
+  <div class="formula">
+    git pull &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# = fetch + merge（默认行为）<br>
+    git pull --rebase &emsp;&emsp;&emsp;&emsp;&ensp;# = fetch + rebase（推荐！）<br>
+    git pull --ff-only &emsp;&emsp;&emsp;&emsp;&ensp;# 只允许快进合并，否则报错（最安全）<br>
+    git pull origin main &emsp;&emsp;&emsp;# 指定远程和分支
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把远程更新拉下来并合并到本地当前分支。<code>fetch</code> + <code>merge/rebase</code> 的二合一操作。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>标准拉取</td><td><code>git pull</code></td><td>拉取跟踪分支的最新并合并</td></tr>
+      <tr><td><strong>推荐：变基拉取</strong></td><td><code>git pull --rebase</code></td><td>把你的本地提交 rebase 到远程最新提交之后，保持线性历史</td></tr>
+      <tr><td>全局设默认 rebase</td><td><code>git config --global pull.rebase true</code></td><td>设完后 <code>git pull</code> 就等于 <code>git pull --rebase</code></td></tr>
+      <tr><td>最安全拉取</td><td><code>git pull --ff-only</code></td><td>只能在快进时合并，有分叉就报错让你手动处理</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git push -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git push</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-red">危险操作含 --force</span>
+    </span>
+  </div>
+  <div class="formula">
+    git push &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 推送当前分支到默认远程<br>
+    git push -u origin &lt;branch&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 首次推送，建立跟踪关系<br>
+    git push origin &lt;branch&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 推送到指定远程的指定分支<br>
+    git push origin --delete &lt;branch&gt; &emsp;&emsp;&emsp;# 删除远程分支<br>
+    git push origin &lt;tag&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 推送一个标签<br>
+    git push origin --tags &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 推送所有标签<br>
+    git push --force &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 🔴 强制推送（危险！）<br>
+    git push --force-with-lease &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 🟡 更安全的强制推送
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 把本地仓库的提交"上传"到远程仓库，让团队其他人能看到。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>首次推送+关联</strong></td><td><code>git push -u origin main</code></td><td><code>-u</code> 建立追踪，之后只需 <code>git push</code></td></tr>
+      <tr><td>日常推送</td><td><code>git push</code></td><td>推送当前分支到已关联的远程分支</td></tr>
+      <tr><td>推送指定分支</td><td><code>git push origin feature-x</code></td><td>把 feature-x 推送到远程</td></tr>
+      <tr><td><strong>删除远程分支</strong></td><td><code>git push origin --delete feature-x</code></td><td>远程的分支被删除</td></tr>
+      <tr><td>推送标签</td><td><code>git push origin v1.0.0</code></td><td>推送指定标签</td></tr>
+      <tr><td>推送所有标签</td><td><code>git push origin --tags</code></td><td>把所有本地标签推上去</td></tr>
+      <tr><td>强制推送（审慎）</td><td><code>git push --force-with-lease</code></td><td>比 <code>--force</code> 安全：如果远程有新提交会拒绝推送</td></tr>
+      <tr><td>裸强制推送</td><td><code>git push --force</code></td><td>🔴 直接覆盖远程历史，非常危险</td></tr>
+    </tbody>
+  </table>
+  <div class="callout danger">
+    <span class="callout-icon">⚠️</span>
+    <div><strong><code>--force</code> vs <code>--force-with-lease</code></strong>：<br>
+    · <code>--force</code>：不管三七二十一，用你的历史覆盖远程 — <strong>非常危险</strong>！<br>
+    · <code>--force-with-lease</code>：先检查远程有没有你不知道的新提交。如果有，拒绝覆盖 — <strong>相对安全</strong>。<br><br>
+    永远优先用 <code>--force-with-lease</code>。只在 100% 确定要覆盖时用 <code>--force</code>。</div>
+  </div>
+</div>
+
+<!-- ===== SECTION 7: 历史查看篇 ===== -->
+<h2 id="s7">7. 🔍 历史查看篇</h2>
+<blockquote class="tip">🟢 <span class="badge badge-green">安全等级：安全</span> — 全是只读操作，随便用。</blockquote>
+
+<!-- git log -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git log</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git log &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 查看提交历史（完整版）<br>
+    git log --oneline &emsp;&emsp;&emsp;&emsp;&emsp;# 一行一个提交（最实用）<br>
+    git log --oneline --graph --all &emsp;# 图形化所有分支历史<br>
+    git log --author="name" &emsp;&emsp;&emsp;# 按作者过滤<br>
+    git log --since="2025-01-01" &emsp;# 按日期过滤<br>
+    git log -- &lt;file&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 只看某文件的提交历史<br>
+    git log -p &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 显示每次提交的详细 diff<br>
+    git log --stat &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 显示每次提交的文件统计<br>
+    git log -n 5 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 只看最近 5 条
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: Git 历史是时光机，<code>log</code> 是操作这台时光机的仪表盘。</p>
+
+  <h4>🔥 推荐组合：图形化历史</h4>
+  <pre><code>git log --oneline --graph --decorate --all
+# 或者设置别名：
+git config --global alias.lg "log --oneline --graph --decorate --all"
+git lg   # 一行出图！</code></pre>
+  <pre><code>* a1b2c3d (HEAD -> feature, origin/feature) feat: add login
+* e4f5g6h (origin/main, main) docs: update readme
+* i7j8k9l Initial commit</code></pre>
+
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>图形化全览</strong></td><td><code>git log --oneline --graph --all</code></td><td>一张图看清所有分支的来龙去脉</td></tr>
+      <tr><td>看某人的提交</td><td><code>git log --author="张三"</code></td><td>支持模糊匹配</td></tr>
+      <tr><td>看今天的提交</td><td><code>git log --since="today"</code></td><td>也可以 <code>--since="2025-07-01"</code></td></tr>
+      <tr><td>看最近 N 条</td><td><code>git log -5</code></td><td>只看最近 5 条</td></tr>
+      <tr><td>看文件的修改历史</td><td><code>git log -p -- &lt;file&gt;</code></td><td>带 diff 的详细历史</td></tr>
+      <tr><td>看文件改了啥</td><td><code>git log --stat</code></td><td>统计每次提交改了多少行</td></tr>
+      <tr><td>搜索提交消息</td><td><code>git log --grep="bug"</code></td><td>在提交消息里搜关键词</td></tr>
+      <tr><td>搜索代码变更</td><td><code>git log -S "function login"</code></td><td>找出引入或删除某段代码的提交</td></tr>
+      <tr><td>两个分支的差异提交</td><td><code>git log main..feature</code></td><td>feature 有但 main 没有的提交</td></tr>
+    </tbody>
+  </table>
+
+  <h4>常用 <code>--pretty=format:</code> 占位符</h4>
+  <table>
+    <thead><tr><th>占位符</th><th>含义</th><th>占位符</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td><code>%H</code></td><td>完整 commit SHA</td><td><code>%an</code></td><td>作者名</td></tr>
+      <tr><td><code>%h</code></td><td>缩写 commit SHA</td><td><code>%ae</code></td><td>作者邮箱</td></tr>
+      <tr><td><code>%s</code></td><td>提交标题</td><td><code>%ar</code></td><td>相对时间（3 days ago）</td></tr>
+      <tr><td><code>%d</code></td><td>分支/标签引用</td><td><code>%ad</code></td><td>绝对日期</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git show -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git show</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git show &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 查看最新提交的详细信息<br>
+    git show &lt;commit-sha&gt; &emsp;&emsp;&ensp;# 查看指定提交<br>
+    git show --stat &lt;sha&gt; &emsp;&emsp;&ensp;# 只看文件统计<br>
+    git show &lt;sha&gt;:&lt;file&gt; &emsp;&ensp;# 看某个提交中某个文件的内容
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>最新提交</td><td><code>git show</code></td><td>显示最新提交的消息 + diff</td></tr>
+      <tr><td>指定提交</td><td><code>git show abc123</code></td><td>这个提交改了啥</td></tr>
+      <tr><td>看某文件的旧版本</td><td><code>git show HEAD~3:src/app.ts</code></td><td>3 次提交前 app.ts 长什么样</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git blame -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git blame</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git blame &lt;file&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 显示每一行是谁在哪个提交改的<br>
+    git blame -L 10,20 &lt;file&gt; &emsp;&ensp;# 只看第 10 到 20 行<br>
+    git blame -L /pattern/ &lt;file&gt; # 从匹配 pattern 的行开始
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: "这行代码是谁写的？什么时候？哪个提交？"——<code>blame</code> 全部告诉你。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>全文件追溯</td><td><code>git blame src/app.ts</code></td><td>每行显示 SHA、作者、时间</td></tr>
+      <tr><td>指定行范围</td><td><code>git blame -L 50,100 src/app.ts</code></td><td>只看第 50-100 行</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div>VS Code 用户：安装 <strong>GitLens</strong> 插件，每行代码末尾自动显示 blame 信息，无需手动打命令。</div>
+  </div>
+</div>
+
+<!-- git bisect -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git bisect</span>
+    <span class="badges-row">
+      <span class="badge badge-yellow">进阶</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git bisect start &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 开始二分查找<br>
+    git bisect bad [&lt;commit&gt;] &emsp;&emsp;&emsp;&ensp;# 标记当前提交是有问题的<br>
+    git bisect good [&lt;commit&gt;] &emsp;&emsp;&ensp;# 标记当前提交是好的<br>
+    git bisect reset &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 结束二分查找<br>
+    git bisect run &lt;测试脚本&gt; &emsp;&emsp;# 自动化二分
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 已知某版本正常、某版本出 Bug，让 Git 用二分法帮你自动定位到引入 Bug 的那个提交。</p>
+
+  <div class="mermaid">
+flowchart LR
+    subgraph "二分查找过程"
+        direction LR
+        G["✅ good<br/>v1.0"] --> C1["❓ 测试"] --> C2["❓ 测试"] --> B["🔴 bad<br/>HEAD"]
+    end
+  </div>
+
+  <pre><code># 手动二分示例
+git bisect start
+git bisect bad HEAD          # 最新版本有问题
+git bisect good v1.0.0       # v1.0.0 是好的
+# Git 自动切到中间某个提交...
+# 测试后告诉 Git：
+git bisect good              # 或 git bisect bad
+# 重复直到找到首个 bad 提交
+git bisect reset
+
+# 自动化二分示例
+git bisect start HEAD v1.0.0
+git bisect run npm test
+git bisect reset</code></pre>
+</div>
+
+<!-- git grep -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git grep</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git grep "pattern" &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 在 Git 跟踪的文件中搜索<br>
+    git grep -n "pattern" &emsp;&emsp;&emsp;&ensp;# 显示行号<br>
+    git grep -c "pattern" &emsp;&emsp;&emsp;&ensp;# 只显示匹配数量<br>
+    git grep "pattern" &lt;commit&gt; &ensp;# 在某个版本中搜索
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 比系统 <code>grep</code> 更快（只搜 Git 跟踪的文件，忽略 node_modules 等）。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>搜索代码</td><td><code>git grep "function login"</code></td><td>在所有跟踪文件中搜索</td></tr>
+      <tr><td>含行号</td><td><code>git grep -n "TODO"</code></td><td>列出所有 TODO 注释的位置</td></tr>
+      <tr><td>统计数量</td><td><code>git grep -c "import.*from"</code></td><td>每个文件各有多少行 import</td></tr>
+      <tr><td>历史版本</td><td><code>git grep "oldFunc" v1.0.0</code></td><td>v1.0.0 版本中有没有 oldFunc</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===== SECTION 8: 标签管理篇 ===== -->
+<h2 id="s8">8. 🏷️ 标签管理篇</h2>
+<blockquote class="tip">🟢 <span class="badge badge-green">安全等级：安全</span> — 标签是只读锚点，标记发布版本。</blockquote>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git tag</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git tag &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 列出所有标签<br>
+    git tag &lt;name&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 创建轻量标签（指向当前提交的指针）<br>
+    git tag -a &lt;name&gt; -m "描述" &emsp;&ensp;# 创建附注标签（含作者、日期、消息）<br>
+    git tag -a &lt;name&gt; &lt;commit&gt; -m "" &ensp;# 给历史提交打标签<br>
+    git push origin &lt;tag-name&gt; &emsp;&emsp;&ensp;# 推送一个标签<br>
+    git push origin --tags &emsp;&emsp;&emsp;&emsp;&ensp;# 推送所有标签<br>
+    git tag -d &lt;name&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 删除本地标签<br>
+    git push origin --delete &lt;name&gt; # 删除远程标签
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 给某个提交贴一个永久标签，通常用来标记发布版本号（v1.0.0, v2.3.1）。</p>
+
+  <h4>轻量标签 vs 附注标签</h4>
+  <table>
+    <thead><tr><th>类型</th><th>命令</th><th>特点</th></tr></thead>
+    <tbody>
+      <tr><td><strong>轻量标签</strong></td><td><code>git tag v1.0.0</code></td><td>只是一个指向提交的指针，不含额外信息</td></tr>
+      <tr><td><strong>附注标签</strong></td><td><code>git tag -a v1.0.0 -m "正式发布"</code></td><td>Git 完整对象：含作者、日期、消息，可通过 <code>git show</code> 查看</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>打轻量标签</td><td><code>git tag v1.0.0</code></td><td>在当前提交上打标签</td></tr>
+      <tr><td><strong>打附注标签（推荐）</strong></td><td><code>git tag -a v1.0.0 -m "首次正式发布"</code></td><td>含完整元信息</td></tr>
+      <tr><td>给历史提交打标签</td><td><code>git tag -a v0.9.0 abc123 -m "回溯标签"</code></td><td>给过去的提交补标签</td></tr>
+      <tr><td>推送指定标签</td><td><code>git push origin v1.0.0</code></td><td>标签默认不推送，需要显式推送</td></tr>
+      <tr><td>推送所有标签</td><td><code>git push origin --tags</code></td><td>把所有本地标签推上去</td></tr>
+      <tr><td>删除本地标签</td><td><code>git tag -d v1.0.0</code></td><td>删除本地标签</td></tr>
+      <tr><td>删除远程标签</td><td><code>git push origin --delete v1.0.0</code></td><td>删除远程标签</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div>发布版本用<strong>附注标签</strong>（<code>-a</code>），临时标记用轻量标签。</div>
+  </div>
+</div>
+
+<!-- ===== SECTION 9: 撤销与回退篇 ===== -->
+<h2 id="s9">9. ↩️ 撤销与回退篇</h2>
+<blockquote class="danger">🔴 <span class="badge badge-red">安全等级：危险</span> — 有些操作不可逆，请仔细阅读每个警告。</blockquote>
+
+<!-- git reset -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git reset</span>
+    <span class="badges-row">
+      <span class="badge badge-yellow">进阶</span>
+      <span class="badge badge-red">危险</span>
+    </span>
+  </div>
+  <div class="formula">
+    git reset --soft &lt;commit&gt; &emsp;# 重置 HEAD，保留暂存区和工作区<br>
+    git reset --mixed &lt;commit&gt; # 重置 HEAD 和暂存区，保留工作区（默认）<br>
+    git reset --hard &lt;commit&gt; &emsp;# 🔴 重置一切：HEAD、暂存区、工作区全部覆盖<br>
+    git reset HEAD~1 &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 撤销最近一次提交（mixed 模式）<br>
+    git reset &lt;file&gt; &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 取消暂存指定文件
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 让 HEAD 指针"回退"到某个历史提交，三种模式控制回退多少。</p>
+
+  <h4>三种 reset 模式对比</h4>
+  <div class="mermaid">
+flowchart TB
+    subgraph S["--soft 软重置"]
+        S1["HEAD 移动 ✅"] --> S2["暂存区 不变 ✅"] --> S3["工作区 不变 ✅"]
+    end
+    subgraph M["--mixed 混合重置（默认）"]
+        M1["HEAD 移动 ✅"] --> M2["暂存区 清空 🔄"] --> M3["工作区 不变 ✅"]
+    end
+    subgraph H["--hard 硬重置 🔴"]
+        H1["HEAD 移动 ✅"] --> H2["暂存区 清空 🔄"] --> H3["工作区 清空 🔴"]
+    end
+  </div>
+
+  <table>
+    <thead><tr><th>模式</th><th>HEAD</th><th>暂存区</th><th>工作区</th><th>使用场景</th></tr></thead>
+    <tbody>
+      <tr><td><code>--soft</code></td><td>✅ 移动</td><td>✅ 保留</td><td>✅ 保留</td><td>撤销 commit 但保留所有改动，方便重新提交</td></tr>
+      <tr><td><code>--mixed</code></td><td>✅ 移动</td><td>🔄 重置</td><td>✅ 保留</td><td>撤销 commit 和 add，改动回到工作区</td></tr>
+      <tr><td><code>--hard</code></td><td>✅ 移动</td><td>🔄 重置</td><td>🔴 <strong>丢弃</strong></td><td>彻底放弃所有改动，回到干净状态</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>撤销提交（保留改动）</strong></td><td><code>git reset --soft HEAD~1</code></td><td>提交没了，改动在暂存区</td></tr>
+      <tr><td>撤销 commit + add</td><td><code>git reset HEAD~1</code></td><td>改动回到工作区</td></tr>
+      <tr><td><strong>彻底放弃一切</strong></td><td><code>git reset --hard HEAD</code></td><td>🔴 丢弃所有未提交的改动</td></tr>
+      <tr><td>回到 3 次提交前</td><td><code>git reset --hard HEAD~3</code></td><td>🔴 最近 3 次提交全部丢弃</td></tr>
+      <tr><td>取消暂存某文件</td><td><code>git reset &lt;file&gt;</code></td><td>等于 <code>git restore --staged &lt;file&gt;</code></td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>救命的 <code>git reflog</code></strong>：即使 <code>git reset --hard</code> 把提交"弄丢了"，只要没执行 <code>git gc</code>，90 天内都可以通过 <code>reflog</code> 找回。</div>
+  </div>
+</div>
+
+<!-- git revert -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git revert</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-green">安全</span>
+    </span>
+  </div>
+  <div class="formula">
+    git revert &lt;commit-sha&gt; &emsp;&emsp;# 创建一个新提交来"反做"指定提交的改动<br>
+    git revert HEAD &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;# 反做最近一次提交<br>
+    git revert --no-commit &lt;sha&gt; # 不自动提交，改动放到工作区
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: "撤销但留记录"——创建一个新提交来抵消旧提交，历史不丢失。</p>
+  <div class="callout note">
+    <span class="callout-icon">💡</span>
+    <div><strong>reset vs revert 如何选择？</strong><br>
+    · 撤销的提交<strong>只在本地</strong>，没 push → 用 <code>reset</code><br>
+    · 撤销的提交<strong>已经 push</strong> 到远程 → 用 <code>revert</code>（安全，不破坏公共历史）</div>
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>撤销最近一次提交</td><td><code>git revert HEAD</code></td><td>创建一个反向提交</td></tr>
+      <tr><td>撤销指定提交</td><td><code>git revert abc123</code></td><td>抵消 abc123 的改动</td></tr>
+      <tr><td>暂不提交</td><td><code>git revert --no-commit abc123</code></td><td>审核改动后再手动提交</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- git reflog -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git reflog — 救命稻草</span>
+    <span class="badges-row">
+      <span class="badge badge-yellow">进阶</span>
+      <span class="badge badge-blue">只读</span>
+    </span>
+  </div>
+  <div class="formula">
+    git reflog &emsp;&emsp;&emsp;&emsp;&ensp;# 查看 HEAD 的移动历史<br>
+    git reflog &lt;branch&gt; &ensp;# 查看某分支的移动历史<br>
+    git reflog --all &emsp;&ensp;# 查看所有引用
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 记录了本地仓库中 HEAD 和分支指针的每一次移动——删掉的提交、reset 掉的改动，都能在这里找回来。</p>
+  <pre><code># 输出示例：
+abc1234 HEAD@{0}: commit: feat: add login
+def5678 HEAD@{1}: reset: moving to HEAD~1
+ghi9012 HEAD@{2}: commit: WIP: 重构了一半（被 reset 掉了！）</code></pre>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>查看 HEAD 移动史</td><td><code>git reflog</code></td><td>看到所有"曾经指向过"的提交</td></tr>
+      <tr><td>找回被 reset 的提交</td><td><code>git reset --hard HEAD@{2}</code></td><td>回到 reflog 记录的某个状态</td></tr>
+      <tr><td>找回被删分支</td><td><code>git checkout -b recovered HEAD@{5}</code></td><td>基于 reflog 记录创建分支找回</td></tr>
+    </tbody>
+  </table>
+  <pre><code># 典型急救流程
+git reflog                        # 找到被 reset 前的 HEAD@{n}
+git reset --hard HEAD@{3}         # 穿越回去！</code></pre>
+</div>
+
+<!-- git clean -->
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git clean</span>
+    <span class="badges-row">
+      <span class="badge badge-green">基础</span>
+      <span class="badge badge-red">危险</span>
+    </span>
+  </div>
+  <div class="formula">
+    git clean -n &emsp;&ensp;# 预览：哪些未跟踪文件会被删除<br>
+    git clean -f &emsp;&ensp;# 删除未跟踪的文件<br>
+    git clean -fd &ensp;# 删除未跟踪的文件 + 目录<br>
+    git clean -fx &ensp;# 删除未跟踪文件 + 被 .gitignore 忽略的文件
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 清除工作区中所有没被 Git 跟踪的文件和文件夹。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>先看看会删什么</strong></td><td><code>git clean -n</code></td><td>🔍 预览模式，安全无害</td></tr>
+      <tr><td>删除未跟踪文件</td><td><code>git clean -f</code></td><td>删除未跟踪的文件（不含目录）</td></tr>
+      <tr><td>含目录一起删</td><td><code>git clean -fd</code></td><td>删除文件 + 空目录</td></tr>
+      <tr><td>含 ignored 文件</td><td><code>git clean -fx</code></td><td>连 <code>node_modules/</code> 等被忽略的一起删</td></tr>
+    </tbody>
+  </table>
+  <div class="callout danger">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>永远先用 <code>-n</code> 预览！</strong><code>git clean -fd</code> 删除的内容无法恢复（不经过 Git，不进回收站）。</div>
+  </div>
+</div>
+
+<!-- ===== SECTION 10: 高级篇 ===== -->
+<h2 id="s10">10. 🚀 高级篇</h2>
+<blockquote>🟣 <span class="badge badge-purple">进阶</span> — 不是每天用，但关键时刻能解决大问题。</blockquote>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git submodule</span>
+    <span class="badges-row">
+      <span class="badge badge-purple">进阶</span>
+    </span>
+  </div>
+  <div class="formula">
+    git submodule add &lt;url&gt; [path] &emsp;&emsp;&emsp;&emsp;&ensp;# 添加子模块<br>
+    git submodule update --init --recursive &emsp;# 初始化并更新所有子模块<br>
+    git submodule update --remote &emsp;&emsp;&emsp;&emsp;&emsp;# 拉取子模块的最新提交<br>
+    git clone --recurse-submodules &lt;url&gt; &ensp;# 克隆时一并初始化子模块
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 在一个 Git 仓库里嵌套另一个 Git 仓库——适合管理项目依赖的第三方库。</p>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>添加子模块</td><td><code>git submodule add &lt;url&gt; libs/theme</code></td><td>嵌入 theme 库</td></tr>
+      <tr><td>克隆含子模块的仓库</td><td><code>git clone --recurse-submodules &lt;url&gt;</code></td><td>一次性克隆主仓库+子模块</td></tr>
+      <tr><td>更新子模块</td><td><code>git submodule update --remote</code></td><td>拉取子模块最新版本</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git worktree</span>
+    <span class="badges-row">
+      <span class="badge badge-purple">进阶</span>
+    </span>
+  </div>
+  <div class="formula">
+    git worktree add &lt;path&gt; &lt;branch&gt; &emsp;# 在另一个目录 checkout 一个分支<br>
+    git worktree list &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 列出所有工作树<br>
+    git worktree remove &lt;path&gt; &emsp;&emsp;&emsp;# 删除工作树<br>
+    git worktree prune &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 清理已删除工作树的记录
+  </div>
+  <p class="one-liner">💡 <strong>一句话</strong>: 同一个仓库，同时 checkout 多个分支到不同目录——不用来回切换就能并行工作。</p>
+  <pre><code># 场景：main 分支在跑测试，你想同时开发新功能
+git worktree add ../project-hotfix hotfix
+cd ../project-hotfix    # 过去开发，不影响原目录的测试</code></pre>
+</div>
+
+<div class="cmd-card">
+  <div class="cmd-header">
+    <span class="cmd-name">🎯 git archive / git bundle</span>
+    <span class="badges-row">
+      <span class="badge badge-purple">进阶</span>
+    </span>
+  </div>
+  <div class="formula">
+    git archive --format=zip HEAD > project.zip &emsp;# 打包当前版本为 zip<br>
+    git archive -o latest.tar.gz HEAD &emsp;&emsp;&emsp;# 打包为 tar.gz<br>
+    git bundle create repo.bundle --all &emsp;&emsp;&ensp;# 创建完整仓库包（离线传输）<br>
+    git clone repo.bundle &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# 从 bundle 克隆
+  </div>
+  <table>
+    <thead><tr><th>🎬 场景</th><th>⌨️ 命令</th><th>📝 说明</th></tr></thead>
+    <tbody>
+      <tr><td>导出源码包</td><td><code>git archive -o v1.0.zip v1.0.0</code></td><td>发布不带 .git 的源代码包</td></tr>
+      <tr><td>离线传输仓库</td><td><code>git bundle create my.bundle --all</code></td><td>生成单个文件，U 盘拷走</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== SECTION 11: 实用工作流 ===== -->
+<h2 id="s11">11. 📋 实用工作流</h2>
+
+<h3>11.1 日常开发流（单人/小团队）</h3>
+<div class="mermaid">
+flowchart TD
+    A["1️⃣ git pull --rebase"] --> B["2️⃣ 写代码..."]
+    B --> C["3️⃣ git status"]
+    C --> D["4️⃣ git add ."]
+    D --> E["5️⃣ git commit -m 'feat: ...'"]
+    E --> F["6️⃣ git pull --rebase"]
+    F -->|"有冲突"| G["解决冲突 → git add → git rebase --continue"]
+    F -->|"无冲突"| H["7️⃣ git push"]
+    G --> H
+</div>
+<pre><code># 标准日常流程（每次开始写代码前）
+git pull --rebase              # 同步远程最新
+# ... 写代码 ...
+git status                     # 看看改了啥
+git add .                      # 暂存所有
+git commit -m "feat: 描述"     # 提交
+git pull --rebase              # 推送前再同步一次
+git push                       # 推！</code></pre>
+
+<h3>11.2 Feature 分支流</h3>
+<pre><code># 开新功能
+git switch -c feature-payment          # 从 main 创建功能分支
+# ... 开发，多次提交 ...
+git add . && git commit -m "支付接入"
+
+# 期间 main 有更新，同步过来
+git switch main && git pull            # 先更新 main
+git switch feature-payment             # 切回功能分支
+git rebase main                        # 把功能分支 rebase 到最新 main
+
+# 开发完毕，合并回 main
+git switch main
+git merge --no-ff feature-payment      # --no-ff 保留分支轨迹
+git push origin main
+git branch -d feature-payment          # 清理已合并的分支</code></pre>
+
+<h3>11.3 紧急修复流（Hotfix）</h3>
+<pre><code># 正在 feature 分支上开发，突然要修线上 Bug
+git stash push -m "支付写到一半"        # 1. 暂存当前工作
+git switch main                         # 2. 切到 main
+git pull                                # 3. 同步最新
+git switch -c hotfix-critical-bug       # 4. 从 main 开修复分支
+# ... 修 Bug ...
+git add . && git commit -m "fix: 严重 Bug"
+git switch main && git merge --no-ff hotfix-critical-bug
+git push origin main                    # 5. 推送修复
+git switch feature-payment              # 6. 回到功能分支
+git rebase main                         # 7. 把修复同步过来
+git stash pop                           # 8. 恢复之前的进度</code></pre>
+
+<h3>11.4 合并 vs 变基选择指南</h3>
+<div class="mermaid">
+flowchart TD
+    Q["需要整合分支？"] --> A{"分支已经<br/>push 到远程？"}
+    A -->|"是（公共分支）"| M["✅ merge<br/>保留完整历史"]
+    A -->|"否（本地分支）"| R{"追求线性历史？"}
+    R -->|是| RB["✅ rebase<br/>历史像一条直线"]
+    R -->|否| M2["✅ merge<br/>保留分支轨迹"]
+</div>
+<blockquote class="tip">💡 <strong>简单口诀</strong>：公共分支用 merge，本地整理用 rebase。</blockquote>
+
+<!-- ===== 附录 ===== -->
+<h2 id="sa">附录 A：命令速查表</h2>
+<blockquote>一页纸浓缩，按使用频率排序。打印出来贴在显示器旁边。</blockquote>
+
+<h3>🔥 每天必用</h3>
+<table>
+  <thead><tr><th>命令</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><code>git status</code></td><td>当前状态一览</td></tr>
+    <tr><td><code>git add .</code></td><td>暂存所有改动</td></tr>
+    <tr><td><code>git commit -m "..."</code></td><td>提交</td></tr>
+    <tr><td><code>git pull --rebase</code></td><td>拉取并变基</td></tr>
+    <tr><td><code>git push</code></td><td>推送</td></tr>
+    <tr><td><code>git log --oneline -10</code></td><td>看最近 10 条记录</td></tr>
+  </tbody>
+</table>
+
+<h3>⚡ 常用</h3>
+<table>
+  <thead><tr><th>命令</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><code>git diff</code></td><td>工作区 vs 暂存区</td></tr>
+    <tr><td><code>git diff --staged</code></td><td>暂存区 vs HEAD</td></tr>
+    <tr><td><code>git restore &lt;file&gt;</code></td><td>撤销工作区修改</td></tr>
+    <tr><td><code>git restore --staged &lt;file&gt;</code></td><td>取消暂存</td></tr>
+    <tr><td><code>git switch -c &lt;name&gt;</code></td><td>创建并切换分支</td></tr>
+    <tr><td><code>git stash</code> / <code>git stash pop</code></td><td>暂存工作 / 恢复</td></tr>
+    <tr><td><code>git merge &lt;branch&gt;</code></td><td>合并分支</td></tr>
+    <tr><td><code>git log --oneline --graph --all</code></td><td>图形化全历史</td></tr>
+    <tr><td><code>git branch -d &lt;name&gt;</code></td><td>删除已合并分支</td></tr>
+  </tbody>
+</table>
+
+<h3>🛠️ 偶尔用但很关键</h3>
+<table>
+  <thead><tr><th>命令</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><code>git commit --amend</code></td><td>追加到上一次提交</td></tr>
+    <tr><td><code>git rebase -i HEAD~3</code></td><td>整理最近 3 次提交</td></tr>
+    <tr><td><code>git cherry-pick &lt;sha&gt;</code></td><td>复制一个提交</td></tr>
+    <tr><td><code>git reset --soft HEAD~1</code></td><td>撤销提交但保留改动</td></tr>
+    <tr><td><code>git revert &lt;sha&gt;</code></td><td>安全反做（已 push 的提交）</td></tr>
+    <tr><td><code>git reflog</code></td><td>找回丢失的提交</td></tr>
+    <tr><td><code>git bisect start</code></td><td>二分定位 Bug</td></tr>
+    <tr><td><code>git push --force-with-lease</code></td><td>安全强制推送</td></tr>
+  </tbody>
+</table>
+
+<h2 id="sb">附录 B：推荐 Git 别名</h2>
+<p>把以下内容加入 <code>~/.gitconfig</code> 的 <code>[alias]</code> 段：</p>
+<pre><code>[alias]
+    # 状态与日志
+    st     = status
+    sts    = status -sb
+    lg     = log --oneline --graph --decorate --all
+    lga    = log --oneline --graph --decorate --all
+    last   = log -1 HEAD
+    hist   = log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+
+    # 分支
+    co     = checkout
+    sw     = switch
+    swc    = switch -c
+    br     = branch
+    bra    = branch -a
+    del    = branch -d
+    delF   = branch -D
+
+    # 提交
+    ci     = commit
+    ca     = commit --amend
+    can    = commit --amend --no-edit
+    unstage = restore --staged .
+    discard = restore .
+
+    # 合并与变基
+    mg     = merge --no-ff
+    rb     = rebase
+    rbi    = rebase -i
+    rbc    = rebase --continue
+    rba    = rebase --abort
+
+    # 撤销
+    undo   = reset --soft HEAD~1
+    uncommit = reset --mixed HEAD~1
+    redo   = reset --hard HEAD@{1}
+
+    # 远程
+    pf     = push --force-with-lease
+    pl     = pull --rebase
+
+    # 实用工具
+    aliases = config --get-regexp alias
+    today  = log --oneline --since="00:00:00"
+    contrib = shortlog -sn --no-merges</code></pre>
+
+<h2 id="sc">附录 C：常用术语中英对照</h2>
+<table>
+  <thead><tr><th>英文</th><th>中文</th><th>解释</th></tr></thead>
+  <tbody>
+    <tr><td>Repository</td><td>仓库</td><td>Git 存储项目完整历史的地方</td></tr>
+    <tr><td>Working Directory</td><td>工作区</td><td>你硬盘上的项目文件夹</td></tr>
+    <tr><td>Staging Area / Index</td><td>暂存区</td><td>临时存放待提交改动的区域</td></tr>
+    <tr><td>Commit</td><td>提交</td><td>将暂存区的快照永久保存</td></tr>
+    <tr><td>Branch</td><td>分支</td><td>独立的开发线，平行的提交历史</td></tr>
+    <tr><td>HEAD</td><td>HEAD 指针</td><td>指向当前所在分支的最新提交</td></tr>
+    <tr><td>Merge</td><td>合并</td><td>将两条分支的历史合并到一起</td></tr>
+    <tr><td>Rebase</td><td>变基</td><td>将提交"搬迁"到另一个基础上</td></tr>
+    <tr><td>Fast-Forward</td><td>快进合并</td><td>当目标分支没有新提交时直接移动指针</td></tr>
+    <tr><td>Conflict</td><td>冲突</td><td>同一位置被不同分支修改，Git 无法自动合并</td></tr>
+    <tr><td>Remote</td><td>远程</td><td>托管在网络上的仓库副本</td></tr>
+    <tr><td>Origin</td><td>默认远程名</td><td>克隆时自动创建的远程名称</td></tr>
+    <tr><td>Fetch</td><td>获取</td><td>下载远程更新但不合并</td></tr>
+    <tr><td>Pull</td><td>拉取</td><td>下载远程更新并合并到本地</td></tr>
+    <tr><td>Push</td><td>推送</td><td>将本地提交上传到远程</td></tr>
+    <tr><td>Tag</td><td>标签</td><td>标记某个提交（常用作版本号）</td></tr>
+    <tr><td>SHA / Hash</td><td>哈希值</td><td>每个 Git 对象的唯一标识（如 abc1234）</td></tr>
+    <tr><td>Detached HEAD</td><td>分离头指针</td><td>HEAD 指向具体提交而非分支</td></tr>
+    <tr><td>Stash</td><td>暂存</td><td>临时保存工作区改动</td></tr>
+    <tr><td>Cherry-Pick</td><td>遴选</td><td>复制某个提交到当前分支</td></tr>
+    <tr><td>Squash</td><td>压缩</td><td>将多个提交合并为一个</td></tr>
+    <tr><td>Amend</td><td>修正</td><td>修改最近一次提交</td></tr>
+    <tr><td>Fork</td><td>复刻</td><td>将他人仓库复制到自己账户下</td></tr>
+    <tr><td>Pull Request (PR)</td><td>拉取请求</td><td>请求仓库维护者合并你的改动</td></tr>
+    <tr><td>Clone</td><td>克隆</td><td>将远程仓库完整下载到本地</td></tr>
+    <tr><td>Bare Repository</td><td>裸仓库</td><td>不含工作区的仓库（服务器上用）</td></tr>
+    <tr><td>Submodule</td><td>子模块</td><td>嵌套在仓库中的另一个独立仓库</td></tr>
+  </tbody>
+</table>
+
+<!-- Footer -->
+<div style="text-align:center; padding: 40px 0 20px; color: #999; font-size: 0.85rem; border-top: 1px solid #e0e0d8; margin-top: 40px;">
+  <p>📖 Made with ❤️ | 持续更新中 | 欢迎补充和纠错</p>
+  <p style="margin-top:4px;">
+    <a href="https://github.com/spinner-bot/fundamentals-forge" target="_blank">GitHub</a> ·
+    <a href="#s0">返回导航</a>
+  </p>
+</div>
+
+</div>
+</main>
+</body>
+</html>
