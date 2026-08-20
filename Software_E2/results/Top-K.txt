@@ -1,0 +1,12 @@
+D:\Anaconda\python.exe "F:\资源夹\科研\zzlab (preparing)\pre\2524030232_张锐寒\Software_E2\top5_acc.py" 
+已加载 MLP 模型: F:\资源夹\科研\zzlab (preparing)\pre\2524030232_张锐寒\Software_E2\model\mlp.pth
+已加载 CNN 模型: F:\资源夹\科研\zzlab (preparing)\pre\2524030232_张锐寒\Software_E2\model\cnn.pth
+
+================ Top-k 准确率 ================
+MLP:  Top-1 = 96.47%   Top-5 = 99.91%
+CNN:  Top-1 = 98.65%   Top-5 = 100.00%
+
+【分析】
+CNN 借助卷积核提取局部特征(边缘、笔画结构)，参数共享+局部感受野使其
+在同等或更少参数下精度更高、更抗过拟合；MLP 全连接对每个像素独立加权，
+需大量参数且忽略空间结构。通常 CNN 的 Top-1 与 Top-5 均高于 MLP。
