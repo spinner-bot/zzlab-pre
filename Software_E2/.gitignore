@@ -1,0 +1,6 @@
+# 官方 MNIST 数据较大，不入库（首次运行前需放到 data/ 下）
+data/
+# 训练产物
+model/*.pth
+__pycache__/
+*.pyc
