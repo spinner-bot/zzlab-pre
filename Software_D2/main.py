@@ -4,15 +4,30 @@ import json
 import sys
 import os
 from game import TicTacToe
-from train import QLearningAgent, run_ai_vs_ai_training
+from train import QLearningAgent, run_ai_vs_ai_training, BASE_DIR
+
+# 缺失的模型/数据文件，若不存在则自动训练一次
+AUTO_TRAIN_EPISODES = 10000
+
+
+def ensure_trained_model():
+    """模型或训练数据缺失时，自动训练一次，保证可直接开始对战或绘图"""
+    model_file = os.path.join(BASE_DIR, "Agent_X_q_table.json")
+    stats_file = os.path.join(BASE_DIR, "training_stats.json")
+    if not os.path.exists(model_file) or not os.path.exists(stats_file):
+        print(f"未检测到已训练模型({os.path.basename(model_file)})，正在自动训练（首次运行请稍候，约{AUTO_TRAIN_EPISODES}局）...")
+        run_ai_vs_ai_training(episodes=AUTO_TRAIN_EPISODES)
+        print("训练完成，已自动创建模型与训练数据。\n")
+
 
 # --- 1. 学习曲线绘制 ---
 def plot_learning_curve():
-    if not os.path.exists("training_stats.json"):
+    stats_file = os.path.join(BASE_DIR, "training_stats.json")
+    if not os.path.exists(stats_file):
         print("未找到训练数据，请先运行训练！")
         return
 
-    with open("training_stats.json", 'r') as f:
+    with open(stats_file, 'r') as f:
         stats = json.load(f)
 
     epochs = [s['epoch'] for s in stats]
@@ -113,11 +128,13 @@ if __name__ == "__main__":
         choice = input("请选择 (1/2/3/4): ")
 
         if choice == '1':
-            run_ai_vs_ai_training(episodes=10000)
+            run_ai_vs_ai_training(episodes=AUTO_TRAIN_EPISODES)
             plot_learning_curve()
         elif choice == '2':
+            ensure_trained_model()  # 无模型则自动训练
             play_human_vs_ai()
         elif choice == '3':
+            ensure_trained_model()  # 无数据则自动训练
             plot_learning_curve()
         elif choice == '4':
             break

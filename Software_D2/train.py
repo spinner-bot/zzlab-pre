@@ -3,6 +3,9 @@ import os
 import random
 from game import TicTacToe
 
+# 锚定到脚本所在目录，避免从其他目录启动时找不到/写错模型文件
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 class QLearningAgent:
     """
     井字棋强化学习智能体 (Q-Learning)
@@ -17,7 +20,7 @@ class QLearningAgent:
         self.initial_epsilon = epsilon
         self.q_table = {}
         self.history = []
-        self.file_path = f"{name}_q_table.json"
+        self.file_path = os.path.join(BASE_DIR, f"{name}_q_table.json")
 
         # 核心新增：冻结状态标志
         self.frozen = False
@@ -135,6 +138,6 @@ def run_ai_vs_ai_training(episodes=5000, window_size=100):
     agent_o.save_model()
 
     # 保存统计数据供 main.py 画图
-    with open("training_stats.json", 'w') as f:
+    with open(os.path.join(BASE_DIR, "training_stats.json"), 'w') as f:
         json.dump(stats_history, f)
     print("训练完成！数据已保存至 training_stats.json")
