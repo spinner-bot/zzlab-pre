@@ -1,0 +1,532 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module 5 · PRISM & Uni-OPD 论文精讲</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>
+:root{--bg:#020010;--surface:rgba(15,15,35,0.75);--border:rgba(56,189,248,0.12);--text:#e2e8f0;--text2:rgba(200,210,230,0.65);--text3:rgba(140,150,180,0.4);--prism:#38bdf8;--uniopd:#fb7185;--gold:#fbbf24;--accent-g:#22d3a0}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}.reveal .slides section{padding:28px 48px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}
+.star-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:36px 48px;max-width:880px;box-shadow:0 8px 40px rgba(0,0,0,0.7),0 0 80px rgba(56,189,248,0.04)}.star-card::before{content:'';height:2px;background:linear-gradient(90deg,transparent,var(--prism),var(--uniopd),var(--gold),transparent);display:block;margin-bottom:12px}
+.hero-title{font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--prism) 0%,var(--uniopd) 50%,var(--gold) 100%);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite}@keyframes gS{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.star-bar{width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--prism),var(--uniopd),var(--gold),transparent);margin:14px auto}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(56,189,248,0.08);color:var(--prism);border:1px solid rgba(56,189,248,0.2);letter-spacing:1px}
+.page-badge-r{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(251,113,133,0.08);color:var(--uniopd);border:1px solid rgba(251,113,133,0.2);letter-spacing:1px}
+.page-badge-g{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(34,211,160,0.08);color:var(--accent-g);border:1px solid rgba(34,211,160,0.2);letter-spacing:1px}
+
+/* ── 论文左右讲解布局 ── */
+.paper-split{display:flex;gap:24px;max-width:1120px;width:100%;align-items:stretch}.paper-left{flex:1;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:22px 24px;text-align:left;overflow-y:auto;max-height:530px;font-size:12.5px;line-height:2;color:rgba(220,225,240,0.85)}.paper-left .hl-g{border-bottom:2px solid var(--gold);background:rgba(251,191,36,0.1);padding:0 3px;font-weight:600;color:#fff}.paper-left .hl-b{border-bottom:2px solid var(--prism);background:rgba(56,189,248,0.1);padding:0 3px;font-weight:600;color:#fff}.paper-left .hl-r{border-bottom:2px solid var(--uniopd);background:rgba(251,113,133,0.1);padding:0 3px;font-weight:600;color:#fff}
+.paper-right{flex:1;background:rgba(56,189,248,0.03);border:1px solid rgba(56,189,248,0.15);border-radius:10px;padding:22px 24px;text-align:left;overflow-y:auto;max-height:530px}.paper-right .section-label{font-size:10px;font-weight:700;color:var(--prism);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase}.paper-right .comment{font-size:12.5px;color:var(--text);line-height:1.9;border-left:2px solid var(--prism);padding-left:14px;margin:8px 0}.paper-right .insight{font-size:12px;color:var(--gold);line-height:1.8;background:rgba(251,191,36,0.06);border-radius:8px;padding:10px 14px;margin:8px 0}.paper-right .warn{font-size:12px;color:var(--uniopd);line-height:1.8;border-left:2px solid var(--uniopd);padding-left:14px;margin:8px 0}
+.paper-right.uniopd-theme{background:rgba(251,113,133,0.03);border:1px solid rgba(251,113,133,0.15)}.paper-right.uniopd-theme .section-label{color:var(--uniopd)}.paper-right.uniopd-theme .comment{border-left-color:var(--uniopd)}
+
+/* ── 通用组件 ── */
+.two-col{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:960px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:960px}
+.concept-block{background:rgba(20,20,40,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left}.concept-block h4{font-size:13px;color:var(--prism);margin:0 0 5px}.concept-block p{font-size:11px;color:var(--text2);line-height:1.7;margin:0}
+.concept-block.r h4{color:var(--uniopd)}.concept-block.g h4{color:var(--accent-g)}
+.formula-box{background:rgba(6,4,18,0.85);border:1px solid rgba(56,189,248,0.15);border-radius:10px;padding:18px 24px;max-width:800px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:8px 0}.formula-box .math-block{font-size:16px;color:#d4c8b0}
+.def-box{background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.15);border-left:3px solid var(--prism);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:780px;margin:8px 0}.def-box .label{font-size:11px;color:var(--prism);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.def-box.r{background:rgba(251,113,133,0.04);border-color:rgba(251,113,133,0.15);border-left-color:var(--uniopd)}.def-box.r .label{color:var(--uniopd)}
+.warn-box{background:rgba(251,113,133,0.05);border:1px solid rgba(251,113,133,0.15);border-left:3px solid var(--uniopd);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:780px;margin:8px 0}.warn-box .label{font-size:11px;color:var(--uniopd);font-weight:700;margin-bottom:4px}.warn-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.summary-table{width:100%;max-width:860px;border-collapse:collapse;font-size:11px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}.summary-table thead{background:linear-gradient(135deg,rgba(56,189,248,0.18),rgba(251,113,133,0.1))}.summary-table th{padding:10px 12px;font-weight:700;color:var(--gold);font-size:10px}.summary-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,20,40,0.4)}.summary-table .pc{font-weight:700;color:var(--gold)}.summary-table .hl{color:var(--prism);font-weight:600}.summary-table .wr{color:var(--uniopd);font-weight:600}
+.struct-head{font-size:18px;font-weight:700;color:var(--prism);margin:0 0 8px;border-bottom:1px solid rgba(56,189,248,0.25);display:inline-block;padding-bottom:4px}.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:800px}.struct-content strong{color:#fff}
+.cite{font-size:10px;color:var(--prism);font-family:monospace}
+.tag-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:6px 0}.tag{padding:4px 12px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:1px}.tag-b{background:rgba(56,189,248,0.1);color:var(--prism);border:1px solid rgba(56,189,248,0.2)}.tag-r{background:rgba(251,113,133,0.1);color:var(--uniopd);border:1px solid rgba(251,113,133,0.2)}.tag-g{background:rgba(34,211,160,0.1);color:var(--accent-g);border:1px solid rgba(34,211,160,0.2)}
+.flow-diagram{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin:10px 0}.flow-node{padding:12px 24px;border-radius:10px;font-size:13px;font-weight:700}.fn-b{background:rgba(56,189,248,0.1);border:2px solid rgba(56,189,248,0.35);color:var(--prism)}.fn-r{background:rgba(251,113,133,0.1);border:2px solid rgba(251,113,133,0.35);color:var(--uniopd)}.fn-g{background:rgba(34,211,160,0.1);border:2px solid rgba(34,211,160,0.35);color:var(--accent-g)}.flow-arrow{font-size:20px;color:var(--text3)}
+.step-num{display:inline-flex;width:28px;height:28px;border-radius:50%;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--prism);color:#020010;margin-right:8px;flex-shrink:0}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}.paper-split{flex-direction:column}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- ═══════ 1. 标题页 ═══════ -->
+<section data-transition="zoom"><div class="star-card fragment fade-up"><p class="cite">MODULE 5 · 论文精讲</p><h1 class="hero-title">PRISM & Uni-OPD</h1><p style="font-size:22px;color:var(--text);font-weight:600;">多模态 On-Policy Distillation 的前沿探索</p><div class="star-bar"></div><p style="font-size:14px;color:var(--text2);">PRISM：黑盒对抗式 OPD 预对齐 &nbsp;|&nbsp; Uni-OPD：双视角统一 OPD 框架</p>
+<div class="tag-row fragment fade-up"><span class="tag tag-b">PRISM · arXiv 2604.28123</span><span class="tag tag-r">Uni-OPD · arXiv 2605.03677</span></div>
+<p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
+
+
+<!-- ═══════ 20. Uni-OPD 在线数据平衡 + 边距校准引入 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 学生视角</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">👨‍🎓 在线正确率感知数据平衡</h2><p style="font-size:13px;color:var(--text2);">Online Correctness-aware Data Balancing</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div class="def-box"><div class="label">核心机制</div><div class="content">训练时每个 rollout 组内强制保持<strong>正确和错误轨迹的平衡组合</strong>。防止退化情况：所有样本相同结果→梯度无信息量。最佳比例：<strong>correct/incorrect ≈ 0.75–1.0</strong>。</div></div>
+<div class="def-box r"><div class="label">为什么需要在线平衡？</div><div class="content">离线平衡只能保证<strong>初始数据分布</strong>合理。但随着训练进行，学生在不同prompt上的表现会变化——需要<strong>动态调整</strong>每个batch的组内构成，确保梯度始终有信息量。</div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;">💡 离线 + 在线双重平衡：<strong>离线确保数据的难度谱完整</strong>，<strong>在线确保每个训练步的梯度有信息量</strong>——两者互补，缺一不可。</p></div>
+</div></section>
+
+<!-- ═══════ 26. 互补关系分析 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-g">Part 4 · 互补</p><h2 style="font-size:26px;font-weight:700;color:var(--gold);margin:8px 0;">🔄 互补关系分析</h2><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div style="text-align:left;background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.15);border-radius:10px;padding:18px;">
+<p style="font-size:14px;font-weight:700;color:var(--prism);margin-bottom:8px;">🔷 PRISM 能做但 Uni-OPD 不能做的</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;">🔹 利用<strong>对抗训练实现黑盒蒸馏</strong>——不需要教师logits，API-only教师也可用<br/>🔹 分离感知与推理的<strong>解耦矫正信号</strong>——MoE判别器提供维度专精反馈<br/>🔹 将OPD作为<strong>管道中间阶段</strong>——不追求OPD本身的终端性能，而追求下游RLVR的增益</p>
+</div>
+<div style="text-align:left;background:rgba(251,113,133,0.04);border:1px solid rgba(251,113,133,0.15);border-radius:10px;padding:18px;">
+<p style="font-size:14px;font-weight:700;color:var(--uniopd);margin-bottom:8px;">🔶 Uni-OPD 能做但 PRISM 不能做的</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;">🔹 <strong>多教师能力合并</strong>——将多个领域专家的能力注入同一学生<br/>🔹 <strong>强到弱蒸馏</strong>——系统性研究能力差距对OPD的影响<br/>🔹 <strong>跨模态蒸馏</strong>——文本+多模态联合训练互相强化<br/>🔹 系统性<strong>分析和解决</strong>OPD的底层瓶颈（而非绕过）</p>
+</div>
+</div>
+</div></section>
+
+<!-- ═══════ 28. OPD研究整体启示 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-g">Part 4 · 启示</p><h2 style="font-size:26px;font-weight:700;color:var(--gold);margin:8px 0;">💡 对 OPD 研究的整体启示</h2><div class="star-bar"></div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;">
+<div style="background:rgba(56,189,248,0.03);border-radius:8px;padding:12px 16px;margin-bottom:6px;text-align:left;">
+<p><span style="color:var(--prism);font-weight:700;">1. OPD 不是一个确定的算法，而是一个设计空间。</span> PRISM证明了OPD可以放在管道中间、可以用对抗方式实现；Uni-OPD证明了OPD的成功取决于数据分布和教师监督质量。未来工作不应只问"OPD好用吗"，而应问"哪个OPD设计在什么场景下最优"。</p>
+</div>
+<div style="background:rgba(251,113,133,0.03);border-radius:8px;padding:12px 16px;margin-bottom:6px;text-align:left;">
+<p><span style="color:var(--uniopd);font-weight:700;">2. 多模态OPD ≠ 文本OPD + 图像。</span> PRISM揭示了多模态场景下分布漂移的异质性——感知和推理是不同的维度，需要不同的矫正信号。OPD研究不能简单地将文本方法移植到多模态——视觉的熵爆炸、多模态shortcut等问题需要专门设计。</p>
+</div>
+<div style="background:rgba(251,191,36,0.03);border-radius:8px;padding:12px 16px;margin-bottom:6px;text-align:left;">
+<p><span style="color:var(--gold);font-weight:700;">3. 黑盒 vs 白盒的选择是场景依赖的。</span> 如果你有教师的logits访问权，Uni-OPD的白盒方案提供更精细的优化；如果教师是API-only（如GPT-4V），PRISM的黑盒方案是唯一选择。两者互补而非互斥。</p>
+</div>
+<div style="background:rgba(34,211,160,0.03);border-radius:8px;padding:12px 16px;text-align:left;">
+<p><span style="color:var(--accent-g);font-weight:700;">4. OPD + RLVR 可能是后训练的下一步范式。</span> 两篇论文都指向同一个未来：OPD提供密集的过程监督，RLVR提供稀疏的结果优化。关键问题不是"是否混合"，而是"如何混合"——λ权重、阶段划分、信号优先级。</p>
+</div>
+</div></div></section>
+
+<!-- ═══════ 29. 未来方向 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-g">Part 4 · 展望</p><h2 style="font-size:26px;font-weight:700;color:var(--gold);margin:8px 0;">🔭 未来方向与开放问题</h2><div class="star-bar"></div>
+<div class="tri-grid fragment fade-up" style="margin-top:10px;">
+<div class="concept-block"><h4>🔹 稳定的对抗式OPD</h4><p>PRISM的对抗训练仅500步——如何借鉴Wasserstein GAN、Spectral Normalization等技术实现更稳定的长程对抗蒸馏？</p></div>
+<div class="concept-block r"><h4>🔸 自适应边距校准</h4><p>Uni-OPD的δ需要手动选择——能否根据训练动态自动调整？如何将order consistency扩展为soft约束而非硬阈值？</p></div>
+<div class="concept-block g"><h4>🔹 统一OPD框架</h4><p>将PRISM的三阶段管道 + Uni-OPD的双视角优化 + 多教师/跨模态整合为单一可配置的训练框架。</p></div>
+<div class="concept-block"><h4>🔹 OPD的理论理解</h4><p>为什么OPD的token-level信号比RL的outcome-level信号更高效？OPD的收敛性质与传统蒸馏有何本质区别？</p></div>
+<div class="concept-block r"><h4>🔸 超越结构化输出</h4><p>PRISM的MoE依赖caption+think+answer——如何让判别器自动或学习式地分解反馈维度，适用于任意输出格式？</p></div>
+<div class="concept-block g"><h4>🔹 极小模型的OPD极限</h4><p>Uni-OPD中1.7B从30B蒸馏仍远低于教师——OPD的能力传递效率是否存在根本性的上限？如何突破？</p></div>
+</div></div></section>
+
+<!-- ═══════ 30. 致谢/结束页 + 公式速查 ═══════ -->
+<section data-transition="zoom"><div class="star-card fragment fade-up"><p class="page-badge">Thanks</p><h1 class="hero-title">谢谢！</h1><p style="font-size:18px;color:var(--text2);">PRISM & Uni-OPD 论文精讲 · 组会报告</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:8px;max-width:900px;">
+<div style="text-align:left;font-size:11px;color:var(--text2);line-height:1.8;"><p style="color:var(--prism);font-weight:700;font-size:13px;">🔷 PRISM 关键公式</p><p>MoE: \(r(x,y)=\alpha D_v(x,c)+(1-\alpha)D_r(x,t)\)<br/>BT Loss: \(\mathcal{L}_{D_k}=-\mathbb{E}\log\sigma(D_k^+-D_k^-)\)<br/>Minimax: \(\min_\theta\max_\phi\mathbb{E}[r_\phi(x,y^+)-r_\phi(x,y^-)]\)</p></div>
+<div style="text-align:left;font-size:11px;color:var(--text2);line-height:1.8;"><p style="color:var(--uniopd);font-weight:700;font-size:13px;">🔶 Uni-OPD 关键公式</p><p>OPD Reward: \(r_t^{OPD}=\log\frac{\pi_T(o_t|q,o_{&lt;t})}{\pi_\theta(o_t|q,o_{&lt;t})}\)<br/>Trajectory Return: \(G_{OPD}(q,\tau)=\frac{1}{|\tau|}\sum r_t^{OPD}\)<br/>Margin: \(m(q)=\min G_{OPD}(\tau^+)-\max G_{OPD}(\tau^-)\)</p></div>
+</div>
+<div class="tag-row fragment fade-up" style="margin-top:10px;"><span class="tag tag-b">PRISM · 黑盒对抗OPD</span><span class="tag tag-r">Uni-OPD · 双视角统一</span><span class="tag tag-g">OPD = 设计空间</span></div>
+<p style="font-size:12px;color:var(--text3);margin-top:8px;">论文来源：arXiv:2604.28123v1 (PRISM) · arXiv:2605.03677v2 (Uni-OPD) &nbsp;|&nbsp; 报告生成：2026/07/16</p></div></section>
+
+<!-- ═══════ 27. 两者结合的可能性（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px;">🔮 两者结合的可能性</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">💡 设想方案</p>
+<p><strong>一个整合PRISM和Uni-OPD优势的框架：</strong></p>
+<p style="margin-top:6px;">1. <span class="hl-b">保留PRISM的三阶段管道框架</span>（SFT→Alignment→RLVR）作为顶层架构</p>
+<p>2. <span class="hl-r">在对齐阶段引入Uni-OPD的优化策略</span>：</p>
+<p style="margin-left:12px;">🔹 <strong>离线/在线数据平衡</strong>：确保对抗训练的prompt和rollout具有充分的难度多样性<br/>🔹 <strong>边距校准</strong>：用outcome reward校准判别器的打分，确保order consistency</p>
+<p>3. <span class="hl-g">用Uni-OPD的多教师设置扩展PRISM</span>：多个领域专家的监督pool同时参与对齐</p>
+<p>4. 将PRISM的<strong>MoE判别器迁移到Uni-OPD</strong>的框架中作为教师信号的一种</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 理论优势分析</div>
+<div class="comment"><strong>对抗式OPD（PRISM）</strong>提供了<strong>分布级别的匹配</strong>——让学生的整体生成分布向监督分布靠拢。这是粗粒度的对齐。</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>边距校准（Uni-OPD）</strong>提供了<strong>样本级的可靠性保障</strong>——确保每个训练样本的教师信号都是可靠的。这是细粒度的校准。</div>
+<div class="insight">💡 <strong>两者天然互补：</strong><br/>粗粒度对齐 → 保证学生在"对的方向"上<br/>细粒度校准 → 保证每一步的梯度信号都是可靠的<br/>= 既有大方向，又有小步骤的正确引导</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>挑战：</strong>对抗训练的不稳定性 + 边距校准的超参数选择 → 需要更复杂的训练调度。另外，MoE判别器的预热要求与Uni-OPD的数据平衡策略如何协调也需要实验验证。</div>
+</div>
+</div></section>
+
+<!-- ═══════ 25. 关键对比表 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--gold);margin-bottom:8px;">⭐ PRISM vs Uni-OPD：12维度全面对比</h2>
+<table class="summary-table fragment fade-up" style="font-size:10px;"><thead><tr><th style="width:14%">维度</th><th style="width:38%">PRISM</th><th style="width:38%">Uni-OPD</th><th style="width:10%">互补？</th></tr></thead>
+<tbody>
+<tr><td class="pc">OPD 定位</td><td class="hl">中间过渡阶段（pre-alignment）</td><td class="wr">独立后训练范式</td><td class="hl">✅</td></tr>
+<tr><td class="pc">教师需求</td><td class="hl"><strong>黑盒</strong>（仅需demonstration样本）</td><td class="wr"><strong>白盒</strong>（需logits访问）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">核心技术</td><td class="hl">对抗式MoE判别器</td><td class="wr">数据平衡 + 边距校准</td><td class="hl">✅</td></tr>
+<tr><td class="pc">模态范围</td><td>聚焦多模态（MLLM）</td><td class="wr">LLM + MLLM 统一</td><td class="hl">✅</td></tr>
+<tr><td class="pc">问题诊断</td><td>SFT引入分布漂移（异质化）</td><td>OPD的两个基础瓶颈（探索+监督）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">解决路径</td><td>插入新阶段（三阶段管道）</td><td>优化现有OPD训练过程</td><td class="hl">✅</td></tr>
+<tr><td class="pc">判断标准</td><td>下游RLVR性能提升</td><td>直接蒸馏性能提升</td><td class="hl">✅</td></tr>
+<tr><td class="pc">对抗训练</td><td class="hl">是（minimax game）</td><td class="wr">否（直接校准）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">数据构建</td><td>1.37M多模态·结构化输出</td><td>5域16基准·难度谱reshape</td><td>—</td></tr>
+<tr><td class="pc">模型规模</td><td>4B / 8B</td><td>1.7B / 4B / 30B teacher</td><td>—</td></tr>
+<tr><td class="pc">多教师支持</td><td class="wr">否</td><td class="hl">✅ 多教师+跨模态</td><td class="hl">✅</td></tr>
+<tr><td class="pc">理论基础</td><td>分布匹配 + 对抗学习</td><td class="wr">第一性原理 + 排序一致性</td><td class="hl">✅</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:6px;"><p style="text-align:center;font-size:12px;">💡 <strong>几乎每行都是互补的</strong>——PRISM解决"OPD放在管道哪"，Uni-OPD解决"OPD怎么做才对"。两者不存在直接竞争，而是<strong>从不同角度完善OPD技术栈</strong>。</p></div></section>
+
+<!-- ═══════ 24. Uni-OPD 小结 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up" style="border-color:rgba(251,113,133,0.25);"><p class="page-badge-r">Uni-OPD · 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--uniopd);margin:8px 0;">🔶 Uni-OPD 总结</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--accent-g);">✅ 贡献</p>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 从<strong>第一性原理</strong>分解OPD成功条件——学生视角+教师视角</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>双视角优化策略</strong>——数据平衡（学生）+ 边距校准（教师）</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>最全面的OPD实验</strong>——5场景·16基准·LLM+MLLM</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ OPD优于RL的收敛速度——更少步数达到更好性能</p></div>
+<div class="concept-block g fragment fade-up"><p>✅ 发现OPD推理能力是<strong>模态无关</strong>的——文本+多模态互相强化</p></div>
+</div>
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--uniopd);">⚠️ 局限</p>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ <strong>需要白盒教师</strong>（logits访问）——无法用于API-only教师</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ Order consistency假设outcome reward是gold standard——<strong>存在反例</strong></p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 1.7B从30B蒸馏仍远低于教师——<strong>能力差距过大时</strong>OPD有限制</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 边距校准的δ阈值<strong>需要手动选择</strong></p></div>
+<div class="concept-block r fragment fade-up"><p>⚠️ <strong>不涉及对抗训练</strong>——黑盒场景下不适用</p></div>
+</div>
+</div>
+<p style="text-align:center;margin-top:12px;color:var(--gold);font-size:15px;">✦ 接下来：Part 4 — PRISM vs Uni-OPD 全面对比与展望 ✦</p></div></section>
+
+<!-- ═══════ 23. Uni-OPD 实验结果 + 消融 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 结果</p><h2 style="font-size:26px;font-weight:700;color:var(--uniopd);margin:8px 0;">📊 关键实验结果与消融</h2><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div style="text-align:left;">
+<p style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">单教师蒸馏 (LLM · Qwen3-4B)</p>
+<table class="summary-table" style="font-size:10px;"><thead><tr><th>场景</th><th>OPD基线</th><th>Uni-OPD</th><th>Δ</th></tr></thead>
+<tbody>
+<tr><td>Math Avg</td><td>44.6</td><td class="hl">48.7</td><td class="wr">+4.1</td></tr>
+<tr><td>Code Avg</td><td>60.2</td><td class="hl">63.2</td><td class="wr">+3.0</td></tr>
+<tr><td>多教师 Math</td><td>46.6</td><td class="hl">48.5</td><td class="wr">+1.9</td></tr>
+<tr><td>多教师 Code</td><td>60.5</td><td class="hl">63.6</td><td class="wr">+3.1</td></tr>
+</tbody></table>
+<p style="font-size:12px;color:var(--text2);margin-top:6px;"><strong>强到弱 (30B→4B):</strong> Math +1.7, Code +1.8<br/><strong>跨模态 (MLLM学生):</strong> Code +1.5, Math +1.2</p>
+</div>
+<div style="text-align:left;">
+<p style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">消融实验</p>
+<div class="concept-block fragment fade-up" style="margin-bottom:4px;"><h4 style="color:var(--uniopd);">1. 离线数据平衡（去掉→性能下降）</h4><p>验证了保留难度多样性的必要性——过滤会丢失informative states。</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:4px;"><h4 style="color:var(--uniopd);">2. 在线数据平衡（去掉→性能下降）</h4><p>验证了组内正负样本平衡对梯度信息量的重要性。</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:4px;"><h4 style="color:var(--uniopd);">3. 边距校准（去掉→下降最明显）</h4><p>验证了教师监督可靠性是OPD的<strong>关键瓶颈</strong>。</p></div>
+<div class="concept-block fragment fade-up"><h4 style="color:var(--uniopd);">4. Margin Shift > Margin Mask</h4><p>两者都优于基线，Shift略好于Mask——保留更多训练信号。</p></div>
+</div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:4px;"><p style="text-align:center;font-size:12px;color:var(--uniopd);"><strong>核心结论：</strong>Uni-OPD的收敛速度比RL快得多（更少优化步数达到更好性能）。OPD蒸馏推理是模态无关的能力——文本和多模态数据联合训练下，per-token信号携带的推理模式独立于模态。</p></div></div></section>
+
+<!-- ═══════ 22. Uni-OPD 实验设计全景 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 实验</p><h2 style="font-size:26px;font-weight:700;color:var(--uniopd);margin:8px 0;">🧪 实验设计全景：四种蒸馏场景</h2><p style="font-size:13px;color:var(--text2);">5个能力域 · 16个benchmark · Qwen3系列</p><div class="star-bar"></div>
+<table class="summary-table fragment fade-up" style="margin-top:10px;"><thead><tr><th>蒸馏场景</th><th>描述</th><th>示例配置</th></tr></thead>
+<tbody>
+<tr><td class="pc">单教师蒸馏 (LLM)</td><td>一个领域专家教师蒸馏到学生</td><td>Math teacher → Qwen3-4B (Math+Code)</td></tr>
+<tr><td class="pc">单教师蒸馏 (MLLM)</td><td>多模态教师蒸馏到多模态学生</td><td>MLLM teacher → Qwen3-VL-4B (Math/Logic/Doc)</td></tr>
+<tr><td class="pc">多教师蒸馏</td><td>合并多个领域专家的能力</td><td>Math + Code + Logic teachers → 单一学生</td></tr>
+<tr><td class="pc">强到弱蒸馏</td><td>大教师 → 小学生，能力差距大</td><td>30B teacher → 4B / 1.7B student</td></tr>
+<tr><td class="pc">跨模态蒸馏</td><td>文本+多模态教师联合训练MLLM学生</td><td>Text LLM + MLLM teachers → MLLM student</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;font-size:13px;">模型：Qwen3-4B/1.7B（文本）、Qwen3-VL-4B/2B（多模态） &nbsp;|&nbsp; 基准覆盖：MATH · CODE · LOGIC · DOC · 多模态推理</p>
+<p style="text-align:center;color:var(--uniopd);">💡 Uni-OPD 的实验设计是<strong>目前OPD领域最全面的</strong>——从LLM到MLLM、从单教师到多教师、从同规模到强到弱</p></div></div></section>
+
+<!-- ═══════ 21. Uni-OPD Order Consistency 边距校准（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px;">👩‍🏫 教师视角：Order Consistency 与边距校准</h2><p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Outcome-Guided Margin Calibration</p>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:4px;">📄 论文原文 · Sec 3.2 Margin Calibration</p>
+<p><span class="hl-g">Trajectory-level Distillation Return:</span></p>
+<p style="font-size:13px;">$$G_{OPD}(q, \tau) = \frac{1}{|\tau|} \sum_{t=1}^{|\tau|} \log \frac{\pi_T(o_t|q, o_{&lt;t})}{\pi_\theta(o_t|q, o_{&lt;t})}$$</p>
+<p style="margin-top:6px;"><span class="hl-g">Order Consistency Criterion:</span></p>
+<p style="font-size:12px;">$$G_{OPD}(q, \tau^+) \geq G_{OPD}(q, \tau^-), \quad \forall \tau^+ \in S^+(q), \tau^- \in S^-(q)$$</p>
+<p style="margin-top:6px;"><span class="hl-g">Prompt-level Margin:</span></p>
+<p style="font-size:13px;">$$m(q) = \min_{\tau \in S^+(q)} G_{OPD}(q, \tau) - \max_{\tau \in S^-(q)} G_{OPD}(q, \tau)$$</p>
+<p style="margin-top:6px;">Target: \(m(q) \geq \delta\) (\(\delta > 0\) is safety margin)</p>
+<p style="margin-top:6px;"><span class="hl-b">Margin Shift Correction:</span></p>
+<p style="font-size:11px;">$$\Delta(q) = \delta - m(q), \quad \tilde{G}_{OPD}(q, \tau) = G_{OPD}(q, \tau) + \Delta(q) \cdot \mathbf{1}\{R(q, \tau) = 1\}$$</p>
+</div>
+<div class="paper-right uniopd-theme">
+<div class="section-label">🔍 逐行解读</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>Order Consistency 的直觉：</strong>正确的推理轨迹应该比错误的轨迹获得更高的教师评分。如果教师的蒸馏回报（trajectory-level）违反了这一排序——错误轨迹得分高于正确轨迹——那么教师的监督就是<strong>不可靠的</strong>。</div>
+<div class="insight">💡 <strong>Margin Shift 为什么优于 Margin Mask？</strong><br/>🔹 <strong>Margin Mask：</strong>丢弃违反order consistency的组→保守但浪费数据<br/>🔹 <strong>Margin Shift：</strong>给正确轨迹加上最小修正量来恢复排序→<strong>保留所有训练信号</strong><br/>实验表明Margin Shift略好——说明保留更多训练数据比保守丢弃更有利。</div>
+<div class="warn" style="margin-top:6px;">⚠️ <strong>局限性：</strong>Order consistency假设outcome reward是排序的gold standard——但"幸运的正确"（推理错但答案对）和"接近正确的错误"（推理几乎全对最后一步错）会打破这个假设。</div>
+</div>
+</div></section>
+
+<!-- ═══════ 19. Uni-OPD 离线数据平衡（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:4px;">👨‍🎓 学生视角：离线难度感知数据平衡</h2><p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Offline Difficulty-aware Data Balancing</p>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:4px;">📄 论文原文 · Sec 3.1 Offline Data Balancing</p>
+<p>Standard RL practice filters out samples that are <span class="hl-r">too easy</span> (all correct) or <span class="hl-r">too hard</span> (all incorrect). However, Uni-OPD finds that:</p>
+<p style="margin-top:6px;">🔸 Small models' training data often exhibits a <span class="hl-g">mirror-J-shaped or U-shaped distribution</span> — most samples cluster at the extremes (very easy or very hard).</p>
+<p>🔸 Direct filtering <span class="hl-r">drastically reduces data diversity</span>, causing significant performance drops.</p>
+<p style="margin-top:6px;"><span class="hl-b">Uni-OPD's solution:</span> <strong>Upsample</strong> medium-difficulty samples (those with partial correctness across multiple rollouts) to reshape the distribution into a more uniform one — preserving both diversity and the full difficulty spectrum.</p>
+</div>
+<div class="paper-right uniopd-theme">
+<div class="section-label">🔍 核心解读</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>过滤 vs 平衡的本质区别：</strong><br/>🔹 <strong>过滤</strong> = 把极难/极易样本扔掉 → 数据量减少，多样性丧失<br/>🔹 <strong>平衡</strong> = 对中等难度样本多采样几次 → 所有样本都保留，但难度分布更均匀<br/>在J形/U形分布下（小模型的常见情况），过滤会丢失大量数据。</div>
+<div class="insight">💡 <strong>为什么中等难度样本更"informative"？</strong>极简单的样本——学生已经会了，OPD学不到东西；极难的样本——学生完全不会，教师的监督信号在学生的OOD区域也变得不可靠。中等难度样本正好处于"学习区"——学生部分对部分错，教师能提供有效的矫正信号。</div>
+</div>
+</div></section>
+
+<!-- ═══════ 18. Uni-OPD 双视角优化框架 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 框架</p><h2 style="font-size:28px;font-weight:700;color:var(--uniopd);margin:8px 0;">🔶 双视角优化策略</h2><p style="font-size:14px;color:var(--text2);">学生视角：数据平衡 &nbsp;|&nbsp; 教师视角：边距校准</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:12px;">
+<div style="text-align:left;background:rgba(56,189,248,0.03);border:1px solid rgba(56,189,248,0.12);border-radius:10px;padding:18px;">
+<p style="font-size:15px;font-weight:700;color:var(--prism);margin-bottom:8px;">👨‍🎓 学生视角：充分探索 Informative States</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;"><strong>问题：</strong>小模型的训练数据常呈现<strong>镜像J形或U形分布</strong>——大多数样本集中在极难或极易两端。直接过滤会大幅减少数据多样性。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案① 离线难度感知数据平衡：</strong>对中等难度样本（多次rollout中部分正确）进行<strong>上采样</strong>，reshape成更均匀的分布——保留多样性和难度谱。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案② 在线正确率感知数据平衡：</strong>每个rollout组内强制保持<strong>正确和错误轨迹的平衡组合</strong>（最佳比例≈0.75-1.0），防止组内全对或全错的退化情况。</p>
+</div>
+<div style="text-align:left;background:rgba(251,113,133,0.03);border:1px solid rgba(251,113,133,0.12);border-radius:10px;padding:18px;">
+<p style="font-size:15px;font-weight:700;color:var(--uniopd);margin-bottom:8px;">👩‍🏫 教师视角：保证监督可靠性</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;"><strong>问题：</strong>教师的token级评分在轨迹级聚合后可能出现排序错误——<strong>错误轨迹因局部匹配获得比正确轨迹更高的总分</strong>。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>核心概念：Order Consistency</strong>——正确轨迹的蒸馏回报 \(G_{OPD}(\tau^+)\) 必须高于错误轨迹 \(G_{OPD}(\tau^-)\)。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案① Margin Mask：</strong>只保留满足 order consistency 的prompt组，丢弃违反的组。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案② Margin Shift（✅ 采用）：</strong>对违反的组施加最小修正量 \(\Delta(q) = \delta - m(q)\)，恢复顺序一致性——保留所有训练数据。</p>
+</div>
+</div></div></section>
+
+<!-- ═══════ 17. Uni-OPD 核心动机：OPD的两个基础瓶颈（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--uniopd);margin-bottom:6px;">🔶 Uni-OPD 核心动机：OPD 为什么有时有效、有时失效？</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文原文 · Sec 1 Introduction (paraphrased)</p>
+<p>Uni-OPD decomposes the success conditions of OPD from <span class="hl-g">first principles</span> into two role perspectives:</p>
+<p style="margin-top:8px;"><strong>1. Student Perspective（学生视角）</strong> — The student must sufficiently explore <span class="hl-b">informative states</span>: self-generated trajectories that are diverse and have moderate difficulty.</p>
+<p><strong>2. Teacher Perspective（教师视角）</strong> — The teacher's token-level supervision on student rollouts must remain <span class="hl-r">reliable</span>.</p>
+<p style="margin-top:10px;color:rgba(251,191,36,0.85);"><span class="hl-g">When these two conditions fail:</span></p>
+<p>🔸 <strong>Insufficient exploration</strong> → student only sees narrow state distribution → OPD degenerates to SFT-like behavior</p>
+<p>🔸 <strong>Unreliable supervision</strong> → teacher gives wrong token-level signals → student learns noise, not knowledge</p>
+<p style="margin-top:8px;color:var(--uniopd);"><strong>Three failure modes of teacher supervision:</strong><br/>1. OOD degradation · 2. Over-estimation of incorrect trajectories · 3. Under-estimation of correct trajectories</p>
+</div>
+<div class="paper-right uniopd-theme">
+<div class="section-label">🔍 核心解读</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>Uni-OPD 问了一个更根本的问题：</strong>PRISM 关注的是"OPD 放在管道的哪里"，而 Uni-OPD 关注的是"<strong>OPD 本身的训练过程为什么不稳定</strong>"——它从第一性原理出发，将 OPD 的成功条件拆成了两个必须同时满足的要素。</div>
+<div class="insight">💡 <strong>学生视角 vs 教师视角的张力：</strong>学生需要<strong>多样性</strong>来充分探索——但越多样，轨迹越可能进入教师的 OOD 区域，导致监督<strong>不可靠</strong>。这是一个根本性的 trade-off——Uni-OPD 的双视角优化策略正是为了解决这个张力。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>三种教师监督失败模式：</strong><br/>① <strong>OOD退化</strong>：学生rollout进入教师没见过的区域→logits变噪声<br/>② <strong>高估错误轨迹</strong>：错误但碰巧局部token匹配教师模式→得高分<br/>③ <strong>低估正确轨迹</strong>：正确但路径与教师不同→被异常低分</div>
+</div>
+</div></section>
+
+<!-- ═══════ 16. Uni-OPD 标题页 ═══════ -->
+<section data-transition="zoom"><div class="star-card fragment fade-up" style="border-color:rgba(251,113,133,0.25);"><p class="page-badge-r">Part 3 · Uni-OPD</p><h2 style="font-size:36px;font-weight:800;color:var(--uniopd);margin:8px 0;">Uni-OPD</h2><p style="font-size:18px;color:var(--text);">Unifying On-Policy Distillation with a Dual-Perspective Recipe</p><div class="star-bar"></div>
+<div class="struct-content" style="text-align:center;margin-top:8px;">
+<p><strong>作者：</strong>Wenjin Hou, Shangpin Peng, Weinong Wang 等（浙大、Tencent）</p>
+<p><strong>发表：</strong>arXiv:2605.03677v2 · 2026年7月6日 &nbsp;|&nbsp; 🔗 github.com/WenjinHou/Uni-OPD</p>
+<p style="color:var(--uniopd);margin-top:10px;"><strong>核心贡献：</strong>从第一性原理出发，将OPD的成功条件分解为<strong>学生视角</strong>（数据平衡）和<strong>教师视角</strong>（边距校准），提出统一的OPD优化框架</p>
+</div></div></section>
+
+<!-- ═══════ 15. PRISM 小结 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up" style="border-color:rgba(56,189,248,0.25);"><p class="page-badge">PRISM · 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--prism);margin:8px 0;">🔷 PRISM 总结</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--accent-g);">✅ 贡献</p>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 发现SFT在多模态场景下的<strong>异质分布漂移</strong>——感知和推理的漂移模式不同</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 提出<strong>三阶段管道</strong>——在SFT和RLVR之间插入对抗式OPD对齐</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>MoE判别器</strong>——感知专家+推理专家提供解耦矫正信号</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>黑盒设计</strong>——不需要教师logits，仅需demonstration pool</p></div>
+<div class="concept-block g fragment fade-up"><p>✅ <strong>4B +4.4 / 8B +6.0</strong>——显著的实验提升</p></div>
+</div>
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--uniopd);">⚠️ 局限</p>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ MoE设计依赖<strong>结构化输出</strong>（caption+think+answer）</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 对抗训练<strong>仅500步</strong>，未系统解决GAN稳定性问题</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 需要<strong>大量SFT数据</strong>（1.37M）和高质量蒸馏</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 判别器<strong>预热要求高</strong>——需在偏好对上预训练</p></div>
+<div class="concept-block r fragment fade-up"><p>⚠️ OPD仅为过渡阶段——<strong>不独立产生</strong>最终模型</p></div>
+</div>
+</div>
+<p style="text-align:center;margin-top:12px;color:var(--uniopd);font-size:15px;">✦ 接下来：Part 3 — Uni-OPD：双视角统一 OPD 框架 ✦</p></div></section>
+
+<!-- ═══════ 14. PRISM 消融实验 + 训练动力学 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 消融</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">🔬 消融实验与训练动力学</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;">
+<p style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:8px;">消融实验关键结论</p>
+<div class="concept-block fragment fade-up" style="margin-bottom:6px;"><h4>1. MoE > 密集判别器 (-3.4 avg)</h4><p>单一判别器折叠感知和推理为单一标量 → 梯度含噪。MoE让每个专家专精一个维度，提供<strong>解耦的矫正信号</strong>。WeMath上密集判别器比MoE差6个点。</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:6px;"><h4>2. 三阶段缺一不可</h4><p>去掉对齐→<strong>-4.4 avg</strong>；去掉SFT→<strong>-16.8 avg</strong>（差距太大，对抗训练失败，判别器平凡区分→策略退化）</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:6px;"><h4>3. 视觉-语言判别器 > 纯文本判别器</h4><p>纯文本判别器只能捕捉文本表层模式（"鹦鹉对齐"），无法验证视觉描述是否忠实于图像。</p></div>
+<div class="concept-block fragment fade-up"><h4>4. 更多SFT数据帮助对齐</h4><p>仅107K→-3.7 avg。SFT与对齐是<strong>互补的</strong>——更多SFT数据→策略离监督分布更近→对抗训练更有效。</p></div>
+</div>
+<div style="text-align:left;">
+<p style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:8px;">训练动力学分析</p>
+<div class="concept-block fragment fade-up" style="border-color:rgba(251,191,36,0.25);"><h4 style="color:var(--gold);">异步收敛验证MoE必要性</h4><p>🔹 <strong>感知专家收敛早且快</strong>——视觉对齐（描述准确性）相对简单，判别器很快学会区分好的和差的视觉描述<br/>🔹 <strong>推理专家上升缓慢且有震荡</strong>——推理对齐涉及更复杂的逻辑链分布修正<br/>🔹 两者最终收敛到相似的平衡水平<br/>🔹 这种异步收敛进一步验证了：<strong>单一判别器无法同时处理两种不同速度的对齐过程</strong></p></div>
+<div class="def-box fragment fade-up" style="margin-top:6px;"><div class="label">⚠️ 潜在局限</div><div class="content">论文仅训练500步就停止，暗示更长训练可能导致退化。未系统讨论GAN训练的经典问题（mode collapse、non-convergence），也未尝试Wasserstein GAN等更稳定的对抗方法。MoE设计依赖结构化输出格式（&lt;caption&gt;+&lt;think&gt;+&lt;answer&gt;），对非结构化任务适用性有限。</div></div>
+</div>
+</div></div></section>
+
+<!-- ═══════ 13. PRISM 主要实验结果 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 实验</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">📊 PRISM 关键实验结果</h2><p style="font-size:13px;color:var(--text2);">多模态benchmark平均准确率 · Qwen3-VL系列</p><div class="star-bar"></div>
+<table class="summary-table fragment fade-up"><thead><tr><th>配置</th><th>4B Avg</th><th>8B Avg</th><th>关键发现</th></tr></thead>
+<tbody>
+<tr><td class="pc">Instruct（基座）</td><td>59.7</td><td>63.3</td><td>强模型的起点已经很高</td></tr>
+<tr><td>SFT only</td><td class="wr">56.8</td><td class="wr">58.1</td><td>SFT反而<strong>损害</strong>性能！(-2.9 / -5.2)</td></tr>
+<tr><td>SFT + GRPO（基线）</td><td>61.8</td><td>63.3</td><td>RL可以修复一些，但有限</td></tr>
+<tr style="background:rgba(56,189,248,0.06);"><td class="pc">PRISM + GRPO</td><td class="hl"><strong>66.2</strong></td><td class="hl"><strong>69.3</strong></td><td><strong>🚀 最佳结果</strong></td></tr>
+<tr><td class="pc">vs 基线改进</td><td class="hl">+4.4</td><td class="hl">+6.0</td><td><strong>8B受益更大</strong>（强模型→SFT伤害更大→对齐修复更多）</td></tr>
+</tbody></table>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div class="def-box"><div class="label">🔑 对齐checkpoint的"反常"现象</div><div class="content">PRISM对齐后的checkpoint<strong>单独看准确率并不比SFT高</strong>——因为对齐的目标是<strong>分布修正</strong>而非答案正确率。对齐的收益在RLVR阶段才体现出来——分布对了，RLVR只需微调就能到达正确答案。</div></div>
+<div class="def-box"><div class="label">🔑 Token效率提升</div><div class="content">基于PRISM的RLVR比SFT+GRPO使用<strong>更少的token</strong>达到更高准确率。因为对齐后模型的推理路径已经接近正确的分布形态——RLVR的搜索空间从"找到任何能得出正确答案的推理"缩小为"在正确的推理分布附近优化"。</div></div>
+</div></div></section>
+
+<!-- ═══════ 12. PRISM 对抗式OPD的minimax博弈（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">🎮 PRISM 对抗式 OPD：Minimax 博弈</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文原文 · Sec 3.3 Adversarial Alignment</p>
+<p><span class="hl-g">Minimax Objective:</span></p>
+<p style="font-size:13px;">$$\min_\theta \max_\phi \mathbb{E}_{(x,y^+)\sim\mathcal{T}, y^-\sim G_\theta} \left[r_\phi(x, y^+) - r_\phi(x, y^-)\right]$$</p>
+<p style="margin-top:10px;"><strong>Discriminator:</strong> 学习最大化监督数据 \(y^+\) 与策略rollout \(y^-\) 之间的reward gap → 区分"好的"和"生成的"</p>
+<p><strong>Policy (Student):</strong> 学习最小化这个gap → 让自己的rollout变得<strong>越来越像监督数据</strong></p>
+<p style="margin-top:10px;color:rgba(251,191,36,0.85);"><span class="hl-g">关键设计选择：</span></p>
+<p>🔸 <strong>去掉 KL 正则化</strong>（KL coefficient = 0）：标准 RLHF/RLVR 用 KL 防止偏离 SFT 初始化。但 PRISM 的对齐目标恰恰是<strong>修正 SFT 引入的漂移</strong>——策略需要向监督分布移动，KL 锚定会与此目标直接矛盾。</p>
+<p>🔸 <strong>黑盒设计</strong>：不需要教师 logits，只需监督 pool 中的 demonstration 样本。判别器替代了传统 OPD 中教师的角色。</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 白话解读</div>
+<div class="comment"><strong>想象一个警察与小偷的游戏：</strong><br/>🔹 <span style="color:var(--prism);">判别器 = 警察</span>：不断学习如何区分"真钞（监督数据）"和"假钞（学生生成的）"<br/>🔹 <span style="color:var(--uniopd);">策略 = 小偷</span>：不断学习制造更逼真的"假钞"<br/>🔹 最终，当小偷制造的假钞警察也分不出来时，学生的rollout就已经和监督数据<strong>分布对齐</strong>了。</div>
+<div class="insight">💡 <strong>为什么去掉KL是合理的？</strong>传统RL中KL是"锚"——防止策略漂太远。但PRISM中策略<strong>本来就该漂</strong>（向监督分布漂）——加KL就像让一个要搬家的人绑在旧房子上。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>对抗训练的挑战：</strong>PRISM仅训练500步就停止。论文讨论了稳定性措施：判别器和策略都需要预热初始化，否则模式坍塌。训练动力学图显示推理专家的reward gap先震荡后收敛——这是GAN训练的经典问题，论文未尝试Wasserstein GAN等更稳定的方法。</div>
+</div>
+</div></section>
+
+<!-- ═══════ 11. PRISM MoE判别器设计（左右布局·核心贡献） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px;">⚡ PRISM 核心技术：MoE 判别器设计</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文原文 · Sec 3.2 MoE Discriminator</p>
+<p>The discriminator contains <span class="hl-b">two specialized experts</span>:</p>
+<p><strong>Perception Expert \(D_v\)</strong> — evaluates the accuracy of visual descriptions \(c\)</p>
+<p><strong>Reasoning Expert \(D_r\)</strong> — evaluates the consistency of reasoning chains \(t\)</p>
+<p style="margin-top:8px;"><span class="hl-g">MoE Reward:</span></p>
+<p style="text-align:center;font-size:15px;">$$r(x, y) = \alpha \cdot D_v(x, c) + (1-\alpha) \cdot D_r(x, t)$$</p>
+<p style="margin-top:8px;"><span class="hl-g">Discriminator Training (Bradley-Terry Loss):</span></p>
+<p style="font-size:11px;">$$\mathcal{L}_{D_k} = -\mathbb{E}_{(x, y^+, y^-) \sim \mathcal{T}} \log \sigma\left(D_k(x, y_k^+) - D_k(x, y_k^-)\right)$$</p>
+<p style="margin-top:8px;"><span class="hl-g">Policy Update (GRPO-style):</span></p>
+<p style="font-size:11px;">$$A_i = \frac{r(x, y_i^-) - \text{mean}\{r(x, y_j^-)\}_{j=1}^N}{\text{std}\{r(x, y_j^-)\}_{j=1}^N}$$</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 逐行解读</div>
+<div class="comment"><strong>为什么需要两个专家？</strong>多模态推理中的错误有两个独立来源：<span style="color:var(--prism);">看错（感知）</span>和<span style="color:var(--uniopd);">想错（推理）</span>。单一判别器将两者折叠为一个标量——当策略在一个维度提升但另一个维度退化时，梯度信号含噪，无法有效更新。</div>
+<div class="insight">💡 <strong>α 权重的作用：</strong>控制感知和推理信号的混合比例。α → 1 偏重视觉对齐（早期训练），α → 0.5 平衡两者（后期）。训练动力学显示：<strong>感知专家收敛早且快，推理专家上升缓慢且有震荡</strong>——进一步验证MoE设计的必要性。</div>
+<div class="comment" style="margin-top:8px;"><strong>Bradley-Terry Loss 的直觉：</strong>让判别器学会"哪个更好"而非"这个有多好"——只需区分正样本和监督样本的<strong>相对排序</strong>，比直接回归分数更稳定。</div>
+<div class="comment"><strong>GRPO-style Advantage：</strong>组内归一化——消除不同prompt之间的难度差异，让优势信号在同一问题的不同rollout之间可比。</div>
+</div>
+</div></section>
+
+<!-- ═══════ 10. PRISM Stage 1: 冷启动SFT ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · Stage 1</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">🧊 Stage 1：冷启动 SFT</h2><p style="font-size:13px;color:var(--text2);">数据构建是PRISM的关键基础设施</p><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div class="def-box fragment fade-up"><div class="label">数据规模与来源</div><div class="content"><strong>113K</strong> Gemini 3 Flash 蒸馏数据 + <strong>1.26M</strong> 公开多模态数据 = <strong>1.37M</strong> 总样本。专门针对当前强模型零通过率的难题进行蒸馏，确保高难度和高信息量。</div></div>
+<div class="def-box fragment fade-up"><div class="label">结构化输出要求</div><div class="content">每个样本必须包含三部分：<br/>🔹 <code>&lt;caption&gt;</code> — 细粒度视觉描述<br/>🔹 <code>&lt;think&gt;</code> — 逐步推理链<br/>🔹 <code>&lt;answer&gt;</code> — 最终答案<br/><strong>这种结构化格式为Stage 2的MoE判别器提供了天然的专家分工基础。</strong></div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;"><strong>SFT的目的：</strong>建立初始推理能力并<strong>缩小与监督分布的差距</strong>——如果跳过SFT直接对抗训练，策略离监督分布太远，判别器平凡区分两者并迅速饱和，梯度消失（-16.8 avg 的灾难性后果）。</p></div></div></section>
+
+<!-- ═══════ 9. PRISM 三阶段管道 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 管道</p><h2 style="font-size:28px;font-weight:700;color:var(--prism);margin:8px 0;">三阶段管道：SFT → Alignment → RLVR</h2><p style="font-size:13px;color:var(--text2);">核心创新在 Stage 2——对抗式 OPD 分布对齐</p><div class="star-bar"></div>
+<div class="flow-diagram fragment fade-up" style="margin-top:12px;"><div class="flow-node fn-b" style="text-align:center;">Stage 1<div style="font-size:10px;font-weight:400;color:var(--text2);">冷启动 SFT</div><div style="font-size:9px;color:var(--text3);">1.37M 多模态数据</div></div><div class="flow-arrow">→</div><div class="flow-node" style="text-align:center;background:rgba(251,191,36,0.1);border:2px solid rgba(251,191,36,0.35);color:var(--gold);">Stage 2 ⚡<div style="font-size:10px;font-weight:400;color:var(--text2);">对抗式 OPD 对齐</div><div style="font-size:9px;color:var(--text3);">500步 · MoE判别器</div></div><div class="flow-arrow">→</div><div class="flow-node fn-r" style="text-align:center;">Stage 3<div style="font-size:10px;font-weight:400;color:var(--text2);">RLVR 优化</div><div style="font-size:9px;color:var(--text3);">2K 难度筛选样本</div></div></div>
+<div class="tri-grid fragment fade-up" style="margin-top:16px;">
+<div class="concept-block"><h4>🧊 Stage 1 · 冷启动 SFT</h4><p>113K Gemini 3 Flash 蒸馏 + 1.26M 公开数据。核心要求：每个样本必须包含完整 <code>&lt;caption&gt;</code>（细粒度视觉描述）+ <code>&lt;think&gt;</code>（逐步推理）+ <code>&lt;answer&gt;</code>。目的：建立初始推理能力，<strong>缩小与监督分布的差距</strong>使对抗训练可行。</p></div>
+<div class="concept-block" style="border-color:rgba(251,191,36,0.25);"><h4 style="color:var(--gold);">⚡ Stage 2 · 对抗式 OPD 对齐</h4><p><strong>核心贡献。</strong>MoE 判别器（感知专家+推理专家）与策略进行 minimax 博弈：判别器学习区分策略 rollout 和监督数据；策略最大化判别器奖励。黑盒设计——<strong>不需要教师 logits</strong>，只需监督 demonstration pool。去掉 KL 正则化，因为目标就是让分布发生偏移。</p></div>
+<div class="concept-block r"><h4>🎯 Stage 3 · RLVR</h4><p>在 2K 难度筛选样本上做 outcome-based RL（GRPO/DAPO/GSPO）。奖励 = 答案准确性 + 格式合规性。对齐阶段让模型从"正确的分布"出发，RLVR 只需微调到"正确的答案"——token 效率大幅提升。</p></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:6px;text-align:center;"><p style="color:var(--gold);">💡 三阶段是"能力 → 分布 → 结果"的递进关系，<strong>缺一不可</strong>（消融：去对齐 -4.4 · 去SFT -16.8）</p></div></div></section>
+
+<!-- ═══════ 8. PRISM 核心动机：SFT分布漂移（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">🔷 PRISM 核心动机：SFT 引入的分布漂移</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文原文摘录 (Sec 1 · Introduction, paraphrased)</p>
+<p>SFT injects foundational reasoning capabilities into the model, but it simultaneously <span class="hl-g">pushes the model away from its original distribution</span>. This <span class="hl-b">distributional drift</span> is particularly severe in multimodal scenarios, manifesting as two <span class="hl-r">heterogeneous</span> forms:</p>
+<p style="margin-top:8px;"><strong>1. Perception Drift（感知漂移）</strong> — visual descriptions lose accuracy; the model "sees" less precisely after SFT.</p>
+<p><strong>2. Reasoning Drift（推理漂移）</strong> — reasoning chains deviate from correct logical paths; the model "thinks" less faithfully.</p>
+<p style="margin-top:8px;color:rgba(251,191,36,0.8);"><strong>Key Finding:</strong> The stronger the model, the <em>more</em> it suffers from SFT drift — because strong models already have good reasoning distributions that SFT may disrupt.</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 核心解读</div>
+<div class="comment"><strong>SFT 不是免费的午餐。</strong>虽然它为模型注入了基础推理能力，但它强制模型模仿一个外部 demonstration policy 的轨迹分布——这会破坏模型原生的推理分布。多模态场景比纯文本更严重，因为"看"和"想"是两种不同的能力，它们的漂移模式也不同。</div>
+<div class="insight">💡 <strong>为什么8B比4B受SFT漂移影响更大？</strong>因为8B的原生推理能力更强(63.3 vs 59.7 avg)，SFT强行覆盖其原生分布时破坏也更大。越强的模型，SFT越要谨慎。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>关键洞察：</strong>感知漂移和推理漂移是<strong>异质的(heterogeneous)</strong>——单一矫正信号无法同时修复两种漂移。这正是PRISM设计MoE判别器的根本动机。</div>
+</div>
+</div></section>
+
+<!-- ═══════ 7. PRISM 标题页 ═══════ -->
+<section data-transition="zoom"><div class="star-card fragment fade-up" style="border-color:rgba(56,189,248,0.25);"><p class="page-badge">Part 2 · PRISM</p><h2 style="font-size:36px;font-weight:800;color:var(--prism);margin:8px 0;">PRISM</h2><p style="font-size:18px;color:var(--text);">Pre-alignment via Black-box On-policy Distillation<br/>for Multimodal Reinforcement Learning</p><div class="star-bar"></div>
+<div class="struct-content" style="text-align:center;margin-top:8px;">
+<p><strong>作者：</strong>Sudong Wang, Weiquan Huang, Xiaomin Yu 等（HKUST(GZ)、清华、NTU）</p>
+<p><strong>发表：</strong>arXiv:2604.28123v1 · 2026年4月30日 &nbsp;|&nbsp; 🔗 github.com/XIAO4579/PRISM</p>
+<p style="color:var(--prism);margin-top:10px;"><strong>核心贡献：</strong>在 SFT 和 RLVR 之间插入对抗式 OPD 对齐阶段——用 MoE 判别器修复多模态分布漂移</p>
+</div></div></section>
+
+<!-- ═══════ 6. 报告叙述结构预览 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">Part 1 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--gold);margin:8px 0;">🎯 报告叙述路线</h2><div class="star-bar"></div>
+<div class="struct-content">
+<p style="text-align:center;font-size:15px;"><strong>一条主线：OPD 如何让多模态模型更好地推理？</strong></p>
+<div style="margin:12px 0;padding:14px 20px;background:rgba(56,189,248,0.04);border-radius:10px;text-align:left;">
+<p><span style="color:var(--prism);font-weight:700;">Part 1 · 背景</span> — SFT→RLVR 有空隙 → OPD 填补了这个空隙 → <strong>但 OPD 本身还不够完美</strong></p>
+<p><span style="color:var(--prism);font-weight:700;">Part 2 · PRISM</span> — OPD 可以作为 <strong>SFT→RLVR 的桥梁</strong>（对抗式预对齐）→ 问题：SFT 造成了分布漂移</p>
+<p><span style="color:var(--uniopd);font-weight:700;">Part 3 · Uni-OPD</span> — OPD 为什么有时有效、有时失效？→ 诊断：<strong>两个基础瓶颈</strong>（探索不足 + 监督不可靠）</p>
+<p><span style="color:var(--gold);font-weight:700;">Part 4 · 对比</span> — 两篇论文互补：PRISM 告诉你"<strong>OPD 放在哪里</strong>"，Uni-OPD 告诉你"<strong>OPD 怎么做才对</strong>"</p>
+</div>
+<p style="text-align:center;color:var(--prism);font-size:15px;margin-top:12px;">✦ 接下来：Part 2 — PRISM：黑盒对抗式 OPD 预对齐 ✦</p>
+</div></div></section>
+
+<!-- ═══════ 5. 两篇论文定位对比 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:26px;font-weight:700;color:#fff;margin-bottom:10px;">两篇论文在 OPD 研究版图中的定位</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th style="width:16%">维度</th><th style="width:42%">PRISM</th><th style="width:42%">Uni-OPD</th></tr></thead>
+<tbody>
+<tr><td class="pc">核心关注</td><td class="hl">OPD 作为 SFT→RLVR 之间的<strong>中间对齐阶段</strong></td><td class="wr">OPD 本身作为<strong>独立的后训练范式</strong></td></tr>
+<tr><td class="pc">解决问题</td><td>SFT 引入的<strong>分布漂移</strong>（多模态下异质化）</td><td>OPD 的两个<strong>基础瓶颈</strong>（探索不足 + 监督不可靠）</td></tr>
+<tr><td class="pc">技术贡献</td><td class="hl">MoE 判别器的对抗式 OPD</td><td class="wr">双视角优化策略（数据平衡 + 边距校准）</td></tr>
+<tr><td class="pc">模态范围</td><td class="hl"><strong>聚焦多模态</strong>（MLLM）</td><td class="wr"><strong>LLM + MLLM 统一</strong>框架</td></tr>
+<tr><td class="pc">OPD 角色</td><td>过渡阶段（pre-alignment）</td><td>独立训练范式</td></tr>
+<tr><td class="pc">教师形式</td><td class="hl"><strong>黑盒</strong>（仅需 demonstration 样本）</td><td class="wr"><strong>白盒</strong>（需 logits 访问）</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:10px;max-width:860px;"><p style="text-align:center;font-size:14px;"><strong>关键理解</strong>：PRISM 把 OPD 当作<strong style="color:var(--prism);">管道中的一环</strong>（修复 SFT→RLVR 之间的 gap），而 Uni-OPD 把 OPD 当作<strong style="color:var(--uniopd);">独立的优化范式</strong>来系统性研究其成功条件。</p></div></section>
+
+<!-- ═══════ 4. OPD 核心思想与公式 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">核心概念</p><h2 style="font-size:28px;font-weight:700;color:var(--gold);margin:8px 0;">On-Policy Distillation (OPD)</h2><p style="font-size:14px;color:var(--text2);">结合 RL 的 on-policy 采样优势 + SFT 的细粒度信号优势</p><div class="star-bar"></div>
+<div class="def-box fragment fade-up"><div class="label">OPD 的核心定义</div><div class="content">让学生模型在自己的 <strong>on-policy 生成轨迹</strong>上接受教师模型的 <strong>token-level 监督</strong>。学生先生成，教师在学生的轨迹上打分——训练分布 = 推理分布，消除 exposure bias。</div></div>
+<div class="formula-box fragment fade-up"><div class="math-block">$$J_{\text{OPD}}(\theta) = \min_\theta \mathbb{E}_{q \sim \mathcal{D}, \tau \sim \pi_\theta(\cdot|q)} D_{KL}\left(\pi_\theta(\tau|q) \| \pi_T(\tau|q)\right)$$</div></div>
+<div class="struct-content fragment fade-up"><p style="text-align:center;color:var(--prism);">让学生在自己生成的轨迹上，最小化与教师分布的 Reverse KL 散度</p>
+<p><strong>OPD 的梯度 = Token 级奖励信号：</strong></p></div>
+<div class="formula-box fragment fade-up"><div class="math-block">$$r_t^{\text{OPD}} = \log \frac{\pi_T(o_t | q, o_{&lt;t})}{\pi_\theta(o_t | q, o_{&lt;t})}$$</div></div>
+<div class="struct-content fragment fade-up"><p style="text-align:center;">当教师比学生更偏好某个 token（\(r_t^{\text{OPD}} > 0\)）→ 学生向该方向更新<br/>当教师比学生更不偏好某个 token（\(r_t^{\text{OPD}} < 0\)）→ 学生远离该方向</p>
+<p style="text-align:center;color:var(--gold);margin-top:8px;">💡 OPD 的本质：<strong>逐 token 的"教师认同度"打分</strong>——它告诉你每一步推理中，教师有多同意你的选择</p></div></div></section>
+
+<!-- ═══════ 3. SFT→RLVR 标准范式及问题 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">背景</p><h2 style="font-size:28px;font-weight:700;color:#fff;margin:8px 0;">LLM/MLLM 后训练的标准范式</h2><p style="font-size:14px;color:var(--text2);">SFT → RLVR：两阶段管道的隐藏缺陷</p><div class="star-bar"></div>
+<div class="flow-diagram fragment fade-up"><div class="flow-node fn-b">Stage 1<div style="font-size:10px;font-weight:400;color:var(--text2);">SFT · 监督微调</div></div><div class="flow-arrow">→</div><div class="flow-node fn-r">Stage 2<div style="font-size:10px;font-weight:400;color:var(--text2);">RLVR · 可验证奖励RL</div></div></div>
+<div class="two-col" style="margin-top:12px;">
+<div class="warn-box fragment fade-up"><div class="label">⚠️ SFT 的 Exposure Bias</div><div class="content">在<strong>静态数据集</strong>上做 token-level 模仿学习。训练和推理时的数据分布不一致——模型在推理时可能进入训练时没见过的错误状态，导致<strong>错误级联放大</strong>。尤其多模态场景：视觉描述与推理链的漂移模式是<strong>异质的</strong>。</div></div>
+<div class="warn-box fragment fade-up"><div class="label">⚠️ RLVR 的稀疏奖励困境</div><div class="content">只能给出<strong>序列级别</strong>的奖励信号（答案对/错、格式合规）。无法提供细粒度的<strong>token级别归因</strong>——哪个token导致了错误？哪一步推理偏离了方向？RLVR 完全不知道。纯RL探索在巨大搜索空间中极其低效。</div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:4px;text-align:center;"><p style="color:var(--gold);">💡 两篇论文的共识：SFT → RLVR 之间存在一个<strong>被忽视的"空白地带"</strong>——需要一种既能提供 token 级监督、又能让学生在自己轨迹上学习的机制。</p></div></div></section>
+
+<!-- ═══════ 2. DAG 知识结构图 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">报告知识结构图</h2><p style="font-size:11px;color:var(--text3);margin:0 0 8px;">DAG · 4大板块 · 30页精讲</p>
+<svg viewBox="0 0 960 460" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.18)"/></marker></defs>
+<rect x="280" y="8" width="400" height="34" rx="17" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.18)"/>
+<text x="480" y="30" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">Module 5: PRISM & Uni-OPD 论文精讲</text>
+
+<!-- Part 1: 背景与动机 -->
+<rect x="50" y="65" width="210" height="100" rx="10" fill="rgba(56,189,248,0.04)" stroke="rgba(56,189,248,0.2)"/>
+<text x="155" y="90" text-anchor="middle" fill="var(--prism)" font-size="11" font-weight="700" font-family="sans-serif">📋 Part 1 · 背景与动机</text>
+<text x="155" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">SFT→RLVR 范式缺陷</text>
+<text x="155" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">OPD 核心公式与原理</text>
+<text x="155" y="142" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">两篇论文定位对比</text>
+
+<!-- Part 2: PRISM -->
+<rect x="310" y="65" width="210" height="100" rx="10" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.3)"/>
+<text x="415" y="90" text-anchor="middle" fill="var(--prism)" font-size="11" font-weight="700" font-family="sans-serif">🔷 Part 2 · PRISM 深度解析</text>
+<text x="415" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">分布漂移 → MoE判别器</text>
+<text x="415" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">三阶段管道 · 对抗式OPD</text>
+<text x="415" y="142" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">实验 · 消融 · 动力学</text>
+
+<!-- Part 3: Uni-OPD -->
+<rect x="570" y="65" width="210" height="100" rx="10" fill="rgba(251,113,133,0.05)" stroke="rgba(251,113,133,0.25)"/>
+<text x="675" y="90" text-anchor="middle" fill="var(--uniopd)" font-size="11" font-weight="700" font-family="sans-serif">🔶 Part 3 · Uni-OPD 深度解析</text>
+<text x="675" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">双视角优化 · 数据平衡</text>
+<text x="675" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">Order Consistency</text>
+<text x="675" y="142" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">四种蒸馏场景 · 消融</text>
+
+<!-- Arrows part1→part2, part2→part3 -->
+<path d="M260,115 L300,115" marker-end="url(#a)" stroke="rgba(56,189,248,0.22)" stroke-width="1.5"/>
+<path d="M520,115 L560,115" marker-end="url(#a)" stroke="rgba(251,113,133,0.22)" stroke-width="1.5"/>
+
+<!-- Part 4: 对比与展望 -->
+<rect x="180" y="200" width="600" height="55" rx="10" fill="rgba(251,191,36,0.04)" stroke="rgba(251,191,36,0.18)"/>
+<text x="480" y="225" text-anchor="middle" fill="var(--gold)" font-size="12" font-weight="700" font-family="sans-serif">⭐ Part 4 · 对比与展望</text>
+<text x="480" y="244" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">12维对比 · 互补关系 · 结合可能性 · OPD研究启示 · 未来方向</text>
+
+<!-- Arrows from three parts down to part4 -->
+<path d="M155,165 L155,192 L480,192 L480,192" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M415,165 L415,190 L480,190" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M675,165 L675,192 L480,192" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M480,192 L480,192" marker-end="url(#a)" stroke="rgba(251,191,36,0.2)" stroke-width="1.5"/>
+
+<!-- 关键技术标签 -->
+<rect x="180" y="280" width="600" height="85" rx="8" fill="rgba(8,4,20,0.5)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="300" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-weight="700" font-family="sans-serif">🔑 关键技术标签</text>
+<text x="480" y="320" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">On-Policy Distillation · Reverse KL · MoE Discriminator · Adversarial Alignment · Order Consistency · Margin Calibration</text>
+<text x="480" y="338" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">Data Balancing · Black-box Distillation · Multi-Teacher · Cross-Modal · GRPO · Bradley-Terry · Outcome Reward</text>
+<text x="480" y="356" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="sans-serif">PRISM (HKUST+THU+NTU) · Uni-OPD (ZJU+Tencent) · Qwen3 系列 · 2026.04–07</text>
+
+<!-- 底部连接线 -->
+<rect x="280" y="390" width="400" height="30" rx="15" fill="rgba(56,189,248,0.04)" stroke="rgba(56,189,248,0.1)"/>
+<text x="480" y="410" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">⬇ 从背景开始，逐步深入两篇论文的核心设计 ⬇</text>
+</svg></section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');let W,H;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();const N1=60,N2=60,C1X=0.38,C1Y=0.45,C2X=0.62,C2Y=0.50;let frame=0;function lp(){ctx.fillStyle='rgba(2,0,16,0.22)';ctx.fillRect(0,0,W,H);const t=frame*0.014;for(let i=0;i<N1;i++){const a=(i/N1)*Math.PI*2+t*0.7;const r=W*0.22+Math.sin(t*1.3+i*0.7)*W*0.06;const px=C1X*W+Math.cos(a)*r,py=C1Y*H+Math.sin(a)*r*0.65;const alpha=0.12+0.08*Math.sin(t*2+i);ctx.beginPath();ctx.arc(px,py,1.2+Math.sin(t+i)*0.5,0,Math.PI*2);ctx.fillStyle='rgba(56,189,248,'+alpha+')';ctx.fill()}for(let i=0;i<N2;i++){const a=(i/N2)*Math.PI*2-t*0.55+1.2;const r=W*0.18+Math.cos(t*1.1+i*0.9)*W*0.05;const px=C2X*W+Math.cos(a)*r,py=C2Y*H+Math.sin(a)*r*0.6;const alpha=0.1+0.07*Math.cos(t*1.8+i);ctx.beginPath();ctx.arc(px,py,1.0+Math.cos(t+i)*0.4,0,Math.PI*2);ctx.fillStyle='rgba(251,113,133,'+alpha+')';ctx.fill()}for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2+t*0.3;const r=W*0.28;const px=0.5*W+Math.cos(a)*r,py=0.48*H+Math.sin(a)*r*0.55;ctx.beginPath();ctx.arc(px,py,0.6,0,Math.PI*2);ctx.fillStyle='rgba(251,191,36,'+(0.06+0.04*Math.sin(t+i))+')';ctx.fill()}frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>

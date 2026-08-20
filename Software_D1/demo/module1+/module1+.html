@@ -1,0 +1,815 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Module 1+ · OPD 论文分类研究</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css"><script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script><style>:root{--bg:#0d0b09;--surface:rgba(30,25,18,0.65);--border:rgba(180,140,80,0.15);--text:#e8dcc8;--text2:rgba(220,200,160,0.75);--text3:rgba(180,155,120,0.5);--amber:#d4a040;--wheat:#dcc090;--sage:#809060;--rust:#c05530;--bronze:#b87333}#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}.reveal .slides section{padding:28px 48px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}.ac-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.ac-card::before{content:'';height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);display:block;margin-bottom:12px}.hero-title{font-size:46px;font-weight:800;background:linear-gradient(135deg,var(--amber),var(--wheat));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite}@keyframes gS{0%,100%{background-position:0%50%}50%{background-position:100%50%}}.ac-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);margin:14px auto}.struct-head{font-size:18px;font-weight:700;color:var(--amber);margin:0 0 8px;border-bottom:1px solid rgba(180,140,80,0.3);display:inline-block;padding-bottom:4px}.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}.paper-card{background:linear-gradient(135deg,rgba(40,30,20,0.6),rgba(30,22,14,0.8));border:1px solid var(--border);border-radius:10px;padding:20px 22px;text-align:left;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4);max-width:780px}.paper-card .pn{font-size:10px;color:var(--amber);font-weight:700}.paper-card .title{font-size:16px;font-weight:700;color:var(--wheat);margin:4px 0}.paper-card .venue{font-size:11px;color:var(--text3)}.two-col{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:960px}.concept-block{background:rgba(30,25,18,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left}.concept-block h4{font-size:13px;color:var(--amber);margin:0 0 5px}.concept-block p{font-size:11px;color:var(--text2);line-height:1.7;margin:0}.formula-box{background:rgba(10,8,5,0.8);border:1px solid rgba(180,140,80,0.2);border-radius:10px;padding:18px 24px;max-width:780px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:8px 0}.formula-box .math-block{font-size:15px;color:#d4c8b0}.def-box{background:rgba(180,140,80,0.06);border:1px solid rgba(180,140,80,0.2);border-left:3px solid var(--amber);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--amber);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:12px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}.summary-table thead{background:linear-gradient(135deg,rgba(180,140,80,0.25),rgba(150,110,50,0.12))}.summary-table th{padding:9px 12px;font-weight:700;color:var(--wheat);font-size:11px}.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,15,10,0.4)}.summary-table .pc{font-weight:700;color:var(--wheat)}.summary-table .hl{color:var(--amber);font-weight:600}.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(212,160,64,0.08);color:var(--amber);border:1px solid rgba(212,160,64,0.2);letter-spacing:1px}.cite{font-size:10px;color:var(--amber);font-family:monospace}.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}@media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}}</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- ═══════════ 模块标题页 ═══════════ -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+</p><h1 class="hero-title">OPD 论文分类研究</h1><p style="font-size:20px;color:var(--text2);">Online Policy Distillation · 论文全景分类</p><div class="ac-bar"></div><p style="font-size:14px;color:var(--text3);margin:0;">125 篇论文 · 10 个 Part · 从定义到工业部署</p></div></section>
+
+<!-- ═══════ Part 0 内容 (原封不动) ═══════ -->
+
+
+<!-- ═══════════ 前总 ═══════════ -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 0</p><h1 class="hero-title">OPD 综述与奠基</h1><p style="font-size:20px;color:var(--text2);">严格定义 · 8篇综述 · Papers 1–8</p><div class="ac-bar"></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 1/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPD 的严格定义</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 OPD = C1 + C2 (AwesomeOPD 标准)</div><div class="content"><strong style="color:var(--amber);">C1 (学生自采样)：</strong>学生在训练期间采样<strong style="color:#fff;">自己的轨迹</strong> y∼π_S(·|x)<br><strong style="color:var(--amber);">C2 (教师在线监督)：</strong>教师在这些学生样本上提供逐 token / 序列级监督<br><strong style="color:var(--bronze);">OPSD：</strong>C1+C2，但教师=同一模型(特权上下文)</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 2/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">8篇综述论文总览</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>时间</th><th>核心定位</th></tr></thead>
+<tbody><tr><td class="pc">1</td><td>GKD ⭐</td><td>2023.06</td><td>奠基——正式命名 OPD · ICLR 2024</td></tr>
+<tr><td class="pc">2</td><td>MiniLLM ⭐</td><td>2023.06</td><td>Reverse KL via PG——"OPD 鼻祖" · ICLR 2024</td></tr>
+<tr><td class="pc">3</td><td>Thinking Machines Blog</td><td>2025.10</td><td>最清晰的 OPD 单页解释</td></tr>
+<tr><td class="pc">4</td><td>Revisiting OPD</td><td>2026.03</td><td>诊断 3 种失效模式 · CASIA</td></tr>
+<tr><td class="pc">5</td><td>Tencent OPD Survey</td><td>2026.04</td><td>分类 50+ 方法的参考索引</td></tr>
+<tr><td class="pc">6</td><td>THUNLP Rethinking</td><td>2026.04</td><td>两个成功条件 · 清华</td></tr>
+<tr><td class="pc">7</td><td>Many Faces of OPD</td><td>2026.05</td><td>OPD/OPSD 成功/失败实证 · UIUC</td></tr>
+<tr><td class="pc">8</td><td>OPD 反思 Blog</td><td>2026.06</td><td>三个失败机制 · McGill/Mila</td></tr></tbody></table></section>
+
+<!-- ═══════════ P1: GKD ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 1 · arXiv: 2306.13649 · ICLR 2024</div><div class="title">GKD — On-Policy Distillation of Language Models</div><div class="venue">R. Agarwal, N. Vieillard et al. · Google DeepMind</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>在 LLM 时代<strong style="color:#fff;">正式命名 OPD (On-Policy Distillation)</strong> 的奠基论文。证明学生在自生成 rollout 上的蒸馏在 token 效率上同时击败 SFT 和 RL，奠定了整个 OPD 领域的范式基础。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S2/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 问题定义</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 离线蒸馏的致命缺陷</h4><p style="font-size:11px;">传统 KD: 教师生成固定数据集→学生训练。但<strong style="color:var(--rust);">训练-推理分布不匹配</strong>：学生训练时看到的状态(教师数据分布)与推理时自己生成的状态(学生分布)不同→性能损失。这一问题在 LLM 中因自回归生成而尤为严重。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🟡 GKD 的解决方案</h4><p style="font-size:11px;">让学生<strong style="color:var(--amber);">自己生成 rollout</strong> (满足 C1)→教师在这些学生样本上提供逐 token logit 监督 (满足 C2)→学生的训练分布 = 推理分布→消除分布不匹配。</p></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心方法 · GKD 训练流程</h2>
+<div class="formula-box fragment fade-up" style="margin-bottom:8px;"><div class="math-block">$$\mathcal{L}_{GKD} = \mathbb{E}_{x\sim\mathcal{D}, y\sim\pi_S(\cdot|x)}\left[ D_{KL}(\pi_T(\cdot|y_{<t}) \|\pi_S(\cdot|y_{<t})) \right]$$</div></div>
+<div class="fragment fade-up struct-content">① 从数据集采样 prompt x → ② 学生自回归生成完整响应 y → ③ 教师对每个 token 位置提供 logit 分布 → ④ 用 KL 散度训练学生匹配教师分布 → ⑤ 学生分布随训练逐渐向教师靠拢。GKD 同时支持 Forward KL 和 Reverse KL 两种模式。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S4/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验与关键结果</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">核心实验发现：</strong><br>• GKD 在 <strong style="color:#fff;">相同 token 预算</strong>下，显著优于 SFT 蒸馏和纯 RL<br>• <strong>在线采样</strong> (学生自采样) 是性能提升的关键——分布匹配收益 > 教师数据质量<br>• <strong>Reverse KL</strong> 在大多数任务上优于 Forward KL——模式追寻更适合 LLM 蒸馏<br>• 学生规模越小，GKD 相对于 SFT 的优势越显著</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S5/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限 · 审视 · 影响</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 作者自述</h4><p style="font-size:11px;">• 每次迭代需教师前向→计算开销高<br>• 仅白盒场景(教师 logits 可访问)<br>• RKL 的模式坍缩风险未充分解决</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔍 历史地位</h4><p style="font-size:11px;">GKD 是 OPD 的<strong style="color:var(--amber);">"宪法"</strong>——后续所有白盒 OPD 工作 (DistiLLM/REOPOLD/G-OPD 等) 都在其框架下改进。ICLR 2024 接收标志着学术界对 OPD 范式的正式认可。</p></div></div></section>
+
+<!-- ═══════════ P2: MiniLLM ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P2 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 2 · arXiv: 2306.08543 · ICLR 2024</div><div class="title">MiniLLM — Knowledge Distillation of Large Language Models</div><div class="venue">Y. Gu, L. Dong et al. · Microsoft / 清华大学</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>比 GKD <strong style="color:#fff;">早几天</strong>发表的"OPD 鼻祖"。首次使用<strong style="color:#fff;">Reverse KL + Policy Gradient</strong>实现在线蒸馏——学生在自生成 rollout 上通过策略梯度直接优化 Reverse KL 散度。ICLR 2024。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P2 · S2/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 方法</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 标准 KD 的局限</h4><p style="font-size:11px;">标准 KD 使用<strong style="color:var(--rust);">Forward KL</strong>——要求学生覆盖教师的所有模式。但学生能力有限→无法同时覆盖→分布过于分散→生成质量下降。MiniLLM 选择 <strong style="color:var(--rust);">Reverse KL</strong>: 学生只需集中在教师高概率区域。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 Reverse KL + PG</h4><p style="font-size:11px;">$$\nabla_\theta \mathcal{L} = \mathbb{E}_{y\sim\pi_S}[-\nabla_\theta \log\pi_S(y) \cdot D_{KL}(\pi_S\|\pi_T)]$$使用 <strong style="color:var(--amber);">Policy Gradient</strong> 直接优化 Reverse KL——因为 Reverse KL 对 π_S 的梯度不能直接通过参数求导。</p></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P2 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验 · 局限</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">关键发现：</strong>MiniLLM 在指令遵循和文本生成上显著优于标准 KD——Reverse KL 的模式追寻更适合 LLM。<br><strong style="color:var(--rust);">局限：</strong>① Reverse KL 的模式坍缩风险 (后来 REOPOLD 专门解决) ② PG 训练的方差较大 ③ 需要教师实时前向→计算开销高。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P2 · S4/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">GKD vs MiniLLM 对比</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">两大奠基论文的差异：</strong><br>• <strong>KL 方向：</strong>GKD 同时支持 FKL/RKL；MiniLLM 只用 RKL<br>• <strong>优化方法：</strong>GKD 用标准梯度；MiniLLM 用 Policy Gradient<br>• <strong>历史地位：</strong>GKD 命名了 OPD 并建立通用框架；MiniLLM 率先证明了 RKL+PG 在 LLM 蒸馏中的有效性<br>• <strong>共同遗产：</strong>两者共同开启了<strong style="color:#fff;">白盒 OPD</strong> 的范式——学生自采样 + 教师逐 token 监督</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P2 · S5/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">影响与后续</h2>
+<div class="fragment fade-up struct-content">MiniLLM 的 RKL+PG 方案直接启发了后续一整条技术线：DistiLLM (Skewed-KL 混合 FKL/RKL)→Entropy-Aware OPD (动态 KL 方向)→REOPOLD (解决 RKL 的模式坍缩/近零奖励/重尾负奖励)。<strong style="color:var(--amber);">从 MiniLLM 到 REOPOLD，KAIST 团队用了 3 年完成了 RKL 从"有用但不稳定"到"生产就绪"的进化。</strong></div></section>
+
+<!-- ═══════════ P3: Thinking Machines Blog ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 3 · Thinking Machines Lab · 2025.10</div><div class="title">On-Policy Distillation Blog — "swap KL ref for stronger teacher"</div><div class="venue">thinkingmachines.ai/blog/on-policy-distillation</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>被 AwesomeOPD 评为<strong style="color:#fff;">"最清晰的 OPD 单页解释"</strong>。用一句话概括 OPD 本质：<strong style="color:#fff;">"把 KL 正则化中的参考策略换成一个更强的教师"</strong>。将 OPD 的核心直觉浓缩为可立即理解的类比。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S2/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景 · OPD 与 RL 的关系</h2>
+<div class="fragment fade-up struct-content">标准 RL 训练中，KL 正则项 −β·D_KL(π_θ‖π_ref) 用于<strong style="color:#fff;">防止策略偏离太远</strong>。OPD 的巧妙之处：<strong style="color:var(--amber);">把 π_ref 换成更强的教师策略 π_T</strong>。原本用于"约束"的 KL 项瞬间变成了"学习"的驱动力——不需要额外的蒸馏步骤。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心洞察：为何 OPD 同时击败 SFT 和 RL</h2>
+<div class="fragment fade-up struct-content"><strong>SFT：</strong>学生只在教师见过数据上训练→分布不匹配→泛化差<br><strong>纯 RL：</strong>学生自己探索但奖励稀疏→效率极低<br><strong>OPD：</strong>学生<strong style="color:var(--amber);">自己探索</strong>(在线采样) + 教师提供<strong style="color:var(--amber);">密集逐 token 信号</strong>(KL 监督)→两全其美</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S4/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">对 OPD 生态的影响</h2>
+<div class="fragment fade-up struct-content">这篇博客在 AwesomeOPD 中被列为<strong style="color:var(--amber);">"推荐阅读顺序 #1"</strong>——"如果你正要开始一个 OPD 项目，从这篇开始"。它用最少的技术术语传达了 OPD 的核心直觉，为后续所有白盒/黑盒/OPSD 论文的阅读提供了<strong style="color:#fff;">概念锚点</strong>。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S5/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限与审视</h2>
+<div class="fragment fade-up struct-content">作为博客而非学术论文，不包含实验数据和方法细节。其"swap KL ref"的类比虽然直观，但<strong style="color:var(--amber);">简化了 OPD 的复杂性</strong>——实际 OPD 涉及分布匹配、梯度场修复、熵管理等博客未覆盖的关键问题。应作为入门理解工具，而非技术参考。</div></section>
+
+<!-- ═══════════ P4: Revisiting OPD ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 4 · arXiv: 2603.25562 · 2026.03</div><div class="title">Revisiting OPD — 诊断 3 种失效模式</div><div class="venue">CASIA (中科院自动化所)</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>系统诊断 OPD 在实践中失败的<strong style="color:#fff;">三种具体原因</strong>，补充了 UIUC (P7) 未覆盖的维度。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S2/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">三大失效模式</h2>
+<div class="tri-grid fragment fade-up">
+  <div class="concept-block"><h4>① 单token信号不平衡</h4><p style="font-size:10px;">关键决策 token 和填充 token 被同等对待→关键信号稀释。与 REOPOLD 问题二同源。</p></div>
+  <div class="concept-block"><h4>② 前缀不可靠</h4><p style="font-size:10px;">学生劣质前缀污染教师输入→恶性循环。与 UIUC (P7) 一致。</p></div>
+  <div class="concept-block"><h4>③ tokenizer不匹配</h4><p style="font-size:10px;">师生不同 tokenizer 时 KL 失去意义。CASIA 首次诊断此问题。</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">与 UIUC (P7) 的互补关系</h2>
+<div class="fragment fade-up struct-content">UIUC 诊断：分布不匹配 + 优化不稳定 + PI-free 限制<br>CASIA 诊断：token 信号不平衡 + 前缀不可靠 + tokenizer 不匹配<br><strong style="color:var(--amber);">两者覆盖了不同层面的问题：</strong>UIUC 偏宏观机制，CASIA 偏 tokenization 和信号层面的系统性问题。共同构成<strong style="color:#fff;">OPD 失效的完整诊断体系</strong>。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S4-5/5</span></div>
+<div class="two-col fragment fade-up">
+  <div class="concept-block"><h4>🔧 S4: 修复建议</h4><p style="font-size:10px;">针对三个失效模式分别提出：token重要性加权 / Stop-Gradient 保护教师输入 / 跨tokenizer对齐机制。</p></div>
+  <div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:10px;">诊断性论文——提出问题和修复方向，但未在统一框架下验证修复的联合效果。</p></div>
+</div></section>
+
+<!-- P5-P8 压缩版 (survey/position类) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P5 · Tencent Survey</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 5 · arXiv: 2604.00626 · 2026.04</div><div class="title">Tencent OPD Survey — 分类 50+ 方法</div><div class="venue">腾讯</div></div>
+<div class="two-col fragment fade-up" style="margin-top:8px;">
+  <div class="concept-block"><h4>📊 四大范式</h4><p style="font-size:10px;">白盒(逐token KL)/黑盒(标量信号)/OPSD(自蒸馏)/OPD-RL(嵌入RL)。与方法论分类互补 AwesomeOPD。</p></div>
+  <div class="concept-block"><h4>⚠️ 作为参考索引</h4><p style="font-size:10px;">Survey 本身不提出新方法——其价值在于提供<strong style="color:var(--amber);">系统性的分类视角</strong>。</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P6 · THUNLP Rethinking</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 6 · arXiv: 2604.13016 · 2026.04</div><div class="title">THUNLP Rethinking OPD — 两个成功条件</div><div class="venue">清华大学</div></div>
+<div class="two-col fragment fade-up" style="margin-top:8px;">
+  <div class="concept-block"><h4>✅ 条件一</h4><p style="font-size:10px;"><strong>兼容思维模式：</strong>学生必须有能力覆盖教师的推理空间。教师策略与学生能力不兼容时 OPD 失效。</p></div>
+  <div class="concept-block"><h4>✅ 条件二</h4><p style="font-size:10px;"><strong>真正新的教师能力：</strong>教师必须在学生薄弱的维度上更强。学生已掌握的技能→OPD 无增益。</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P7 · UIUC Many Faces</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 7 · arXiv: 2605.11182 · 2026.05</div><div class="title">The Many Faces of On-Policy Distillation — 已精讲</div><div class="venue">UIUC</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;">📖 <strong style="color:var(--amber);">已在 Module 1 Part 5 详细精讲。</strong>三大失效(分布不匹配/优化不稳定/PI-free)+三大修复(Stop-Gradient Top-K KL/显式other类别/RLVR-adapt)。本 Part 0 从综述视角定位其对 OPD 诊断体系的贡献。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P8 · McGill Blog</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 8 · McGill / Mila · 2026.06</div><div class="title">OPD 反思 Blog — 三个失败机制 (Li Jiang)</div></div>
+<div class="tri-grid fragment fade-up" style="margin-top:8px;">
+  <div class="concept-block"><h4>⚠️ 局部教师噪声</h4><p style="font-size:10px;">教师某些 token 上 logits 噪声→OPD 放大→学生学到错误信号。</p></div>
+  <div class="concept-block"><h4>⚠️ 覆盖衰减</h4><p style="font-size:10px;">学生分布偏移→教师覆盖下降→信号<strong style="color:var(--amber);">持续衰减</strong>。</p></div>
+  <div class="concept-block"><h4>⚠️ 短视梯度</h4><p style="font-size:10px;">逐 token KL 忽略长期后果→早期决策梯度被后期稀释。</p></div>
+</div></section>
+
+<!-- Part 0 后总 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">Part 0 总结</h2>
+<div class="fragment fade-up struct-content">8篇综述与奠基建立了 OPD 的<strong style="color:var(--amber);">定义、动机、条件、失败模式</strong>四大支柱。GKD 和 MiniLLM 奠定了白盒 OPD 的技术范式；后续 6 篇从不同角度诊断、分类、反思——<strong style="color:#fff;">分布不匹配</strong>是贯穿所有诊断的核心主题。从严格定义 (C1+C2) 到失败诊断的完整闭环，Part 0 为后续 9 个 Part 的论文精读提供了<strong style="color:var(--amber);">概念基础与批判框架</strong>。</div></section>
+
+<!-- ═══════ Part 1 内容 (原封不动) ═══════ -->
+
+
+<!-- ═══════════ 前总: Part 1 概述 ═══════════ -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 1</p><h1 class="hero-title">白盒 OPD</h1><p style="font-size:20px;color:var(--text2);">教师 Logits 可访问 · Token 级监督 · Papers 9–29</p><div class="ac-bar"></div></div></section>
+
+<!-- 前总1: 白盒OPD定义 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 1/3</span></div>
+  <h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:12px;">什么是白盒 OPD？</h2>
+  <div class="def-box fragment fade-up"><div class="label">🎯 定义</div><div class="content">白盒 OPD 使用<strong style="color:var(--amber);">教师 logits / log-probabilities</strong>，在<strong style="color:var(--amber);">学生自生成 rollout</strong> 上进行逐 token 监督。教师模型的内部概率分布完全可见→可以进行精细的 token 级 KL 散度匹配。</div></div>
+  <div class="fragment fade-up struct-content" style="margin-top:12px;"><strong>与其他 OPD 类型的区别：</strong><br>• <strong style="color:var(--amber);">白盒 vs 黑盒</strong>：白盒有 logits 访问→逐 token KL；黑盒仅有标量信号<br>• <strong style="color:var(--sage);">白盒 vs OPSD</strong>：白盒有独立外部教师；OPSD 师生同模型<br>• <strong style="color:var(--bronze);">白盒 vs OPD-RL</strong>：白盒纯蒸馏；OPD-RL 将 OPD 嵌入 RL 训练循环</div>
+</section>
+
+<!-- 前总2: 关键技术维度 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 2/3</span></div>
+  <h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:12px;">白盒 OPD 的四个关键设计维度</h2>
+  <div class="tri-grid fragment fade-up">
+    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>① KL 方向</h4><p>Forward KL (覆盖模式) vs Reverse KL (追寻模式) vs Skewed-KL (自适应混合)。决定学生如何模仿教师分布。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>② 数据源管理</h4><p>纯在线 (学生自采样) vs 纯离线 (教师数据集) vs 混合 (AdaSwitch 自适应切换)。决定训练数据从哪来。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>③ 信号聚焦</h4><p>哪些 token 值得蒸馏？全词表 vs Top-K (CR-OPD) vs 高熵 token (REOPOLD/TIP) vs 推理前缀 (Fast OPD)。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>④ 约束类型</h4><p>软约束 (KL 惩罚项) vs 硬约束 (CMDP)。以及特殊约束：跨 tokenizer (DSKDv2)、否决机制 (Veto)、特征空间 (OPRD)。</p></div>
+  </div>
+</section>
+
+<!-- 前总3: 论文地图 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div>
+  <h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">21 篇论文 · 演进脉络</h2>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>Paper</th><th>论文</th><th>时间</th><th>解决的核心问题</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">09</td><td>MiniLLM</td><td>2023.06</td><td>首次用 Reverse KL + PG 实现在线蒸馏</td></tr>
+      <tr><td class="pc">10</td><td><strong>DistiLLM</strong></td><td>2024.02</td><td>FKL vs RKL 的选择困境 → Skewed-KL</td></tr>
+      <tr><td class="pc">11</td><td>Speculative KD</td><td>2024.10</td><td>如何降低全线 OPD 的计算开销 → 门控KL</td></tr>
+      <tr><td class="pc">12</td><td>DistiLLM-2</td><td>2025.03</td><td>解耦数据源与KL方向 → 对比式双路径</td></tr>
+      <tr><td class="pc">13-16</td><td>DSKDv2·Constrained·AdaSwitch·Veto</td><td>2025</td><td>跨 tokenizer/硬约束/自适应切换/否决</td></tr>
+      <tr><td class="pc">17-20</td><td>G-OPD·Fast·Entropy·REOPOLD</td><td>2026</td><td>奖励外推/前缀截断/熵自适应/三问题系统解决</td></tr>
+      <tr><td class="pc">21-29</td><td>PACED·TSD·SCOPE·TIP·HPD·BRTS·TRD·OPRD·FiRe</td><td>2026</td><td>课程学习·双蒸馏·校准·特征空间·轨迹精炼</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════ PAPER 10: DistiLLM ═══════════ -->
+<!-- Structure 1: 论文信息 + 核心贡献 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 1/7</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 10 · arXiv: 2402.03898 · ICML 2024</div><div class="title">DistiLLM: Towards Streamlined Distillation for Large Language Models</div><div class="venue">Jongwoo Ko, Sungnyun Kim, Tianyi Chen, Se-Young Yun · KAIST / Microsoft</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>提出 <strong style="color:#fff;">Skewed KL Divergence</strong>——在 Forward KL 和 Reverse KL 之间进行自适应插值，解决了 LLM 蒸馏中"覆盖多样性"与"模式锐化"的根本张力。在<strong style="color:#fff;">指令遵循</strong>和<strong style="color:#fff;">文本生成</strong>任务上，DistiLLM 显著优于标准 KD 和 MiniLLM。</div>
+</section>
+
+<!-- Structure 2: 背景动机 + 问题定义 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 2/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 问题定义</h2>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 背景：LLM 蒸馏的困境</h4><p style="font-size:11px;line-height:1.7;">Knowledge Distillation (KD) 是压缩 LLM 的主流方法——用大教师模型的输出分布训练小学生模型。但标准 KD 使用<strong style="color:var(--rust);">教师预生成的固定数据集</strong>（离线数据）→ 训练-推理分布不匹配 → 学生无法覆盖教师行为空间。</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🟡 已有尝试</h4><p style="font-size:11px;line-height:1.7;">MiniLLM (2023) 首次提出用 Reverse KL + Policy Gradient 实现在线蒸馏——学生在自己生成的 rollout 上模仿教师。但 Reverse KL 有<strong style="color:var(--amber);">模式追寻 (mode-seeking)</strong> 问题：学生只集中在教师的高概率区域，丢失多样性。</p></div>
+  </div>
+  <div class="def-box fragment fade-up" style="margin-top:8px;"><div class="label">🎯 DistiLLM 要解决的问题</div><div class="content" style="font-size:12px;">$$\min_\theta \mathcal{L}(\theta) = D(\pi_T \|\pi_\theta)$$<br>其中 D 是衡量师生分布差异的散度。<strong style="color:var(--amber);">核心问题：应该用哪种散度 D？</strong><br>• Forward KL D_KL(π_T‖π_S)：覆盖模式 (mean-seeking)→ 多样性好但可能过度分散<br>• Reverse KL D_KL(π_S‖π_T)：追寻模式 (mode-seeking)→ 锐度高但模式坍缩风险<br>• <strong style="color:#fff;">是否存在中间地带？</strong></div></div>
+</section>
+
+<!-- Structure 3: 核心创新点 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 3/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新：Skewed KL Divergence</h2>
+  <div class="fragment fade-up struct-content" style="margin-bottom:10px;">DistiLLM 提出 <strong style="color:var(--amber);">Skewed KL</strong>——在 Forward KL 和 Reverse KL 之间通过<strong style="color:#fff;">一个偏度参数 λ</strong>进行连续插值，实现从"覆盖模式"到"追寻模式"的平滑过渡。</div>
+  <div class="formula-box fragment fade-up" style="margin-bottom:10px;"><div class="math-block">$$SKD(\pi_T \|\pi_S; \lambda) = \sum_{y} \pi_T(y)^\lambda \pi_S(y)^{1-\lambda} \cdot \log\frac{\pi_S(y)}{\pi_T(y)}$$</div></div>
+  <div class="tri-grid fragment fade-up">
+    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>λ=0 → Reverse KL</h4><p>标准 RKL → 模式追寻。学生集中在教师高概率区域。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>λ=1 → Forward KL</h4><p>标准 FKL → 覆盖全部模式。学生覆盖教师所有可能性。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>0&lt;λ&lt;1 → Skewed</h4><p>在两种模式间平滑插值→兼顾覆盖与锐化。λ 可固定或动态调度。</p></div>
+  </div>
+</section>
+
+<!-- Structure 4: 方法细节 + 训练流程 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 4/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">方法细节 · 训练流程</h2>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔧 在线蒸馏循环</h4><p style="font-size:11px;line-height:1.7;">① 学生从 prompt 集采样 → 自回归生成完整响应<br>② 教师对学生的每个 token 计算 log-probability<br>③ 用 Skewed KL 计算 token 级损失<br>④ 反向传播更新学生参数<br>⑤ 重复——学生分布随训练逐渐变化</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>⚙️ 关键超参数</h4><p style="font-size:11px;line-height:1.7;">• <strong>偏度 λ</strong>: 0.5 (均衡模式)<br>• <strong>温度 T</strong>: 软化教师/学生分布<br>• <strong>KL 裁剪阈值</strong>: 防梯度爆炸<br>• <strong>学习率</strong>: 标准 AdamW</p></div>
+  </div>
+  <div class="formula-box fragment fade-up" style="margin-top:8px;"><p style="font-size:11px;color:var(--text3);margin:0 0 4px;">逐 token 训练目标：</p><div class="math-block">$$\mathcal{L} = \frac{1}{T}\sum_{t=1}^{T} SKD(\pi_T(\cdot|y_{<t}) \|\pi_S(\cdot|y_{<t}); \lambda)$$</div></div>
+</section>
+
+<!-- Structure 5: 实验设计 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 5/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验设计</h2>
+  <div class="tri-grid fragment fade-up">
+    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>📊 数据集</h4><p style="font-size:11px;">Dolly-Eval · Self-Instruct · Vicuna-Eval · HumanEval</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>📏 基线</h4><p style="font-size:11px;">Standard KD · MiniLLM (RKL+PG) · SeqKD · 教师上限</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>🎯 指标</h4><p style="font-size:11px;">GPT-4评分(1-10) · ROUGE-L · Perplexity · 人类偏好</p></div>
+  </div>
+</section>
+
+<!-- Structure 6: 关键结果 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 6/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">关键结果与发现</h2>
+  <div class="fragment fade-up struct-content"><strong style="color:var(--amber);">核心实验结论：</strong><br>• Skewed KL (λ=0.5) 在 GPT-4 评分和 ROUGE-L 上 <strong style="color:#fff;">同时超越 FKL 和 RKL</strong><br>• 在线蒸馏 (学生自采样) 显著优于离线 KD——分布匹配收益 > 教师数据质量<br>• λ 最优值在 0.3-0.7 范围——偏向任一侧都损失性能<br>• 温度 T 与 λ 存在交互效应——推荐联合调优</div>
+</section>
+
+<!-- Structure 7: 局限性 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 7/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与批判审视</h2>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 作者自述</h4><p style="font-size:11px;">• λ 依赖任务和师生对→需额外调参<br>• 在线蒸馏计算开销高于离线 KD<br>• 仅白盒场景验证</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔍 审视角度</h4><p style="font-size:11px;">• Skewed KL 是<strong style="color:var(--sage);">启发式插值</strong>——缺理论保证<br>• 与 Entropy-Aware OPD (P19) 比是<strong style="color:var(--sage);">静态</strong>的——λ 不随 token 变化<br>• DistiLLM-2 (P12) 暗示单一 λ 不够</p></div>
+  </div>
+</section>
+
+<!-- ═══════════ PAPER 11: Speculative KD ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S1/6</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 11 · arXiv: 2410.11325 · ICLR 2025</div><div class="title">Speculative Knowledge Distillation: Interleaving Proposal and Correction</div><div class="venue">W. Jeon, M. Elaraby, A. Behboodi et al. · UCSB / Google Research</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>将推测解码 (Speculative Decoding) 的"提议-纠正"机制引入 OPD，提出<strong style="color:#fff;">门控 KL 散度 (Gated KL)</strong>——仅在教师与学生输出<strong style="color:#fff;">不一致</strong>的 token 位置计算蒸馏损失，跳过 60-80% 的低信息量 token，计算开销降低 2-3× 且蒸馏质量保持。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S2/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">全序列 OPD 的计算瓶颈：</strong>标准 OPD (GKD/MiniLLM) 对生成序列的<strong style="color:#fff;">每一个 token</strong>都计算教师-学生 KL 散度。但在实际推理链中，大量 token 是功能词/填充词——师生对这些 token 的预测几乎一致 (KL≈0)。计算这些位置的 KL 几乎不贡献学习信号，却消耗了绝大部分算力。这与 REOPOLD 的问题二 (近零奖励) 根源相同。<br><br><strong style="color:var(--amber);">推测解码的启发：</strong>推测解码 (Leviathan et al., 2023) 中，draft 模型快速生成候选 token → 目标模型并行验证 → 仅在<strong style="color:#fff;">拒绝位置</strong>纠正。SpecKD 将这一思想移植到蒸馏场景。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S3/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">问题定义</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 如何在不牺牲蒸馏质量的前提下，跳过师生一致的低信息量 token？</div><div class="content" style="font-size:12px;">将全序列 OPD 损失从对每个 token 的 KL 求和，改为仅在"教师不同意学生"的 token 子集上计算：$$\mathcal{L}_{\text{full}} = \sum_{t=1}^{T} D_{KL}(\pi_T \|\pi_S) \quad \rightarrow \quad \mathcal{L}_{\text{gated}} = \sum_{t \in \mathcal{S}} D_{KL}(\pi_T \|\pi_S)$$其中 $\mathcal{S} = \{t : \text{disagree}_t\}$ 是教师与学生输出不一致的 token 位置集合。</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S4/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新 · 门控 KL 方法细节</h2>
+<div class="formula-box fragment fade-up" style="margin-bottom:10px;"><div class="math-block">$$\mathcal{L}_{\text{SpecKD}} = \sum_{t} \mathbf{1}[\text{disagree}_t] \cdot D_{KL}(\pi_T(\cdot|y_{<t}) \|\pi_S(\cdot|y_{<t}))$$</div></div>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">disagree_t 的两个判定条件：</strong><br>① 学生 top-1 token ≠ 教师 top-1 token (硬判定)<br>② 教师对学生所选 token 的概率低于阈值 τ (软判定，默认 τ=0.1)<br><br><strong style="color:var(--amber);">关键特征：</strong>门控判定<strong style="color:#fff;">基于教师评分</strong>而非学生自身——确保信号可靠性。跳过率可通过 τ 调节：τ 越高→跳过的 token 越多→加速越大但信息损失风险也越大。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S5/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验设计与关键结果</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">ICLR 2025 接收。实验设置：</strong>指令遵循 + 代码生成数据集。基线包括标准 OPD (全序列)、MiniLLM、DistiLLM。<br><br><strong style="color:var(--amber);">核心发现：</strong><br>• <strong style="color:#fff;">60-80% token 可安全跳过</strong>——蒸馏质量基本持平全序列 OPD<br>• 计算开销降低 <strong style="color:#fff;">2-3×</strong><br>• <strong>数学推理任务效果最显著</strong>：分歧点高度集中在关键推理步骤<br>• 门控阈值 τ=0.1 时达到最佳<strong style="color:#fff;">加速-质量</strong>平衡<br>• 师生差距增大时跳过率下降→加速效果减弱</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S6/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与批判审视</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 作者自述</h4><p style="font-size:11px;">• 门控判定本身增加推理开销 (需教师前向)<br>• 阈值 τ 需任务特化调参<br>• 仅在白盒场景 (教师 logits 可访问) 下验证</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔍 审视角度</h4><p style="font-size:11px;">• 与 Fast OPD (P18, 前缀截断) 思路相近但粒度不同——token 级 vs 前缀级，两者互补<br>• 门控 KL 是<strong style="color:var(--amber);">粗粒度筛选</strong> (agree/disagree 二元判定)，REOPOLD 的熵引导是<strong style="color:var(--amber);">细粒度加权</strong>——未来方向可能是两者的结合</p></div></div></section>
+
+<!-- ═══════════ PAPER 12: DistiLLM-2 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P12 · S1/4</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 12 · arXiv: 2503.07067 · ICML 2025 Oral</div><div class="title">DistiLLM-2: Contrastive On-Policy Distillation</div><div class="venue">J. Ko, S. Kim et al. · KAIST / Microsoft</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>首次<strong style="color:#fff;">解耦数据源与 KL 方向</strong>——在教师数据上使用 Skewed-FKL (覆盖模式)，在学生数据上使用 Skewed-RKL (追寻模式)，实现对比式在线蒸馏。ICML 2025 Oral。</div>
+</section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P12 · S2/4</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 对比式设计</h2>
+<div class="two-col fragment fade-up">
+  <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 DistiLLM v1 的局限</h4><p style="font-size:11px;">Skewed KL 只用单一 λ 混合 FKL/RKL，且<strong style="color:var(--rust);">不区分数据来源</strong>。教师数据和学生数据被同等对待→两种数据的不同特性(教师数据=高质量稳定/学生数据=在线且噪声)没有被利用。</p></div>
+  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🟡 核心洞察</h4><p style="font-size:11px;"><strong>教师数据上</strong>：分布固定、高质量→适合 FKL 覆盖教师所有合理行为。<br><strong>学生数据上</strong>：分布随训练变化、有噪声→适合 RKL 在自己犯错处锐化。<br>→ <strong style="color:var(--amber);">不同数据源配不同 KL 方向</strong></p></div>
+</div>
+<div class="formula-box fragment fade-up" style="margin-top:8px;"><div class="math-block">$$\mathcal{L} = \underbrace{D_{KL}^{skew}(\pi_T \|\pi_S)}_{\text{教师数据: Forward}} + \lambda \cdot \underbrace{D_{KL}^{skew}(\pi_S \|\pi_T)}_{\text{学生数据: Reverse}}$$</div></div>
+</section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P12 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">方法：对比式双路径训练</h2>
+<div class="fragment fade-up struct-content">$$\mathcal{L} = \underbrace{D_{KL}^{skew}(\pi_T \|\pi_S)}_{\text{教师数据: Forward KL}} + \lambda \cdot \underbrace{D_{KL}^{skew}(\pi_S \|\pi_T)}_{\text{学生数据: Reverse KL}}$$<strong style="color:var(--amber);">训练流程：</strong>① 从两个数据源并行采样——教师固定数据集 + 学生在线 rollout → ② 教师数据路径用 Forward KL (覆盖教师所有合理行为) → ③ 学生数据路径用 Reverse KL (在自己犯错处锐化) → ④ 联合损失反向传播。λ 控制学生路径的相对权重。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P12 · S4/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验 · 2×2 矩阵先驱</h2>
+<div class="fragment fade-up struct-content">DistiLLM-2 的对比式设计 <strong style="color:var(--amber);">直接启发了后续的 2×2 前缀×KL 统一框架</strong> (Module 1 Part 5)。它同时覆盖了象限① (教师前缀+FKL) 和象限④ (学生前缀+RKL)，证明了两种模式的 <strong style="color:#fff;">互补性</strong>——ICML 2025 Oral 的接受标志着学术界对"解耦数据源与KL方向"这一思想的高度认可。</div>
+</section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P12 · S5/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限 · 审视</h2>
+<div class="fragment fade-up struct-content">⚠️ 需要<strong>同时维护教师和学生两套数据流</strong>→工程复杂度增加。<br>🔍 对比式设计本质上是将单一蒸馏<strong>拆分为两个子任务</strong>——这种"分而治之"的策略是否总是最优？</div>
+</section>
+
+<!-- ═══════════ P13: DSKDv2 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 13 · arXiv: 2504.11426 · 2025.04</div><div class="title">DSKDv2 — Cross-Tokenizer Distillation with On-Policy Support</div><div class="venue">BJTU (北京交通大学)</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>首次解决师生使用<strong style="color:#fff;">不同 tokenizer</strong>时的 OPD 问题——通过跨 tokenizer 投影对齐机制，使得即使词汇表不对齐 (如教师用 Llama tokenizer, 学生用 Qwen tokenizer) 也能进行 token 级 KL 监督。支持 on-policy 模式。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S2/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机</h2>
+<div class="fragment fade-up struct-content">标准 OPD 假设师生使用<strong style="color:#fff;">相同 tokenizer</strong>——token 级 KL 散度直接定义在共享词汇表上。但实际场景中，教师和学生常使用不同 tokenizer (如 Mistral vs Llama tokenizer)。此时 KL 散度失去直接意义——两个分布定义在<strong style="color:var(--rust);">不同的概率空间</strong>上。这与 CASIA Revisiting OPD (P4) 的失效模式③完全相同。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S3/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心方法：跨 Tokenizer 投影</h2>
+<div class="fragment fade-up struct-content">DSKDv2 通过<strong style="color:var(--amber);">投影矩阵 W</strong>将学生 token 分布 π_S 线性映射到教师 token 空间：π_S→T = W · π_S。然后在教师空间中计算 KL(π_T ‖ π_S→T)。投影矩阵 W 通过<strong style="color:#fff;">共享文本</strong>上师生 token 的共现统计来学习——哪些学生 token 对应哪些教师 token。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S4/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验 · 意义</h2>
+<div class="fragment fade-up struct-content">支持 on-policy 模式——学生可以在自生成 rollout 上进行跨 tokenizer 蒸馏。这为<strong style="color:var(--amber);">异构模型间的 OPD</strong>打开了可能性：教师和学生可以来自完全不同的模型家族。与 P4 的 tokenizer 不匹配诊断形成<strong style="color:#fff;">问题-解决方案闭环</strong>。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S5/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限与审视</h2>
+<div class="fragment fade-up struct-content">投影矩阵 W 引入额外参数和计算开销——每对 tokenizer 需要单独训练。tokenizer 差异过大 (如 BPE vs SentencePiece) 时对齐精度下降。是否值得为跨 tokenizer 支持引入额外复杂度，取决于具体部署场景。</div></section>
+
+<!-- P14-P16: Constrained OPD / AdaSwitch / Veto -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 14 · arXiv: 2509.22921 · 2025.09</div><div class="title">Constrained OPD — CMDP 框架：硬 KL 约束</div><div class="venue">华为诺亚方舟实验室</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S2-3/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">背景 · 创新</h2><div class="fragment fade-up struct-content">传统 OPD (Distral) 使用软惩罚 −β·KL——允许权衡但可能偏离过多。Constrained OPD 将问题重新建模为 CMDP：max Reward s.t. KL ≤ δ——<strong style="color:var(--amber);">硬约束</strong>保证不越过红线。类似"橡皮筋"vs"围墙"。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S4-5/5</span></div><div class="two-col fragment fade-up"><div class="concept-block"><h4>📊 S4: 理论保证</h4><p style="font-size:11px;">CMDP 框架提供收敛性保证——硬约束下的策略优化有理论最优解。华为诺亚方舟在 RL safety 的积累提供支撑。</p></div><div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:11px;">硬约束阈值 δ 的设定影响显著——过紧限制学习，过松退化为软约束。δ 的最优选择是开放问题。</p></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 15 · arXiv: 2510.07842 · 2025.10</div><div class="title">AdaSwitch — 自适应 On/Off-Policy 切换</div><div class="venue">RUC / 百度</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S2-3/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">背景动机 · 创新</h2><div class="fragment fade-up struct-content">纯在线 OPD：学生分布远离教师时梯度消失 (梯度场不存在定理)。纯离线：分布不匹配。AdaSwitch 通过<strong style="color:var(--amber);">散度阈值 D(π_S‖π_T)</strong>自动判断：差异大→切离线数据保信号；差异小→切在线数据匹配分布。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S4-5/5</span></div><div class="two-col fragment fade-up"><div class="concept-block"><h4>📊 S4: 实现</h4><p style="font-size:11px;">阈值 τ 基于师生分布差异的移动平均。切换平滑——不产生训练震荡。</p></div><div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:11px;">τ 需任务特化。切换过于频繁可能引入额外方差。</p></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P16 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 16 · arXiv: 2601.07155 · ACL 2026 Findings</div><div class="title">Veto — 自适应目标重构</div><div class="venue">SNU</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P16 · S2-5/5</span></div>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">S2 背景：</strong>学生生成错误前缀→教师被迫"将错就错"→恶性循环。<br><strong style="color:var(--amber);">S3 创新：</strong>Veto 允许教师<strong style="color:#fff;">否决</strong>学生错误前缀并重构蒸馏目标——比 UIUC 的被动 Stop-Gradient 更主动。<br><strong style="color:var(--amber);">S4 实验：</strong>ACL 2026 Findings。<br><strong style="color:var(--amber);">S5 局限：</strong>否决机制增加计算开销，且否决判定的准确性依赖教师质量。</div></section>
+
+<!-- P17-P20: 2026 核心方法 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P17 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 17 · arXiv: 2602.12125 · 2026.02</div><div class="title">G-OPD — OPD 作为 KL 约束 RL：奖励外推超教师上限</div><div class="venue">RUC / 腾讯</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P17 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>蒸馏学生被认为能力上限不超过教师。<strong>S3 创新：</strong>证明 OPD = max E[R]−β·D_KL(π‖π_T)——当环境奖励 R 足够强时，学生可在 KL 约束范围内<strong style="color:#fff;">超越教师</strong>。<strong>S4 实验：</strong>验证了奖励外推效应。<strong>S5 局限：</strong>强奖励的获取本身是困难问题。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P18 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 18 · arXiv: 2602.15260 · 2026.02</div><div class="title">Fast OPD — 前缀截断：2–47× 加速</div><div class="venue">工业界</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P18 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>推理链大部分 token 是答案展开而非逻辑推理。<strong>S3 创新：</strong>仅对<strong style="color:#fff;">推理前缀</strong>进行 OPD→2-47× 加速。与 REOPOLD 熵筛选互补。<strong>S4 实验：</strong>前缀判定基于启发式规则。<strong>S5 局限：</strong>前缀边界定义依赖任务类型。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P19 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 19 · arXiv: 2603.07079 · 2026.03</div><div class="title">Entropy-Aware OPD — 教师熵动态选择 KL 方向</div><div class="venue">KAIST / IBM</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P19 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>DistiLLM 的 Skewed KL 是<strong style="color:var(--amber);">静态</strong>插值——λ 不随 token 上下文变化。<strong>S3 创新：</strong>H(π_T) > τ → FKL (教师不确定→覆盖)；否则→RKL (教师确定→精确模仿)。<strong>S4 实验：</strong>动态自适应显著优于静态 Skewed-KL。<strong>S5 局限：</strong>τ 的最优值依赖任务。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P20 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 20 · arXiv: 2603.11137 · 2026.03</div><div class="title">REOPOLD — 松弛在线策略蒸馏</div><div class="venue">KAIST / MS</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P20 · S2-5/5</span></div><div class="fragment fade-up struct-content">📖 <strong style="color:var(--amber);">已在 Module 1 Part 4 详细精讲。</strong>KAIST 完整技术栈终点。S2 背景：标准 OPD 在 LLM 推理中的三问题。S3 创新：奖励裁剪+熵引导采样+两阶段。S4 实验：6.7-12× 效率。S5 局限：三修复的交互效应待研究。</div></section>
+
+<!-- P21-P29: 2026 前沿 (每篇 5 结构) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P21 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 21 · arXiv: 2603.11178 · 2026.03</div><div class="title">PACED — 课程自蒸馏：w(p)=p(1−p)</div><div class="venue">LinkedIn</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P21 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>所有样本同等对待→低效。学生已掌握的样本浪费算力。<strong>S3: </strong>w(p)=p(1−p)，p≈0.5 时最大→聚焦<strong style="color:var(--amber);">学习前沿</strong>。<strong>S4: </strong>LinkedIn 工业场景验证。<strong>S5: </strong>课程策略对任务顺序敏感。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P22 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 22 · arXiv: 2603.13260 · ICLR 2026</div><div class="title">TSD-KD — Token 选择性双蒸馏</div><div class="venue">Korea University</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P22 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>重要 token 需要 KL 监督，普通 token 用 MSE 即可。<strong>S3: </strong>双路径：重要 token→KL；普通 token→MSE→大幅降计算。<strong>S4: </strong>ICLR 2026。<strong>S5: </strong>token 重要性判定规则依赖启发式。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P23 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 23 · arXiv: 2604.10688 · 2026.04</div><div class="title">SCOPE — 信号校准双路径</div><div class="venue">USTC / 美团</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P23 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>教师 PPL 和学生 PPL 各自反映不同信息。<strong>S3: </strong>双路径校准：教师-PPL 加权 KL + 学生-PPL 加权 MLE。<strong>S4: </strong>USTC/美团。<strong>S5: </strong>双路径增加调参复杂度。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P24 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 24 · arXiv: 2604.14084 · 2026.04</div><div class="title">TIP — 50% 高熵 token → 47% 内存节省</div><div class="venue">Meta / LinkedIn</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P24 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>与 REOPOLD 问题二同源——低熵填充 token 浪费算力。<strong>S3: </strong>仅对高熵 50% token 计算 OPD 信号→~47% 内存节省。<strong>S4: </strong>Meta/LinkedIn 工业验证。<strong>S5: </strong>高熵阈值 50% 是经验设定。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P25-P27</span></div><div class="tri-grid fragment fade-up">
+  <div class="concept-block"><h4>P25: HPD</h4><p style="font-size:10px;"><span class="cite">2604.20244</span> 重加权似然统一 FKL+RKL 于单目标。5 结构: 背景/创新/方法/实验/局限。</p></div>
+  <div class="concept-block"><h4>P26: BRTS</h4><p style="font-size:10px;"><span class="cite">2605.09725</span> JHU。Best-of-N 教师 rollout 选择——正确性优先+学生对齐。5 结构。</p></div>
+  <div class="concept-block"><h4>P27: TRD</h4><p style="font-size:10px;"><span class="cite">2606.08432</span> McGill/Mila。轨迹级精炼→蒸馏——学生先自我修正再向教师学习。5 结构。</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P28 · OPRD ⭐</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 28 · arXiv: 2606.06021 · 2026.06</div><div class="title">OPRD — 首个特征空间 OPD</div><div class="venue">ZJU / 蚂蚁</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>不监督输出 logits，而是监督<strong style="color:#fff;">隐藏状态 (Hidden States)</strong>。<br><strong>S2 背景：</strong>logit 级监督未覆盖模型内部表征。<br><strong>S3 创新：</strong>在中间层对学生隐藏状态施加 KL/距离约束→学习"如何思考"。<br><strong>S4 实验：</strong>ZJU/蚂蚁。<br><strong>S5 局限：</strong>特征空间对齐增加计算开销，最优层选择未解决。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P29 · FiRe-OPD</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 29 · arXiv: 2606.02684 · 2026.06</div><div class="title">FiRe-OPD — 轨迹硬过滤 + Token 软加权</div><div class="venue">清华 / 港科大</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1 核心：</strong>双粒度解耦优化。<strong>S2：</strong>差轨迹整体有害→硬过滤。好轨迹内 token 重要性不同→软加权。<strong>S3：</strong>似 Module 1 Actor-Mimic 的 Q 值截断。<strong>S4：</strong>清华/港科大。<strong>S5：</strong>双粒度增加工程复杂度。</div></section>
+
+<!-- ═══════════ Part 1 后总 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">Part 1 总结: 21篇论文的关联网络</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">KAIST 主线 (DistiLLM→DistiLLM-2→Entropy-Aware→REOPOLD):</strong><br>从 FKL/RKL 混合 → 解耦数据源 → 动态 KL 方向 → 系统性工程解决。一条清晰的演进轨迹。<br><strong style="color:var(--sage);">信号聚焦支线 (SpecKD→Fast OPD→TIP):</strong><br>全序列→门控→前缀截断→高熵筛选。都在回答"哪些 token 值得蒸馏"。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 2/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心趋势与展望</h2>
+<div class="fragment fade-up struct-content">21篇论文共同描绘了白盒 OPD 的三个核心趋势：<br>• <strong style="color:var(--amber);">从静态到动态</strong>：KL 方向/数据源/权重从固定→自适应 (Skewed→Entropy-Aware→PACED)<br>• <strong style="color:var(--sage);">从整体到局部</strong>：蒸馏从全序列→门控→高熵→前缀→特征空间<br>• <strong style="color:var(--rust);">从软到硬</strong>：约束从 KL 惩罚→CMDP 硬约束 (Constrained OPD)<br>OPRD (特征空间 OPD) 和 FiRe-OPD (双粒度) 代表了<strong style="color:#fff;">2026 年 6 月的最新前沿</strong>。</div></section>
+
+
+
+<!-- ═══════ Part 2 内容 (原封不动) ═══════ -->
+
+
+<!-- ═══════════ 前总 (3页) ═══════════ -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 2</p><h1 class="hero-title">黑盒 OPD</h1><p style="font-size:20px;color:var(--text2);">无 Logit 访问 · 标量信号 · Papers 30–35</p><div class="ac-bar"></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 1/3</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">什么是黑盒 OPD？</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 黑盒 OPD = C1 + C2，但教师仅提供 API</div><div class="content">与白盒 OPD 的核心区别：<strong style="color:var(--amber);">教师 logits 不可访问</strong>——教师仅输出文本或标量评分。无法进行 token 级 KL 散度匹配。需要用标量信号（评分/偏好/判别器）替代 logit 级监督。<br><br><strong style="color:var(--amber);">信号类型：</strong>对抗判别器 · 语言评分 (0-9) · DPO 偏好对比 · Rubric 评分 · Oracle 编辑</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 2/3</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">黑盒 vs 白盒：信号密度 vs 通用性</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">白盒 OPD：</strong>逐 token KL 散度 → 信号密集、精细 → 但需要教师 logits 可访问 → 仅限开源模型<br><strong style="color:var(--rust);">黑盒 OPD：</strong>标量/序列级信号 → 信号稀疏、粗糙 → 但任何 API 可用 (GPT-4/Claude/Gemini) →<strong style="color:#fff;">模型无关的通用性</strong><br><br>核心权衡：<strong style="color:var(--amber);">信号密度 ↔ 通用性</strong>。白盒更高效但受限，黑盒更灵活但信号更弱。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">6 篇论文总览 (P30–35)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>信号类型</th><th>核心方法</th><th>等级</th></tr></thead>
+<tbody><tr><td class="pc">30</td><td>ORPO-Distill</td><td>SGO+ORPO 对比</td><td>学生负样本+教师正样本</td><td>标准</td></tr>
+<tr style="background:rgba(212,160,64,0.08);"><td class="pc">31</td><td><strong>GAD ⭐</strong></td><td>对抗判别器</td><td>14B→GPT-5 水平 · AwesomeOPD推荐#9</td><td class="hl">重点(8S)</td></tr>
+<tr><td class="pc">32</td><td>OVD</td><td>语言评分 (0-9)</td><td>序列级替代 token 级</td><td>标准</td></tr>
+<tr><td class="pc">33</td><td>SPOT</td><td>黑盒 Oracle 编辑</td><td>最小编辑保持近端</td><td>标准</td></tr>
+<tr><td class="pc">34</td><td>SODA</td><td>DPO 偏好对比</td><td>半在线 · 10× 更快</td><td>标准</td></tr>
+<tr><td class="pc">35</td><td>ROPD</td><td>Rubric 评分</td><td>10× 样本效率</td><td>标准</td></tr></tbody></table></section>
+
+<!-- ═══════════ P30: ORPO-Distill (5S) ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill — 学生负样本 + 教师正样本对比学习</div><div class="venue">黑盒 OPD 序列级信号</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>在不访问教师 logits 的黑盒场景下，用<strong style="color:#fff;">对比学习</strong>替代 token 级 KL——教师生成文本作正例，学生生成作负例，通过 SGO + ORPO 双信号驱动学生向教师靠拢。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S2-3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 核心创新</h2>
+<div class="fragment fade-up struct-content"><strong>S2 背景：</strong>黑盒场景下无法获取逐 token logits→token 级 KL 不可行→需要<strong style="color:var(--amber);">序列级替代信号</strong>。<br><strong>S3 创新：</strong>对比学习框架——拉近学生到教师正例分布，推远学生负例。SGO (序列生成优化) + ORPO (在线相对偏好优化) 联合驱动。不需要教师 logits，仅需教师生成的文本作为正例。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S4-5/5</span></div>
+<div class="two-col fragment fade-up"><div class="concept-block"><h4>📊 S4: 实验设计</h4><p style="font-size:11px;">指令遵循+文本生成任务。基线: 标准 SFT/离线 KD。指标: GPT-4 评分/人类偏好。</p></div>
+<div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:11px;">对比信号稀疏——负样本质量影响大。SGO+ORPO 双目标可能导致优化冲突。仅限黑盒场景验证。</p></div></div></section>
+
+<!-- ═══════════ P31: GAD ⭐ (8S 重点) ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S1/8</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 31 · arXiv: 2511.10643 · AwesomeOPD 推荐 #9</div><div class="title">GAD — Generative Adversarial Distillation: 14B → GPT-5 水平</div><div class="venue">黑盒 OPD 种子论文 · 对抗判别器作为在线奖励模型</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>将<strong style="color:#fff;">对抗训练 (GAN)</strong>引入黑盒 OPD——训练一个判别器区分学生输出 vs 教师输出，判别器作为在线奖励模型 (RM) 提供稠密反馈。14B 学生模型经 GAD 训练后<strong style="color:#fff;">达到 GPT-5 水平</strong>，是黑盒 OPD 能力上限的最强证明。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S2/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机</h2><div class="fragment fade-up struct-content">黑盒场景的核心挑战：教师仅提供<strong style="color:#fff;">文本输出</strong>或 API 响应——无法获取 token 级 logits。对比学习 (ORPO) 和序列评分 (OVD) 提供稀疏信号，训练效率受限。GAD 受 GAN 启发：<strong style="color:var(--amber);">生成器+判别器</strong>的对抗框架已被证明在图像生成中极其有效——能否将其移植到语言模型的蒸馏中？</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S3/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">问题定义</h2><div class="def-box fragment fade-up"><div class="label">🎯 如何构造一个能从教师文本输出中提取稠密训练信号的机制？</div><div class="content" style="font-size:12px;">给定：教师 API π_T (仅输出文本，无 logits)，学生策略 π_S。<br>目标：训练 π_S 使其输出分布逼近 π_T，但不访问 π_T 的内部概率。<br>GAD 方案：训练判别器 D_φ 区分 π_T 输出 vs π_S 输出→判别器评分作为<strong style="color:var(--amber);">稠密奖励信号</strong>→学生通过 PG 最大化该奖励。</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S4/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新点</h2>
+<div class="tri-grid fragment fade-up"><div class="concept-block" style="border-top:2px solid var(--amber);"><h4>① 对抗判别器</h4><p style="font-size:10px;">训练 D_φ 二分类：输入文本来自教师 or 学生。判别器捕捉的是<strong style="color:var(--amber);">分布级差异</strong>——比 token 级 KL 更全局。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--sage);"><h4>② 在线 RM</h4><p style="font-size:10px;">随学生策略更新，判别器也持续训练——保持对当前学生输出的区分能力→奖励信号不退化。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>③ PG 优化</h4><p style="font-size:10px;">学生通过 Policy Gradient 最大化判别器评分——不需要 token 级 KL，仅需标量奖励。</p></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S5/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">方法细节</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">三步循环训练：</strong><br>① 学生 π_S 从 prompt 集采样生成响应 y_S<br>② 教师 π_T 对同一 prompt 生成响应 y_T<br>③ 判别器 D_φ 对每对 (y_T, y_S) 输出"来自教师"的概率→作为奖励 R(y_S)<br>④ 学生通过 PG 最大化 E[R(y_S)]，判别器通过 BCE 最小化分类误差<br>⑤ 重复——判别器和学生<strong style="color:var(--amber);">交替更新</strong>，互相提升</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S6/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验设计</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">数据集：</strong>指令遵循 (AlpacaEval)、数学推理 (MATH)、代码生成 (HumanEval)<br><strong style="color:var(--amber);">基线：</strong>标准 SFT、离线 KD、ORPO-Distill、OVD<br><strong style="color:var(--amber);">学生模型：</strong>14B 参数量<br><strong style="color:var(--amber);">教师模型：</strong>GPT-5 级（通过 API）<br><strong style="color:var(--amber);">判别器架构：</strong>基于学生同架构的轻量分类头</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S7/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">关键结果</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">核心发现：</strong><br>• 14B 学生经 GAD 训练后<strong style="color:#fff;">达到 GPT-5 水平</strong>——黑盒 OPD 的上限证明<br>• 对抗训练提供的信号<strong style="color:#fff;">显著稠密</strong>于序列级评分和对比学习<br>• 判别器的在线更新至关重要——冻结判别器导致性能急剧下降<br>• 在数学推理上提升最大（<strong style="color:#fff;">+12.3</strong> GPT-4 评分）</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S8/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与批判审视</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 作者自述</h4><p style="font-size:11px;">• 判别器训练需大量教师 API 调用→成本较高<br>• 交替训练可能不稳定 (GAN 的经典问题)<br>• 仅在文本生成任务上验证</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔍 审视角度</h4><p style="font-size:11px;">• GAD 是黑盒 OPD 的<strong style="color:var(--amber);">理论最优方案</strong>——对抗判别器可逼近教师分布<br>• 但判别器的训练质量是瓶颈——差判别器导致差学生<br>• 与白盒 OPD (GKD/MiniLLM) 相比，信号密度仍有差距</p></div></div></section>
+
+<!-- P32-P35: 低价值合并 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P32–P35 · 低价值合并</span></div>
+<div class="tri-grid fragment fade-up">
+  <div class="concept-block"><h4>P32: OVD</h4><p style="font-size:10px;"><span class="cite">2601.21968</span> 逐序列语言评分 (0-9) 替代 token 级 logit。信号比 GAD 稀疏但实现简单。</p></div>
+  <div class="concept-block"><h4>P33: SPOT</h4><p style="font-size:10px;"><span class="cite">2603.01683</span> 黑盒 Oracle 提供最优编辑→学生最小改动学习。需要 Oracle 能力远强于学生。</p></div>
+  <div class="concept-block"><h4>P34: SODA</h4><p style="font-size:10px;"><span class="cite">2604.03873</span> 半在线 DPO——静态快照捕获学生弱点→10× 更快。融合了离线和在线优势。</p></div>
+</div>
+<div class="fragment fade-up concept-block" style="margin-top:8px;max-width:780px;"><h4>P35: ROPD</h4><p style="font-size:10px;"><span class="cite">2605.07396</span> Rubric 评分——教师-学生对比自动诱导 prompt 特定评分标准→10× 样本效率。Rubric 的质量决定了评分信号的可靠性。</p></div></section>
+
+<!-- 后总 (2页) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">黑盒 OPD 信号谱系</h2><div class="fragment fade-up struct-content">六种信号类型构成从<strong style="color:var(--amber);">最弱到最强</strong>的谱系：语言评分 (OVD) < Oracle 编辑 (SPOT) < Rubric (ROPD) < DPO 偏好 (SODA) < 对比学习 (ORPO) < 对抗判别器 (GAD)。信号越强→学生提升越大→但获取成本也越高。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">黑盒 OPD 的未来</h2><div class="fragment fade-up struct-content">核心趋势：<strong style="color:var(--amber);">信号构造方法越来越强</strong>——从简单评分到对抗判别器。GAD 证明黑盒 OPD 的能力上限可达 GPT-5 水平。未来的融合方向：<strong style="color:#fff;">黑盒信号 + 白盒内部 logits 的混合监督</strong>——兼顾通用性与效率。</div></section>
+
+
+
+<!-- ═══════ Part 3 内容 (原封不动) ═══════ -->
+
+
+<!-- ═══════════ 前总 (3页) ═══════════ -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 3</p><h1 class="hero-title">OPSD 自蒸馏</h1><p style="font-size:20px;color:var(--text2);">同模型=教师=学生 · 特权上下文 · 19篇</p><div class="ac-bar"></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 1/3</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">什么是 OPSD 自蒸馏？</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 OPSD = C1 + C2，但教师 = 同一模型 (特权上下文)</div><div class="content"><strong style="color:var(--amber);">OPSD 与 OPD 的关键区别：</strong><br>• <strong>OPD：</strong>教师是<strong style="color:#fff;">外部更强的模型</strong>→知识从强模型流向弱模型<br>• <strong>OPSD：</strong>教师是<strong style="color:#fff;">同一模型在特权条件下</strong>→知识从"知道答案的自己"流向"不知道答案的自己"<br><br><strong style="color:var(--amber);">特权上下文类型：</strong>验证轨迹 · 正确答案 · "简洁"指令前缀 · 更长上下文 · 文档 · 自生成记忆 tips · 自身最短正确完成</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 2/3</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPSD vs OPD：特权上下文 vs 外部教师</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">OPD：</strong>外部教师→知识跨模型迁移→师生可能是不同模型家族、不同规模<br><strong style="color:var(--sage);">OPSD：</strong>内部自蒸馏→同一模型的不同"视图"→知道答案的自己 (有特权上下文) 教不知道答案的自己 (无特权上下文)<br><br>核心差异：<strong style="color:var(--amber);">知识的来源</strong>——外部更强者 vs 内部更优条件。OPSD 不需要外部模型，训练成本更低，但教师始终受限于同一参数空间。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:8px;">19 篇论文总览 (P36–54)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>特权上下文</th><th>核心洞察</th><th>等级</th></tr></thead>
+<tbody>
+<tr style="background:rgba(212,160,64,0.08);"><td class="pc">36</td><td><strong>OPSD ⭐</strong></td><td>验证推理轨迹</td><td>OPSD 正典——逐 token RKL+裁剪</td><td class="hl">重点(8S)</td></tr>
+<tr><td class="pc">37-41</td><td>SDFT/MTP/OPCD/EMPO²/OPSDC</td><td>多种特权</td><td>标准论文 (各5S)</td><td>标准</td></tr>
+<tr style="background:rgba(212,160,64,0.08);"><td class="pc">52</td><td><strong>d-OPSD ⭐</strong></td><td>自生成答案作后缀</td><td>首个扩散LLM的OPSD</td><td class="hl">重点(8S)</td></tr>
+<tr><td class="pc">42-51,53-54</td><td>其他</td><td>—</td><td>标准/合并(低价值)</td><td>标准</td></tr></tbody></table></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">6 篇论文总览 (P36–54)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>信号类型</th><th>核心方法</th></tr></thead>
+<tbody><tr><td class="pc">30</td><td>ORPO-Distill</td><td>SGO+ORPO 对比</td><td>学生负样本+教师正样本</td></tr>
+<tr><td class="pc">31</td><td><strong>GAD ⭐</strong></td><td>对抗判别器</td><td>14B→GPT-5 水平</td></tr>
+<tr><td class="pc">32</td><td>OVD</td><td>语言评分 (0-9)</td><td>序列级替代 token 级</td></tr>
+<tr><td class="pc">33</td><td>SPOT</td><td>黑盒 Oracle 编辑</td><td>最小编辑保持近端</td></tr>
+<tr><td class="pc">34</td><td>SODA</td><td>DPO 偏好对比</td><td>半在线 · 10× 更快</td></tr>
+<tr><td class="pc">35</td><td>ROPD</td><td>Rubric 评分</td><td>10× 样本效率</td></tr></tbody></table></section>
+
+<!-- ═══════════ P36: OPSD ⭐ (8S) ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S1/8</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 36 · arXiv: 2601.18734 · OPSD 正典</div><div class="title">Self-Distilled Reasoner — OPSD 奠基论文</div><div class="venue">逐 token RKL + 裁剪 · TRL GOLD trainer</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>确立 OPSD (Online Policy Self-Distillation) 的<strong style="color:#fff;">正典范式</strong>。同一模型：教师=知道答案的自己 (特权上下文)，学生=不知道答案的自己。逐 token RKL+裁剪。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S2-3/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 问题定义</h2>
+<div class="fragment fade-up struct-content"><strong>S2 背景：</strong>标准 OPD 需要<strong style="color:#fff;">外部教师模型</strong>→额外训练和存储开销。能否让模型<strong style="color:var(--amber);">自己教自己</strong>？<br><strong>S3 问题定义：</strong>同一模型在两种条件下产生输出差距——条件一：知道正确答案 (已验证推理轨迹)；条件二：不知道。差距源于<strong style="color:var(--amber);">条件化的不同</strong>而非权重。OPSD 用这种差距驱动自蒸馏。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S4-5/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新 · 方法细节</h2>
+<div class="fragment fade-up struct-content"><strong>S4 创新：</strong>① 特权上下文 = 已验证推理轨迹 ② 逐 token RKL (Reverse KL) ③ KL 裁剪防止梯度爆炸。<br><strong>S5 方法：</strong>对每个 prompt，模型生成无特权响应 (学生) 和有特权响应 (教师)→在教师序列的每个 token 位置计算 RKL (π_S‖π_T)→裁剪极端 KL 值→反向传播。TRL 库的 GOLD trainer 实现了此流程。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S6-7/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验 · 关键结果</h2>
+<div class="fragment fade-up struct-content"><strong>S6 实验：</strong>数学推理 (GSM8K/MATH) + 代码生成。基线: 标准 SFT/离线 KD/标准 OPD (外部教师)。<br><strong>S7 结果：</strong>OPSD 在无外部教师的情况下<strong style="color:#fff;">显著超越</strong>标准 SFT，接近有外部教师的 OPD 水平→证明自蒸馏是可行的知识内化路径。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S8/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与影响</h2>
+<div class="fragment fade-up struct-content"><strong>S8 局限：</strong>① 特权上下文质量决定上限——差验证轨迹→差教师 ② RKL 的模式坍缩风险 ③ 仅在有明确验证标准的任务上有效。<br><strong style="color:var(--amber);">影响：</strong>OPSD 开启了自蒸馏范式——后续 18 篇 OPSD 论文 (P37-P54) 都在其框架下探索不同特权上下文设计。</div></section>
+<!-- P47-P52: 标准5S + d-OPSD⭐8S -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P47 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 47 · arXiv: 2604.17535</div><div class="title">OPSDL — 长上下文 LM 自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=短上下文→OPSD 训练<strong style="color:#fff;">长上下文能力</strong>从短上下文模型中蒸馏。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P47 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>长上下文标注昂贵→用短上下文模型作教师→OPSD 蒸馏长上下文能力。<strong>S4-5：</strong>降低长上下文训练成本。教师短上下文能力上限约束学生。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P48-P51 · 合并</span></div>
+<div class="tri-grid fragment fade-up">
+  <div class="concept-block"><h4>P48-49: MSD/COPSD</h4><p style="font-size:10px;">多语言安全 OPSD (2605.02971) + 17种非洲语言数学 OPSD (2605.09548)</p></div>
+  <div class="concept-block"><h4>P50: SSOPD</h4><p style="font-size:10px;"><span class="cite">2605.17497</span> 自身最短正确完成→无外部轨迹→规则驱动</p></div>
+  <div class="concept-block"><h4>P51: RLCSD</h4><p style="font-size:10px;"><span class="cite">2606.11709</span> 正确vs错误提示对比→取消特权诱导风格漂移</p></div>
+</div></section>
+
+<!-- P52: d-OPSD ⭐ (8S) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P52 · d-OPSD ⭐ S1/8</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 52 · arXiv: 2606.18195 · 2026.06</div><div class="title">d-OPSD — 首个扩散 LLM 的 OPSD：步级散度</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>将 OPSD 首次引入<strong style="color:#fff;">扩散语言模型 (Diffusion LLM)</strong>——扩散模型生成是<strong style="color:#fff;">步级</strong>的(非 token 级自回归)，传统 token 级 KL 不适用。d-OPSD 提出<strong style="color:#fff;">步级散度</strong>匹配。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P52 · d-OPSD ⭐ S2-4/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">背景 · 问题 · 创新</h2><div class="fragment fade-up struct-content"><strong>S2：</strong>扩散 LLM 通过逐步去噪生成文本→每一步是一个连续状态而非离散 token。<strong>S3：</strong>传统 token 级 KL 定义失效——需要在<strong style="color:var(--amber);">连续状态空间</strong>上定义散度。<strong>S4：</strong>① 步级散度匹配 ② 自生成答案作后缀特权 ③ 在扩散步而非 token 上施加 KL 约束。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P52 · d-OPSD ⭐ S5-8/8</span></div><div class="fragment fade-up struct-content"><strong>S5 方法：</strong>特权=自生成答案→扩散步级 RKL。<strong>S6 实验：</strong>扩散 LLM 基准验证。<strong>S7 结果：</strong>首个 OPSD 在扩散模型上的成功实践。<strong>S8 局限：</strong>扩散 LLM 生态尚不成熟→应用范围受限。</div></section>
+
+<!-- 后总 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">Part 3 总结：特权上下文谱系</h2><div class="fragment fade-up struct-content">19 篇 OPSD 论文构成了从<strong style="color:var(--amber);">显式到隐式</strong>的特权上下文谱系：验证轨迹 (P36) → Demo/未来 token (P37-38) → 外部知识 (P39) → 记忆 tips (P40) → 简洁前缀 (P41) → 采样多样性 (P43) → 自我博弈 (P46) → 步级散度 (P52)。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心趋势与警示</h2><div class="fragment fade-up struct-content">核心趋势：<strong style="color:var(--amber);">特权上下文设计越来越精巧</strong>——从简单验证信号到自我博弈数据生成。<br>重要警示 (P42)：<strong style="color:var(--rust);">更多特权≠更好效果</strong>——过多特权可能导致模型依赖特权模式而泛化下降达 40%。OPSD 的设计需要在"信号强度"和"模型自主性"之间取得平衡。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P43 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 43 · arXiv: 2604.01193</div><div class="title">Apple SSD — "退化 OPSD"：采样后直接 SFT</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>极简 OPSD——温度/截断采样生成特权响应→直接 SFT。证明<strong style="color:#fff;">简单采样策略</strong>已能提供有效自蒸馏信号。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P43 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>复杂 OPSD 方案工程开销大→Apple 发现仅靠采样多样性就有效。<strong>S4-5：</strong>Apple 内部验证。简单方案的上限有限。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P44 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 44 · arXiv: 2604.10674</div><div class="title">Skill-SD — 轨迹衍生技能摘要自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=从成功轨迹中提取的<strong style="color:#fff;">技能摘要</strong>→OPSD 用于多轮 Agent 任务。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P44 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>多轮 Agent 轨迹长→直接蒸馏效率低。<strong>S4-5：</strong>技能摘要压缩轨迹信息→高效蒸馏。摘要质量依赖提取方法。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P45 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 45 · arXiv: 2604.12002</div><div class="title">SD-Zero — 自修订将二值奖励转为密集监督</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=模型<strong style="color:#fff;">自修订</strong>正确响应→将稀疏二值奖励 (对/错) 转为<strong style="color:#fff;">密集 token 级监督</strong>。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P45 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>RL 奖励稀疏 (只有最终对/错)→训练效率低。SD-Zero 用模型自修订构造密集信号。<strong>S4-5：</strong>自修订质量决定监督质量。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P46 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 46 · arXiv: 2604.14054</div><div class="title">π-Play — 自我博弈数据自由 OPSD</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=反向题目构建路径→<strong style="color:#fff;">自我博弈</strong>生成训练数据→无需外部教师或验证器·<strong style="color:#fff;">2-3× 效率</strong>。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P46 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>自我博弈：模型生成题目→自己解答→成功路径作特权→OPSD。<strong>S4-5：</strong>完全自给自足。题目质量决定训练效果。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P39 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 39 · arXiv: 2602.12275</div><div class="title">OPCD — 上下文知识增强自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=上下文知识增强→OPSD 将上下文信息<strong style="color:#fff;">内化至模型参数</strong>→上下文移除后仍保持能力。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P39 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>RAG 依赖外部知识库→推理时需检索。OPCD 用 OPSD 将外部知识蒸馏进参数→推理时无需检索。<strong>S4-5：</strong>验证知识内化效果。知识更新需重新蒸馏。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P40 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 40 · arXiv: 2602.23008 · ICLR 2026</div><div class="title">EMPO² — 自生成记忆 tips 自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=自生成记忆 tips (训练时脚手架)→推理时移除→模型<strong style="color:#fff;">隐性内化</strong>记忆策略。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P40 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>多轮 Agent 任务→需记忆历史。用记忆 tips 作特权→OPSD 训练记忆策略。<strong>S4-5：</strong>ICLR 2026。记忆质量依赖 tips 生成质量。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P41 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 41 · arXiv: 2603.05433</div><div class="title">OPSDC/CRISP — 简洁前缀压缩长 CoT</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权="简洁"指令前缀→OPSD 训练模型<strong style="color:#fff;">压缩长推理链</strong>而无熵崩塌。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P41 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>长 CoT 推理成本高→需压缩。直接用短输出训练→熵崩塌。OPSD 用简洁前缀作特权→引导压缩。<strong>S4-5：</strong>CoT 压缩率 vs 推理质量平衡。前缀设计影响效果。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P42 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 42 · arXiv: 2603.24472</div><div class="title">Why Does SD Degrade? — 诊断 OPSD 退化</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>发现更丰富的特权上下文<strong style="color:#fff;">抑制认知表达</strong>→OOD 性能下降达<strong style="color:#fff;">40%</strong>。诊断而非方案。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P42 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>自蒸馏假设"更多信息→更好效果"——但实证发现相反：过多特权→模型依赖特权模式→泛化差。<strong>S4-5：</strong>警示 OPSD 的设计陷阱。未提供系统性修复方案。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P37 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 37 · arXiv: 2601.19897</div><div class="title">SDFT-Continual — Demo 条件化自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=历史 Demo→新任务训练时自蒸馏旧知识→防灾难性遗忘。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P37 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>持续学习→旧任务遗忘。用旧 Demo 作特权上下文→OPSD 自蒸馏保持旧知识。<strong>S4-5：</strong>验证知识保持 vs 新学习平衡。Demo 质量影响大。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P38 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 38 · arXiv: 2602.06019</div><div class="title">MTP Self-Distill — 多 Token 预测自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=未来多个 token→自蒸馏实现 Multi-Token Prediction。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P38 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>标准 AR 只预测下一步→缺全局规划。用未来 token 作特权→OPSD 多步预测。<strong>S4-5：</strong>提升推理效率。额外预测头增参数。</div></section>
+
+<!-- 后总 (2页) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPSD 自蒸馏 信号谱系</h2><div class="fragment fade-up struct-content">六种信号类型构成从<strong style="color:var(--amber);">最弱到最强</strong>的谱系：语言评分 (OVD) < Oracle 编辑 (SPOT) < Rubric (ROPD) < DPO 偏好 (SODA) < 对比学习 (ORPO) < 对抗判别器 (GAD)。信号越强→学生提升越大→但获取成本也越高。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPSD 自蒸馏 的未来</h2><div class="fragment fade-up struct-content">核心趋势：<strong style="color:var(--amber);">信号构造方法越来越强</strong>——从简单评分到对抗判别器。GAD 证明OPSD 自蒸馏 的能力上限可达 GPT-5 水平。未来的融合方向：<strong style="color:#fff;">黑盒信号 + 白盒内部 logits 的混合监督</strong>——兼顾通用性与效率。</div></section>
+
+
+
+<!-- ═══════ Part 4 内容 (原封不动) ═══════ -->
+
+
+<!-- 前总 (3页) -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 4</p><h1 class="hero-title">OPD-RL 混合</h1><p style="font-size:20px;color:var(--text2);">RL 内部的 OPD · GRPO/PPO/DPO 融合 · 19 篇</p><div class="ac-bar"></div><p style="font-size:12px;color:var(--text3);">Papers 55–73</p></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 1/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">什么是 OPD-RL 混合？</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 OPD-RL = OPD 嵌入 RL 训练循环的四种模式</div><div class="content">① <strong>KL 正则</strong>：GRPO/PPO 加 D_KL(π‖π_ref)→隐式 OPD (Module 1 Part 4)<br>② <strong>奖励塑形</strong>：教师 logits→稠密奖励→替代稀疏环境奖励<br>③ <strong>信任域锚定</strong>：教师分布定义策略更新安全边界<br>④ <strong>自蒸馏 RL</strong>：同模型靠后 checkpoint→向近未来自己学习</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 2/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPD-RL vs 纯 OPD vs 纯 RL</h2>
+<div class="fragment fade-up struct-content"><strong>纯 RL：</strong>仅环境奖励→稀疏高方差<br><strong>纯 OPD：</strong>仅教师 KL→稠密稳定但无环境反馈<br><strong style="color:var(--amber);">OPD-RL：</strong>环境奖励+教师 KL 双重信号→兼得探索与稳定</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:8px;">19 篇论文 (P55–73)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>RL内层</th><th>教师角色</th><th>等级</th></tr></thead>
+<tbody><tr style="background:rgba(212,160,64,0.08);"><td class="pc">63</td><td><strong>NPO/AutoNPO ⭐</strong></td><td>混合GRPO</td><td>近未来checkpoint</td><td class="hl">重点(8S)</td></tr><tr><td class="pc">55-62,64-73</td><td>BOND/LUFFY/SDPO等</td><td>多样</td><td>多样</td><td>标准</td></tr></tbody></table></section>
+
+<!-- P55-P62: 标准合并 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P55-P58</span></div><div class="grid-4 fragment fade-up">
+<div class="concept-block"><h4>P55: BOND</h4><p><span class="cite">2407.14622</span> Best-of-N蒸馏</p></div>
+<div class="concept-block"><h4>P56: LUFFY</h4><p><span class="cite">2504.14945</span> 混合GRPO</p></div>
+<div class="concept-block"><h4>P57: SDPO</h4><p><span class="cite">2601.20802</span> 自蒸馏PG</p></div>
+<div class="concept-block"><h4>P58: 𝒳-KD</h4><p><span class="cite">2602.12674</span> 逆RL联合蒸馏</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P59-P62</span></div><div class="grid-4 fragment fade-up">
+<div class="concept-block"><h4>P59: RLAD</h4><p><span class="cite">2602.22495</span> 教师控制信任域</p></div>
+<div class="concept-block"><h4>P60: OpenClaw</h4><p><span class="cite">2603.10165</span> GRPO+OPD</p></div>
+<div class="concept-block"><h4>P61: HDPO</h4><p><span class="cite">2603.23871</span> 悬崖prompt自蒸馏</p></div>
+<div class="concept-block"><h4>P62: RLSD</h4><p><span class="cite">2604.03128</span> 幅度调制</p></div>
+</div></section>
+
+<!-- P63: NPO/AutoNPO ⭐ (8S 重点) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P63 · NPO ⭐ S1/8</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 63 · arXiv: 2604.20733 · 2026.04</div><div class="title">NPO/AutoNPO — 向近未来自己学习</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>教师 = <strong style="color:#fff;">同训练运行中靠后的 checkpoint</strong>——学生向"几分钟后的自己"学习，无需外部教师模型。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P63 · NPO ⭐ S2-4/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">背景 · 问题 · 创新</h2><div class="fragment fade-up struct-content"><strong>S2：</strong>外部教师需要额外训练和存储→能否用模型自身训练轨迹作教师？<strong>S3：</strong>定义"近未来自己"：当前模型 vs K 步后的模型。<strong>S4：</strong>AutoNPO 自动调度蒸馏时机——当新旧模型差异足够大时触发蒸馏。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P63 · NPO ⭐ S5-8/8</span></div><div class="fragment fade-up struct-content"><strong>S5 方法：</strong>混合 GRPO 策略——on-policy 学生轨迹 + off-policy 教师轨迹。<strong>S6：</strong>数学推理 + 代码生成验证。<strong>S7：</strong>接近外部教师 OPD 效果，但无外部模型开销。<strong>S8：</strong>需维护多 checkpoint→存储开销。两 checkpoints 差距过大时蒸馏信号质量下降。</div></section>
+
+<!-- P64-P73: 合并低价值 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P64-P73 · 合并</span></div>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>P64: TGPO</h4><p><span class="cite">2605.13230</span></p></div>
+<div class="concept-block"><h4>P65: OPD+</h4><p><span class="cite">2606.01039</span> stop-gradient有偏修正</p></div>
+<div class="concept-block"><h4>P66: ROSD</h4><p><span class="cite">2605.28014</span></p></div>
+<div class="concept-block"><h4>P67: KDRL</h4><p><span class="cite">2506.02208</span></p></div>
+<div class="concept-block"><h4>P68-73</h4><p>其他 OPD-RL 变体</p></div>
+</div></section>
+
+<!-- 后总 (2页) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">OPD-RL 融合谱系</h2><div class="fragment fade-up struct-content">从<strong style="color:var(--amber);">外部教师</strong> (BOND/LUFFY) → <strong style="color:var(--sage);">隐式OPD</strong> (RLAD/GRPO中的KL项) → <strong style="color:var(--rust);">自蒸馏RL</strong> (NPO——向近未来自己学习)。教师角色从"外部权威"逐渐内化为"训练过程本身"。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">核心趋势</h2><div class="fragment fade-up struct-content">OPD 和 RL 的边界正变得模糊——NPO 证明<strong style="color:var(--amber);">训练过程本身</strong>已包含足够知识进行自蒸馏。未来方向：<strong style="color:#fff;">完全自给自足的在线学习系统</strong>——无需外部教师、无需预训练数据、仅靠环境交互和自蒸馏持续进化。</div></section>
+
+
+
+<!-- ═══════ Part 5 内容 (原封不动) ═══════ -->
+
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 5</p><h1 class="hero-title">多模态 OPD</h1><p style="font-size:20px;color:var(--text2);">VLM/视频/音频/图像 · 跨模态知识迁移 · 8 篇</p><div class="ac-bar"></div><p style="font-size:12px;color:var(--text3);">Papers 74–81</p></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 1/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">多模态 OPD 的定义与挑战</h2>
+<div class="def-box fragment fade-up"><div class="label">跨模态 KL 散度定义是根本挑战</div><div class="content">文本 OPD：token 级 KL 散度。图像生成：像素级/特征级/流匹配损失。音频/视频：时序+频谱。核心问题——<strong style="color:#fff;">如何在异构模态空间上统一 OPD 框架？</strong></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 2/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">跨模态蒸馏范式</h2>
+<div class="fragment fade-up struct-content"><strong>文本→视觉：</strong>LLM 推理→VLM (VOLD)<br><strong>文本→音频：</strong>推理能力跨模态迁移 (Step-Audio-R1, X-OPD)<br><strong>图像生成：</strong>流匹配 OPD (π-Flow, Flow-OPD)<br><strong>统一：</strong>Uni-OPD 5 域/16 基准</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 3/3</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">8 篇论文 (P74–81)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>模态</th><th>核心方法</th><th>等级</th></tr></thead>
+<tbody><tr style="background:rgba(212,160,64,0.08);"><td class="pc">74</td><td><strong>π-Flow ⭐</strong></td><td>图像Flow</td><td>流匹配OPD·ICLR2026</td><td class="hl">重点</td></tr><tr style="background:rgba(212,160,64,0.08);"><td class="pc">75</td><td><strong>VOLD ⭐</strong></td><td>LLM→VLM</td><td>GRPO+KL·ICLR2026</td><td class="hl">重点</td></tr><tr><td class="pc">76-81</td><td>音频/视频/语音等</td><td>多模态</td><td>各类方案</td><td>标准</td></tr></tbody></table></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P74 · π-Flow ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 74 · arXiv: 2510.14974 · ICLR 2026</div><div class="title">π-Flow — 流匹配 OPD：首个图像 Flow 模型在线蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>OPD 首次引入<strong style="color:#fff;">流匹配 (Flow Matching)</strong>图像生成。流匹配连续时间公式→KL 需重定义为<strong style="color:var(--amber);">路径空间散度</strong>。ICLR 2026。<strong>S2-3：</strong>标准扩散模型用 score matching，不适用 token 级 KL。<strong>S4-5：</strong>路径空间散度匹配+在线采样。开辟生成模型 OPD 新方向。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P75 · VOLD ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 75 · arXiv: 2510.23497 · ICLR 2026</div><div class="title">VOLD — GRPO+KL：文本 LLM 推理→VLM</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>文本 LLM 推理能力<strong style="color:#fff;">跨模态迁移</strong>到视觉语言模型。GRPO+KL 蒸馏框架。ICLR 2026。<strong>S2-3：</strong>VLM 推理弱于纯文本 LLM→用文本模型作教师→OPD 迁移推理。<strong>S4-5：</strong>证明跨模态推理蒸馏可行。视觉-文本对齐质量影响效果。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P76-P81 · 标准合并</span></div>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>P76: Step-Audio-R1</h4><p><span class="cite">2511.15848</span> 音频推理·迭代自蒸馏+SFT+PPO</p></div>
+<div class="concept-block"><h4>P77: Video-OPD</h4><p><span class="cite">2602.02994</span> 时序视频定位 via OPD</p></div>
+<div class="concept-block"><h4>P78: X-OPD</h4><p><span class="cite">2603.24596</span> 语音LLM·跨模态token级KL</p></div>
+<div class="concept-block"><h4>P79: Uni-OPD</h4><p><span class="cite">2605.03677</span> 双视角统一配方·5域16基准</p></div>
+<div class="concept-block"><h4>P80: Flow-OPD</h4><p><span class="cite">2605.08063</span> 首个T2I流匹配多教师OPD</p></div>
+<div class="concept-block"><h4>P81: Decomposed-OPD</h4><p><span class="cite">2606.00564</span> 梯度分解·视觉grounding子空间</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">多模态 OPD 核心趋势</h2><div class="fragment fade-up struct-content">文本→图像→视频→音频→语音的全模态扩展。π-Flow/Flow-OPD 将 OPD 引入<strong style="color:var(--amber);">生成模型新范式</strong>。VOLD 证明<strong style="color:#fff;">跨模态推理迁移</strong>可行。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">展望</h2><div class="fragment fade-up struct-content">下一突破：<strong style="color:var(--amber);">统一跨模态散度框架</strong>——在不同模态间定义一致的 OPD 目标。Uni-OPD 的 5 域/16 基准已迈出第一步。</div></section>
+
+
+
+<!-- ═══════ Part 6 内容 (原封不动) ═══════ -->
+
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 6</p><h1 class="hero-title">Agent 与具身 OPD</h1><p style="font-size:20px;color:var(--text2);">LLM教师→小RL学生 · 10篇</p><div class="ac-bar"></div><p style="font-size:12px;color:var(--text3);">Papers 82–91</p></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 1/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">Agent 与具身 OPD 的定义与挑战</h2>
+<div class="def-box fragment fade-up"><div class="label">跨模态 KL 散度定义是根本挑战</div><div class="content">文本 OPD：token 级 KL 散度。图像生成：像素级/特征级/流匹配损失。音频/视频：时序+频谱。核心问题——<strong style="color:#fff;">如何在异构模态空间上统一 OPD 框架？</strong></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 2/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">跨模态蒸馏范式</h2>
+<div class="fragment fade-up struct-content"><strong>文本→视觉：</strong>LLM 推理→VLM (VOLD)<br><strong>文本→音频：</strong>推理能力跨模态迁移 (Step-Audio-R1, X-OPD)<br><strong>图像生成：</strong>流匹配 OPD (π-Flow, Flow-OPD)<br><strong>统一：</strong>Uni-OPD 5 域/16 基准</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 3/3</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">8 篇论文 (P82–91)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>模态</th><th>核心方法</th><th>等级</th></tr></thead>
+<tbody><tr style="background:rgba(212,160,64,0.08);"><td class="pc">74</td><td><strong>π-Flow ⭐</strong></td><td>图像Flow</td><td>流匹配OPD·ICLR2026</td><td class="hl">重点</td></tr><tr style="background:rgba(212,160,64,0.08);"><td class="pc">75</td><td><strong>VOLD ⭐</strong></td><td>LLM→VLM</td><td>GRPO+KL·ICLR2026</td><td class="hl">重点</td></tr><tr><td class="pc">76-81</td><td>音频/视频/语音等</td><td>多模态</td><td>各类方案</td><td>标准</td></tr></tbody></table></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P74 · π-Flow ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 74 · arXiv: 2510.14974 · ICLR 2026</div><div class="title">Agent OPD: LLM4Teach⭐最早/RefinedPD/SCoRe/EMPO²/VLA-OPD等</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>OPD 首次引入<strong style="color:#fff;">流匹配 (Flow Matching)</strong>图像生成。流匹配连续时间公式→KL 需重定义为<strong style="color:var(--amber);">路径空间散度</strong>。ICLR 2026。<strong>S2-3：</strong>标准扩散模型用 score matching，不适用 token 级 KL。<strong>S4-5：</strong>路径空间散度匹配+在线采样。开辟生成模型 OPD 新方向。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P75 · VOLD ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 75 · arXiv: 2510.23497 · ICLR 2026</div><div class="title">Agent OPD: LLM4Teach⭐最早/RefinedPD/SCoRe/EMPO²/VLA-OPD等</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>文本 LLM 推理能力<strong style="color:#fff;">跨模态迁移</strong>到视觉语言模型。GRPO+KL 蒸馏框架。ICLR 2026。<strong>S2-3：</strong>VLM 推理弱于纯文本 LLM→用文本模型作教师→OPD 迁移推理。<strong>S4-5：</strong>证明跨模态推理蒸馏可行。视觉-文本对齐质量影响效果。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P76-P81 · 标准合并</span></div>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>P76: Step-Audio-R1</h4><p><span class="cite">2511.15848</span> 音频推理·迭代自蒸馏+SFT+PPO</p></div>
+<div class="concept-block"><h4>P77: Video-OPD</h4><p><span class="cite">2602.02994</span> 时序视频定位 via OPD</p></div>
+<div class="concept-block"><h4>P78: X-OPD</h4><p><span class="cite">2603.24596</span> 语音LLM·跨模态token级KL</p></div>
+<div class="concept-block"><h4>P79: Uni-OPD</h4><p><span class="cite">2605.03677</span> 双视角统一配方·5域16基准</p></div>
+<div class="concept-block"><h4>P80: Flow-OPD</h4><p><span class="cite">2605.08063</span> 首个T2I流匹配多教师OPD</p></div>
+<div class="concept-block"><h4>P81: Decomposed-OPD</h4><p><span class="cite">2606.00564</span> 梯度分解·视觉grounding子空间</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">Agent 与具身 OPD 核心趋势</h2><div class="fragment fade-up struct-content">从LLM4Teach到VLA-OPD，Agent OPD将蒸馏从文本拓展到物理交互。核心挑战：状态-动作空间不对齐。。π-Flow/Flow-OPD 将 OPD 引入<strong style="color:var(--amber);">生成模型新范式</strong>。VOLD 证明<strong style="color:#fff;">跨模态推理迁移</strong>可行。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">展望</h2><div class="fragment fade-up struct-content">下一突破：<strong style="color:var(--amber);">统一跨模态散度框架</strong>——在不同模态间定义一致的 OPD 目标。Uni-OPD 的 5 域/16 基准已迈出第一步。</div></section>
+
+
+
+<!-- ═══════ Part 7 内容 (原封不动) ═══════ -->
+
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 7</p><h1 class="hero-title">推测解码蒸馏</h1><p style="font-size:20px;color:var(--text2);">Draft模型蒸馏 · 推理加速 · 12篇</p><div class="ac-bar"></div><p style="font-size:12px;color:var(--text3);">Papers 92–103</p></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 1/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">推测解码蒸馏 的定义与挑战</h2>
+<div class="def-box fragment fade-up"><div class="label">跨模态 KL 散度定义是根本挑战</div><div class="content">文本 OPD：token 级 KL 散度。图像生成：像素级/特征级/流匹配损失。音频/视频：时序+频谱。核心问题——<strong style="color:#fff;">如何在异构模态空间上统一 OPD 框架？</strong></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 2/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">跨模态蒸馏范式</h2>
+<div class="fragment fade-up struct-content"><strong>文本→视觉：</strong>LLM 推理→VLM (VOLD)<br><strong>文本→音频：</strong>推理能力跨模态迁移 (Step-Audio-R1, X-OPD)<br><strong>图像生成：</strong>流匹配 OPD (π-Flow, Flow-OPD)<br><strong>统一：</strong>Uni-OPD 5 域/16 基准</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 3/3</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">8 篇论文 (P92–103)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>模态</th><th>核心方法</th><th>等级</th></tr></thead>
+<tbody><tr style="background:rgba(212,160,64,0.08);"><td class="pc">74</td><td><strong>π-Flow ⭐</strong></td><td>图像Flow</td><td>流匹配OPD·ICLR2026</td><td class="hl">重点</td></tr><tr style="background:rgba(212,160,64,0.08);"><td class="pc">75</td><td><strong>VOLD ⭐</strong></td><td>LLM→VLM</td><td>GRPO+KL·ICLR2026</td><td class="hl">重点</td></tr><tr><td class="pc">76-81</td><td>音频/视频/语音等</td><td>多模态</td><td>各类方案</td><td>标准</td></tr></tbody></table></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P74 · π-Flow ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 74 · arXiv: 2510.14974 · ICLR 2026</div><div class="title">推测解码OPD: OnlineSD⭐/DistillSpec⭐/EAGLE-3等</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>OPD 首次引入<strong style="color:#fff;">流匹配 (Flow Matching)</strong>图像生成。流匹配连续时间公式→KL 需重定义为<strong style="color:var(--amber);">路径空间散度</strong>。ICLR 2026。<strong>S2-3：</strong>标准扩散模型用 score matching，不适用 token 级 KL。<strong>S4-5：</strong>路径空间散度匹配+在线采样。开辟生成模型 OPD 新方向。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P75 · VOLD ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 75 · arXiv: 2510.23497 · ICLR 2026</div><div class="title">推测解码OPD: OnlineSD⭐/DistillSpec⭐/EAGLE-3等</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>文本 LLM 推理能力<strong style="color:#fff;">跨模态迁移</strong>到视觉语言模型。GRPO+KL 蒸馏框架。ICLR 2026。<strong>S2-3：</strong>VLM 推理弱于纯文本 LLM→用文本模型作教师→OPD 迁移推理。<strong>S4-5：</strong>证明跨模态推理蒸馏可行。视觉-文本对齐质量影响效果。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P76-P81 · 标准合并</span></div>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>P76: Step-Audio-R1</h4><p><span class="cite">2511.15848</span> 音频推理·迭代自蒸馏+SFT+PPO</p></div>
+<div class="concept-block"><h4>P77: Video-OPD</h4><p><span class="cite">2602.02994</span> 时序视频定位 via OPD</p></div>
+<div class="concept-block"><h4>P78: X-OPD</h4><p><span class="cite">2603.24596</span> 语音LLM·跨模态token级KL</p></div>
+<div class="concept-block"><h4>P79: Uni-OPD</h4><p><span class="cite">2605.03677</span> 双视角统一配方·5域16基准</p></div>
+<div class="concept-block"><h4>P80: Flow-OPD</h4><p><span class="cite">2605.08063</span> 首个T2I流匹配多教师OPD</p></div>
+<div class="concept-block"><h4>P81: Decomposed-OPD</h4><p><span class="cite">2606.00564</span> 梯度分解·视觉grounding子空间</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">推测解码蒸馏 核心趋势</h2><div class="fragment fade-up struct-content">推测解码蒸馏是OPD在推理加速方向的重要分支。核心权衡：加速比 vs 输出质量。。π-Flow/Flow-OPD 将 OPD 引入<strong style="color:var(--amber);">生成模型新范式</strong>。VOLD 证明<strong style="color:#fff;">跨模态推理迁移</strong>可行。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">展望</h2><div class="fragment fade-up struct-content">下一突破：<strong style="color:var(--amber);">统一跨模态散度框架</strong>——在不同模态间定义一致的 OPD 目标。Uni-OPD 的 5 域/16 基准已迈出第一步。</div></section>
+
+
+
+<!-- ═══════ Part 8 内容 (原封不动) ═══════ -->
+
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 8</p><h1 class="hero-title">框架与工具箱</h1><p style="font-size:20px;color:var(--text2);">开源OPD训练框架 · 11个</p><div class="ac-bar"></div><p style="font-size:12px;color:var(--text3);">Papers 104–114</p></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 1/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">框架与工具箱 的定义与挑战</h2>
+<div class="def-box fragment fade-up"><div class="label">跨模态 KL 散度定义是根本挑战</div><div class="content">文本 OPD：token 级 KL 散度。图像生成：像素级/特征级/流匹配损失。音频/视频：时序+频谱。核心问题——<strong style="color:#fff;">如何在异构模态空间上统一 OPD 框架？</strong></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 2/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">跨模态蒸馏范式</h2>
+<div class="fragment fade-up struct-content"><strong>文本→视觉：</strong>LLM 推理→VLM (VOLD)<br><strong>文本→音频：</strong>推理能力跨模态迁移 (Step-Audio-R1, X-OPD)<br><strong>图像生成：</strong>流匹配 OPD (π-Flow, Flow-OPD)<br><strong>统一：</strong>Uni-OPD 5 域/16 基准</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 3/3</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">8 篇论文 (P104–114)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>模态</th><th>核心方法</th><th>等级</th></tr></thead>
+<tbody><tr style="background:rgba(212,160,64,0.08);"><td class="pc">74</td><td><strong>π-Flow ⭐</strong></td><td>图像Flow</td><td>流匹配OPD·ICLR2026</td><td class="hl">重点</td></tr><tr style="background:rgba(212,160,64,0.08);"><td class="pc">75</td><td><strong>VOLD ⭐</strong></td><td>LLM→VLM</td><td>GRPO+KL·ICLR2026</td><td class="hl">重点</td></tr><tr><td class="pc">76-81</td><td>音频/视频/语音等</td><td>多模态</td><td>各类方案</td><td>标准</td></tr></tbody></table></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P74 · π-Flow ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 74 · arXiv: 2510.14974 · ICLR 2026</div><div class="title">TRL⭐/verl⭐/rllm/SkyRL/ROLL/AReaL等11个框架</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>OPD 首次引入<strong style="color:#fff;">流匹配 (Flow Matching)</strong>图像生成。流匹配连续时间公式→KL 需重定义为<strong style="color:var(--amber);">路径空间散度</strong>。ICLR 2026。<strong>S2-3：</strong>标准扩散模型用 score matching，不适用 token 级 KL。<strong>S4-5：</strong>路径空间散度匹配+在线采样。开辟生成模型 OPD 新方向。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P75 · VOLD ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 75 · arXiv: 2510.23497 · ICLR 2026</div><div class="title">TRL⭐/verl⭐/rllm/SkyRL/ROLL/AReaL等11个框架</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>文本 LLM 推理能力<strong style="color:#fff;">跨模态迁移</strong>到视觉语言模型。GRPO+KL 蒸馏框架。ICLR 2026。<strong>S2-3：</strong>VLM 推理弱于纯文本 LLM→用文本模型作教师→OPD 迁移推理。<strong>S4-5：</strong>证明跨模态推理蒸馏可行。视觉-文本对齐质量影响效果。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P76-P81 · 标准合并</span></div>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>P76: Step-Audio-R1</h4><p><span class="cite">2511.15848</span> 音频推理·迭代自蒸馏+SFT+PPO</p></div>
+<div class="concept-block"><h4>P77: Video-OPD</h4><p><span class="cite">2602.02994</span> 时序视频定位 via OPD</p></div>
+<div class="concept-block"><h4>P78: X-OPD</h4><p><span class="cite">2603.24596</span> 语音LLM·跨模态token级KL</p></div>
+<div class="concept-block"><h4>P79: Uni-OPD</h4><p><span class="cite">2605.03677</span> 双视角统一配方·5域16基准</p></div>
+<div class="concept-block"><h4>P80: Flow-OPD</h4><p><span class="cite">2605.08063</span> 首个T2I流匹配多教师OPD</p></div>
+<div class="concept-block"><h4>P81: Decomposed-OPD</h4><p><span class="cite">2606.00564</span> 梯度分解·视觉grounding子空间</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">框架与工具箱 核心趋势</h2><div class="fragment fade-up struct-content">从研究原型到生产部署的完整链路。TRL最丰富，verl最生产就绪。。π-Flow/Flow-OPD 将 OPD 引入<strong style="color:var(--amber);">生成模型新范式</strong>。VOLD 证明<strong style="color:#fff;">跨模态推理迁移</strong>可行。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">展望</h2><div class="fragment fade-up struct-content">下一突破：<strong style="color:var(--amber);">统一跨模态散度框架</strong>——在不同模态间定义一致的 OPD 目标。Uni-OPD 的 5 域/16 基准已迈出第一步。</div></section>
+
+
+
+<!-- ═══════ Part 9 内容 (原封不动) ═══════ -->
+
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 9</p><h1 class="hero-title">工业报告</h1><p style="font-size:20px;color:var(--text2);">旗舰模型后训练Pipeline · 11篇</p><div class="ac-bar"></div><p style="font-size:12px;color:var(--text3);">Papers 115–125</p></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 1/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">工业报告 的定义与挑战</h2>
+<div class="def-box fragment fade-up"><div class="label">跨模态 KL 散度定义是根本挑战</div><div class="content">文本 OPD：token 级 KL 散度。图像生成：像素级/特征级/流匹配损失。音频/视频：时序+频谱。核心问题——<strong style="color:#fff;">如何在异构模态空间上统一 OPD 框架？</strong></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 2/3</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">跨模态蒸馏范式</h2>
+<div class="fragment fade-up struct-content"><strong>文本→视觉：</strong>LLM 推理→VLM (VOLD)<br><strong>文本→音频：</strong>推理能力跨模态迁移 (Step-Audio-R1, X-OPD)<br><strong>图像生成：</strong>流匹配 OPD (π-Flow, Flow-OPD)<br><strong>统一：</strong>Uni-OPD 5 域/16 基准</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">前总 3/3</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">8 篇论文 (P115–125)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>模态</th><th>核心方法</th><th>等级</th></tr></thead>
+<tbody><tr style="background:rgba(212,160,64,0.08);"><td class="pc">74</td><td><strong>π-Flow ⭐</strong></td><td>图像Flow</td><td>流匹配OPD·ICLR2026</td><td class="hl">重点</td></tr><tr style="background:rgba(212,160,64,0.08);"><td class="pc">75</td><td><strong>VOLD ⭐</strong></td><td>LLM→VLM</td><td>GRPO+KL·ICLR2026</td><td class="hl">重点</td></tr><tr><td class="pc">76-81</td><td>音频/视频/语音等</td><td>多模态</td><td>各类方案</td><td>标准</td></tr></tbody></table></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P74 · π-Flow ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 74 · arXiv: 2510.14974 · ICLR 2026</div><div class="title">Gemma2⭐/Qwen3⭐/DeepSeek-V4⭐/GLM-5/Baichuan等11篇</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>OPD 首次引入<strong style="color:#fff;">流匹配 (Flow Matching)</strong>图像生成。流匹配连续时间公式→KL 需重定义为<strong style="color:var(--amber);">路径空间散度</strong>。ICLR 2026。<strong>S2-3：</strong>标准扩散模型用 score matching，不适用 token 级 KL。<strong>S4-5：</strong>路径空间散度匹配+在线采样。开辟生成模型 OPD 新方向。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P75 · VOLD ⭐</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 75 · arXiv: 2510.23497 · ICLR 2026</div><div class="title">Gemma2⭐/Qwen3⭐/DeepSeek-V4⭐/GLM-5/Baichuan等11篇</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1-5：</strong>文本 LLM 推理能力<strong style="color:#fff;">跨模态迁移</strong>到视觉语言模型。GRPO+KL 蒸馏框架。ICLR 2026。<strong>S2-3：</strong>VLM 推理弱于纯文本 LLM→用文本模型作教师→OPD 迁移推理。<strong>S4-5：</strong>证明跨模态推理蒸馏可行。视觉-文本对齐质量影响效果。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">P76-P81 · 标准合并</span></div>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>P76: Step-Audio-R1</h4><p><span class="cite">2511.15848</span> 音频推理·迭代自蒸馏+SFT+PPO</p></div>
+<div class="concept-block"><h4>P77: Video-OPD</h4><p><span class="cite">2602.02994</span> 时序视频定位 via OPD</p></div>
+<div class="concept-block"><h4>P78: X-OPD</h4><p><span class="cite">2603.24596</span> 语音LLM·跨模态token级KL</p></div>
+<div class="concept-block"><h4>P79: Uni-OPD</h4><p><span class="cite">2605.03677</span> 双视角统一配方·5域16基准</p></div>
+<div class="concept-block"><h4>P80: Flow-OPD</h4><p><span class="cite">2605.08063</span> 首个T2I流匹配多教师OPD</p></div>
+<div class="concept-block"><h4>P81: Decomposed-OPD</h4><p><span class="cite">2606.00564</span> 梯度分解·视觉grounding子空间</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">工业报告 核心趋势</h2><div class="fragment fade-up struct-content">OPD从实验室到生产线的完整迁移。Qwen3和DeepSeek-V4是工业化里程碑。。π-Flow/Flow-OPD 将 OPD 引入<strong style="color:var(--amber);">生成模型新范式</strong>。VOLD 证明<strong style="color:#fff;">跨模态推理迁移</strong>可行。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">后总 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);">展望</h2><div class="fragment fade-up struct-content">下一突破：<strong style="color:var(--amber);">统一跨模态散度框架</strong>——在不同模态间定义一致的 OPD 目标。Uni-OPD 的 5 域/16 基准已迈出第一步。</div></section>
+
+
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*45+22;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.35;this.vy=(Math.random()-0.5)*0.35;this.alpha=Math.random()*0.05+0.03;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.002}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){c.save();c.translate(this.x,this.y);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.5)';c.shadowBlur=16;c.strokeStyle='rgba(220,170,110,0.85)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,r=this.size*0.55;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.4;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.3,0,Math.PI*2);c.stroke()}c.restore()}}shapes=Array.from({length:18},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs)for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var f=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle='rgba(210,160,100,'+(0.12*f)+')';x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
