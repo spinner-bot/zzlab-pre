@@ -1,0 +1,9 @@
+D:\Anaconda\python.exe "F:\资源夹\科研\zzlab (preparing)\pre\2524030232_张锐寒\Software_E2\main.py" 
+训练设备: cuda
+MLP epoch 1/5  loss=0.7321
+MLP epoch 2/5  loss=0.2706
+MLP epoch 3/5  loss=0.1976
+MLP epoch 4/5  loss=0.1560
+MLP epoch 5/5  loss=0.1257
+MLP 测试准确率: 96.47%  训练耗时: 10.5s
+MLP 模型已保存至 F:\资源夹\科研\zzlab (preparing)\pre\2524030232_张锐寒\Software_E2\model\mlp.pth
