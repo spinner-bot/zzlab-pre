@@ -48,13 +48,27 @@ def plot_learning_curve():
     plt.show()
 
 # --- 2. Pygame 人机对战界面 ---
+def _load_cjk_font(size):
+    """优先加载 Windows 中文字体(支持中文显示)，失败则回退到内置字体"""
+    for path in (r"C:\Windows\Fonts\msyh.ttc",      # 微软雅黑
+                 r"C:\Windows\Fonts\simhei.ttf",    # 黑体
+                 r"C:\Windows\Fonts\simsun.ttc"):   # 宋体
+        if os.path.exists(path):
+            try:
+                return pygame.font.Font(path, size)
+            except Exception:
+                continue
+    return pygame.font.Font(None, size)
+
+
 def play_human_vs_ai():
     pygame.init()
     screen = pygame.display.set_mode((600, 600))
     pygame.display.set_caption("Tic-Tac-Toe: Human vs AI")
-    # 用 pygame 内置默认字体，避免 SysFont 在部分环境(如 Python3.13)枚举系统字体时崩溃
+    # 用内置/系统中文字体，避免 SysFont 在部分环境(如 Python3.13)枚举系统字体时崩溃
     font = pygame.font.Font(None, 80)
-    small_font = pygame.font.Font(None, 40)
+    big_font = _load_cjk_font(72)   # 结果横幅
+    small_font = _load_cjk_font(36) # 提示文字
 
     # 加载并冻结 AI
     ai_agent = QLearningAgent(name="Agent_X")
@@ -62,6 +76,7 @@ def play_human_vs_ai():
 
     game = TicTacToe()
     running = True
+    over_at = None  # 对局结束时刻(ms)，用于保证结果提示可见后再允许重开
 
     def ai_move():
         # AI 执 X（先手），每次轮到 X 就自动落子（含开局第一步）
@@ -88,16 +103,26 @@ def play_human_vs_ai():
                 elif game.board[r][c] == -1:  # O (Human)
                     pygame.draw.circle(screen, (0, 0, 255), (cx, cy), 70, 10)
 
-        # 显示结果
+        # 局终：屏幕中央醒目结果横幅
         if game.is_over:
-            txt = "Draw!" if game.winner == 0 else ("AI Wins!" if game.winner == 1 else "You Win!")
-            color = (100, 100, 100) if game.winner == 0 else ((255, 0, 0) if game.winner == 1 else (0, 0, 255))
-            surf = small_font.render(txt + " (Click to Restart)", True, color)
-            screen.blit(surf, (300 - surf.get_width() // 2, 20))
+            if game.winner == 0:
+                result, color = "平局！", (80, 80, 80)
+            elif game.winner == 1:
+                result, color = "AI（X）获胜！", (220, 40, 40)
+            else:
+                result, color = "你（O）获胜！", (40, 120, 220)
+            banner = big_font.render(result, True, color)
+            screen.blit(banner, (300 - banner.get_width() // 2, 200))
+            tip = small_font.render("点击任意处重新开始", True, (120, 120, 120))
+            screen.blit(tip, (300 - tip.get_width() // 2, 310))
 
     while running:
         draw_board()
         pygame.display.flip()
+
+        # 对局一结束就记录时刻（结果至少展示约1.2秒，避免误触直接进下一局）
+        if game.is_over and over_at is None:
+            over_at = pygame.time.get_ticks()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -111,9 +136,12 @@ def play_human_vs_ai():
                         game.step((r, c))
                         ai_move()  # 人类落子后轮到 AI
 
+            # 结果展示满1.2秒后才允许点击重开
             if event.type == pygame.MOUSEBUTTONDOWN and game.is_over:
-                game.reset()  # 点击重新开始
-                ai_move()  # 新对局 AI 再次先手
+                if over_at is not None and (pygame.time.get_ticks() - over_at) >= 1200:
+                    game.reset()  # 点击重新开始
+                    over_at = None
+                    ai_move()  # 新对局 AI 再次先手
 
     pygame.quit()
 

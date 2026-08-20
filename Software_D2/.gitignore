@@ -1,0 +1,8 @@
+# Python
+__pycache__/
+*.pyc
+
+# 强化学习运行生成物（首次运行会自动训练生成，不入库）
+Agent_X_q_table.json
+Agent_O_q_table.json
+training_stats.json
