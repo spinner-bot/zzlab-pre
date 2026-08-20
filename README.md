@@ -24,7 +24,8 @@
 ├── Software_D1/  强化学习研究笔记（OPD/多模态）【学习文档】
 ├── Software_D2/  井字棋 Q-Learning 智能体【3分】
 ├── Software_E1/  numpy 手写 BP 多层感知机【1分】
-└── Software_E2/  手写数字识别 MLP vs CNN（PyTorch）【3分】
+├── Software_E2/  手写数字识别 MLP vs CNN（PyTorch）【3分】
+└── Software_E3/  泰坦尼克生还预测（Kaggle 复现，多模型+网格搜索）【3分】
 ```
 
 ## 各题完成状态与运行
@@ -39,6 +40,7 @@
 | D2 井字棋 | ✅ 完整 | python Software_D2/main.py |
 | E1 BP-MLP | ✅ 完整 | python Software_E1/test.py |
 | E2 MLP vs CNN | ✅ 完整 | python Software_E2/main.py; cnn.py |
+| E3 泰坦尼克 | ⚠️ 半成品 | python Software_E3/titanic_solution.py |
 
 ## 说明
 - 各题均含**学习文档**（记录学习过程、关键知识点、踩坑记录）。
