@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import time
 from game import TicTacToe
 
 # 锚定到脚本所在目录，避免从其他目录启动时找不到/写错模型文件
@@ -92,10 +93,18 @@ class QLearningAgent:
             print(f"[{self.name}] 未找到模型文件，将从零开始学习")
 
 
-def run_ai_vs_ai_training(episodes=5000, window_size=100):
+def run_ai_vs_ai_training(episodes=None, time_limit=None, window_size=100):
     """
-    执行 AI vs AI 训练，并记录统计信息用于绘制学习曲线
+    执行 AI vs AI 训练，并记录统计信息用于绘制学习曲线。
+
+    episodes 与 time_limit 二选一：
+      - episodes: 指定训练局数
+      - time_limit: 指定训练时长(秒)，到时自动停止
+    二者都传时以先到达者为准；Ctrl+C 可随时中断并保存当前进度。
     """
+    if episodes is None and time_limit is None:
+        episodes = 5000  # 默认局数
+
     agent_x = QLearningAgent(name="Agent_X")
     agent_o = QLearningAgent(name="Agent_O")
     agent_x.unfreeze()
@@ -104,35 +113,51 @@ def run_ai_vs_ai_training(episodes=5000, window_size=100):
     stats_history = []
     recent_results = []  # 记录最近 window_size 局的 X 视角结果 (1:赢, -1:输, 0:平)
 
-    print(f"开始训练，共 {episodes} 局...")
-    for i in range(1, episodes + 1):
-        game = TicTacToe()
-        while not game.is_over:
-            current_agent = agent_x if game.current_player == 1 else agent_o
-            state_key = current_agent.get_state_key(game.board)
-            action = current_agent.choose_action(game)
-            current_agent.update_history(state_key, action)
-            game.step(action)
+    goal = f"{episodes} 局" if episodes else f"不超过 {time_limit:.0f} 秒"
+    print(f"开始训练（目标：{goal}，Ctrl+C 可随时中断并保存）...")
+    start_time = time.time()
+    episode = 0
+    interrupted = False
+    try:
+        while True:
+            # 到达任一结束条件即停止
+            if episodes is not None and episode >= episodes:
+                break
+            if time_limit is not None and (time.time() - start_time) >= time_limit:
+                print(f"已达到时间限制（{time_limit:.0f} 秒），停止训练。")
+                break
 
-        # 结算与更新
-        r_x, r_o = (1, -1) if game.winner == 1 else ((-1, 1) if game.winner == -1 else (0.0, 0.0))
-        agent_x.learn(r_x)
-        agent_o.learn(r_o)
+            episode += 1
+            game = TicTacToe()
+            while not game.is_over:
+                current_agent = agent_x if game.current_player == 1 else agent_o
+                state_key = current_agent.get_state_key(game.board)
+                action = current_agent.choose_action(game)
+                current_agent.update_history(state_key, action)
+                game.step(action)
 
-        # 记录统计
-        recent_results.append(1 if game.winner == 1 else (-1 if game.winner == -1 else 0))
-        if len(recent_results) > window_size:
-            recent_results.pop(0)
+            # 结算与更新
+            r_x, r_o = (1, -1) if game.winner == 1 else ((-1, 1) if game.winner == -1 else (0.0, 0.0))
+            agent_x.learn(r_x)
+            agent_o.learn(r_o)
 
-        if i % window_size == 0:
-            x_wins = recent_results.count(1) / len(recent_results)
-            o_wins = recent_results.count(-1) / len(recent_results)
-            draws = recent_results.count(0) / len(recent_results)
-            stats_history.append({"epoch": i, "x_win": x_wins, "o_win": o_wins, "draw": draws})
+            # 记录统计
+            recent_results.append(1 if game.winner == 1 else (-1 if game.winner == -1 else 0))
+            if len(recent_results) > window_size:
+                recent_results.pop(0)
 
-            # 衰减探索率
-            agent_x.epsilon = max(0.01, agent_x.epsilon * 0.99)
-            agent_o.epsilon = max(0.01, agent_o.epsilon * 0.99)
+            if episode % window_size == 0:
+                x_wins = recent_results.count(1) / len(recent_results)
+                o_wins = recent_results.count(-1) / len(recent_results)
+                draws = recent_results.count(0) / len(recent_results)
+                stats_history.append({"epoch": episode, "x_win": x_wins, "o_win": o_wins, "draw": draws})
+
+                # 衰减探索率
+                agent_x.epsilon = max(0.01, agent_x.epsilon * 0.99)
+                agent_o.epsilon = max(0.01, agent_o.epsilon * 0.99)
+    except KeyboardInterrupt:
+        interrupted = True
+        print("\n收到中断信号，正在保存当前进度...")
 
     agent_x.save_model()
     agent_o.save_model()
@@ -140,4 +165,5 @@ def run_ai_vs_ai_training(episodes=5000, window_size=100):
     # 保存统计数据供 main.py 画图
     with open(os.path.join(BASE_DIR, "training_stats.json"), 'w') as f:
         json.dump(stats_history, f)
-    print("训练完成！数据已保存至 training_stats.json")
+    tag = "（已中断）" if interrupted else ""
+    print(f"训练结束{tag}，共完成 {episode} 局，模型与数据已保存至 {os.path.basename(BASE_DIR)} 目录。")

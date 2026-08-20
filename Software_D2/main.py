@@ -10,14 +10,60 @@ from train import QLearningAgent, run_ai_vs_ai_training, BASE_DIR
 AUTO_TRAIN_EPISODES = 10000
 
 
-def ensure_trained_model():
+def ensure_trained_model(agent=None):
     """模型或训练数据缺失时，自动训练一次，保证可直接开始对战或绘图"""
     model_file = os.path.join(BASE_DIR, "Agent_X_q_table.json")
     stats_file = os.path.join(BASE_DIR, "training_stats.json")
+    trained = False
     if not os.path.exists(model_file) or not os.path.exists(stats_file):
         print(f"未检测到已训练模型({os.path.basename(model_file)})，正在自动训练（首次运行请稍候，约{AUTO_TRAIN_EPISODES}局）...")
         run_ai_vs_ai_training(episodes=AUTO_TRAIN_EPISODES)
+        trained = True
         print("训练完成，已自动创建模型与训练数据。\n")
+    if trained and agent is not None:
+        agent.load_model()  # 重新加载最新模型，避免对战用到旧模型
+    return trained
+
+
+def toggle_freeze(agent):
+    """冻结/解冻切换，并告知当前状态"""
+    if agent.frozen:
+        agent.unfreeze()
+    else:
+        agent.freeze()
+    state = "已冻结（纯利用，不更新Q表）" if agent.frozen else "已解冻（可继续训练/探索）"
+    print(f"[{agent.name}] 当前状态：{state}")
+
+
+def run_ai_training_menu(agent):
+    """AI 自动训练：指定局数或时长（二选一），支持 Ctrl+C 中断"""
+    print("\n--- AI vs AI 自动训练 ---")
+    print("训练结束条件（二选一）：")
+    print("  1. 指定训练局数 (epoch)")
+    print("  2. 指定训练时长 (秒)")
+    mode = input("请选择 (1/2): ").strip()
+    if mode == '1':
+        ep = input("请输入训练局数: ").strip()
+        try:
+            episodes = int(ep)
+            assert episodes > 0
+        except (ValueError, AssertionError):
+            print("无效的局数，已取消。")
+            return
+        run_ai_vs_ai_training(episodes=episodes)
+    elif mode == '2':
+        t = input("请输入训练时长(秒): ").strip()
+        try:
+            seconds = float(t)
+            assert seconds > 0
+        except (ValueError, AssertionError):
+            print("无效的时长，已取消。")
+            return
+        run_ai_vs_ai_training(time_limit=seconds)
+    else:
+        print("无效选择，已取消。")
+        return
+    agent.load_model()  # 训练完成后重载最新模型
 
 
 # --- 1. 学习曲线绘制 ---
@@ -61,7 +107,7 @@ def _load_cjk_font(size):
     return pygame.font.Font(None, size)
 
 
-def play_human_vs_ai():
+def play_human_vs_ai(ai_agent):
     pygame.init()
     screen = pygame.display.set_mode((600, 600))
     pygame.display.set_caption("Tic-Tac-Toe: Human vs AI")
@@ -70,9 +116,9 @@ def play_human_vs_ai():
     big_font = _load_cjk_font(72)   # 结果横幅
     small_font = _load_cjk_font(36) # 提示文字
 
-    # 加载并冻结 AI
-    ai_agent = QLearningAgent(name="Agent_X")
-    ai_agent.freeze()  # 测试前冻结策略
+    # 使用传入的持久 AI，遵循其在菜单中设置的冻结/解冻状态
+    if ai_agent.frozen:
+        print(f"[{ai_agent.name}] 当前为冻结状态（纯利用，测试模式）。")
 
     game = TicTacToe()
     running = True
@@ -120,7 +166,7 @@ def play_human_vs_ai():
         draw_board()
         pygame.display.flip()
 
-        # 对局一结束就记录时刻（结果至少展示约1.2秒，避免误触直接进下一局）
+        # 对局一结束就记录时刻（结果至少展示约0.3秒，避免误触直接进下一局）
         if game.is_over and over_at is None:
             over_at = pygame.time.get_ticks()
 
@@ -136,9 +182,9 @@ def play_human_vs_ai():
                         game.step((r, c))
                         ai_move()  # 人类落子后轮到 AI
 
-            # 结果展示满1.2秒后才允许点击重开
+            # 结果展示满0.3秒后才允许点击重开
             if event.type == pygame.MOUSEBUTTONDOWN and game.is_over:
-                if over_at is not None and (pygame.time.get_ticks() - over_at) >= 1200:
+                if over_at is not None and (pygame.time.get_ticks() - over_at) >= 300:
                     game.reset()  # 点击重新开始
                     over_at = None
                     ai_move()  # 新对局 AI 再次先手
@@ -147,22 +193,30 @@ def play_human_vs_ai():
 
 # --- 3. 主菜单 ---
 if __name__ == "__main__":
+    # 跨菜单持久的 AI，保存冻结/解冻状态；默认冻结（测试/部署模式）
+    agent_x = QLearningAgent(name="Agent_X")
+    agent_x.freeze()
+
     while True:
+        frozen_txt = "已冻结（纯利用）" if agent_x.frozen else "已解冻（可探索/学习）"
         print("\n=== 井字棋强化学习系统 ===")
-        print("1. AI vs AI 快速训练 (并绘制学习曲线)")
+        print("1. AI vs AI 自动训练（可指定局数/时长，Ctrl+C 中断）")
         print("2. Player vs AI (Pygame 可视化对战)")
         print("3. 仅绘制已有训练曲线")
-        print("4. 退出")
-        choice = input("请选择 (1/2/3/4): ")
+        print(f"4. 冻结/解冻 AI 策略（当前：{frozen_txt}）")
+        print("5. 退出")
+        choice = input("请选择 (1/2/3/4/5): ")
 
         if choice == '1':
-            run_ai_vs_ai_training(episodes=AUTO_TRAIN_EPISODES)
+            run_ai_training_menu(agent_x)
             plot_learning_curve()
         elif choice == '2':
-            ensure_trained_model()  # 无模型则自动训练
-            play_human_vs_ai()
+            ensure_trained_model(agent_x)  # 无模型则自动训练
+            play_human_vs_ai(agent_x)
         elif choice == '3':
-            ensure_trained_model()  # 无数据则自动训练
+            ensure_trained_model(agent_x)  # 无数据则自动训练
             plot_learning_curve()
         elif choice == '4':
+            toggle_freeze(agent_x)
+        elif choice == '5':
             break
