@@ -5,7 +5,7 @@ import numpy as np
 
 # ============ 通用 numpy 多层感知机（手写反向传播 + Adam，不使用深度学习框架）============
 def _fit_mlp(X, Y, hidden=128, max_epochs=6000, lr=0.01,
-             beta1=0.9, beta2=0.999, eps=1e-8, tol=2e-5):
+             beta1=0.9, beta2=0.999, eps=1e-8, tol=2e-5, lr_decay=1.0):
     """
     训练 3 层 MLP（输入 -> hidden -> hidden -> 输出），tanh 激活，Adam 优化。
     X: (N, n_in)，Y: (N,)。返回权重元组 (W1,b1,W2,b2,W3,b3)。
@@ -43,13 +43,14 @@ def _fit_mlp(X, Y, hidden=128, max_epochs=6000, lr=0.01,
         gW1 = X.T @ da1 / N;                gb1 = da1.sum(axis=0) / N
         grads = [gW1, gb1, gW2, gb2, gW3, gb3]
 
-        # Adam 更新
+        # Adam 更新（带学习率衰减，使训练后期平稳收敛、避免在目标值附近震荡）
+        cur_lr = lr * (lr_decay ** (epoch - 1))
         for i, g in enumerate(grads):
             m[i] = beta1 * m[i] + (1 - beta1) * g
             v[i] = beta2 * v[i] + (1 - beta2) * g * g
             m_hat = m[i] / (1 - beta1 ** epoch)
             v_hat = v[i] / (1 - beta2 ** epoch)
-            params[i] -= lr * m_hat / (np.sqrt(v_hat) + eps)
+            params[i] -= cur_lr * m_hat / (np.sqrt(v_hat) + eps)
 
         if epoch % 2000 == 0:
             print(f"    epoch {epoch}: 平均绝对误差 = {avg_err:.5f}", flush=True)
@@ -83,14 +84,15 @@ class NeuralNetwork1D:
 # 二维输入的神经网络实现（拟合 sin(x1)*cos(x2)）
 class NeuralNetwork2D:
     def __init__(self):
-        n = 50
+        n = 60
         x1 = np.linspace(0, 2 * math.pi, n)
         x2 = np.linspace(0, 2 * math.pi, n)
         X1, X2 = np.meshgrid(x1, x2)
         xs = np.stack([X1.ravel(), X2.ravel()], axis=1)
         ys = np.sin(X1.ravel()) * np.cos(X2.ravel())
-        # 二维函数更复杂：更大容量 + 更小学习率避免震荡 + 更多轮数
-        self.params = _fit_mlp(xs, ys, hidden=256, lr=0.005, max_epochs=12000)
+        # 二维函数更复杂：更大容量 + 更小学习率 + 衰减平滑收敛 + 更多轮数
+        self.params = _fit_mlp(xs, ys, hidden=256, lr=0.002,
+                               max_epochs=20000, lr_decay=0.9996)
 
     def predict(self, input_x1: float, input_x2: float) -> float:
         return float(_predict(np.array([[input_x1, input_x2]]), self.params)[0, 0])
