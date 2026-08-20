@@ -37,8 +37,9 @@ def play_human_vs_ai():
     pygame.init()
     screen = pygame.display.set_mode((600, 600))
     pygame.display.set_caption("Tic-Tac-Toe: Human vs AI")
-    font = pygame.font.SysFont("arial", 80, bold=True)
-    small_font = pygame.font.SysFont("arial", 40)
+    # 用 pygame 内置默认字体，避免 SysFont 在部分环境(如 Python3.13)枚举系统字体时崩溃
+    font = pygame.font.Font(None, 80)
+    small_font = pygame.font.Font(None, 40)
 
     # 加载并冻结 AI
     ai_agent = QLearningAgent(name="Agent_X")
