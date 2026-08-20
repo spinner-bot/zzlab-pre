@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 using namespace std;
 
 class Rational {
@@ -7,7 +8,7 @@ private:
     int den; // 分母
 
     // 求最大公约数 (辗转相除法)
-    int gcd(int a, int b) {
+    static int gcd(int a, int b) {
         a = a > 0 ? a : -a; // 取绝对值
         b = b > 0 ? b : -b;
         while (b != 0) {
@@ -20,10 +21,6 @@ private:
 
     // 约分函数：保证分母为正，且为最简分数
     void simplify() {
-        if (den == 0) {
-            cout << "错误：分母不能为0" << endl;
-            return;
-        }
         // 1. 符号处理：保证分母永远为正
         if (den < 0) {
             num = -num;
@@ -36,30 +33,26 @@ private:
     }
 
 public:
-    // 构造函数
-    Rational(int n = 0, int d = 1) {
-        num = n;
-        den = d;
-        simplify(); // 构造时直接约分
+    // 构造函数重载
+    Rational() : num(0), den(1) {}              // 默认构造：0
+    Rational(int n) : num(n), den(1) {}         // 整数构造：n
+    Rational(int n, int d) : num(n), den(d) {   // 分数构造：n/d
+        if (d == 0) throw invalid_argument("分母不能为0");
+        simplify();
     }
 
-    // 加法重载
-    Rational operator+(const Rational& r) {
+    // 四则运算（const 成员函数，不修改对象）
+    Rational operator+(const Rational& r) const {
         return Rational(num * r.den + r.num * den, den * r.den);
     }
-
-    // 减法重载
-    Rational operator-(const Rational& r) {
+    Rational operator-(const Rational& r) const {
         return Rational(num * r.den - r.num * den, den * r.den);
     }
-
-    // 乘法重载
-    Rational operator*(const Rational& r) {
+    Rational operator*(const Rational& r) const {
         return Rational(num * r.num, den * r.den);
     }
-
-    // 除法重载
-    Rational operator/(const Rational& r) {
+    Rational operator/(const Rational& r) const {
+        if (r.num == 0) throw invalid_argument("除数不能为0");
         return Rational(num * r.den, den * r.num);
     }
 
@@ -87,6 +80,24 @@ int main() {
     cout << "a - b = " << a - b << endl; // 1/6
     cout << "a * b = " << a * b << endl; // 1/6
     cout << "a / b = " << a / b << endl; // 3/2
+
+    // 构造函数重载演示
+    Rational d;      // 0
+    Rational e(5);   // 5
+    cout << "d = " << d << ", e = " << e << endl;
+
+    // 数据安全性演示：分母为0 / 除以0 会抛异常
+    try {
+        Rational f(1, 0);
+    } catch (const invalid_argument& ex) {
+        cout << "捕获异常: " << ex.what() << endl;
+    }
+    try {
+        Rational zero(0, 1);
+        cout << "a / zero = " << a / zero << endl;
+    } catch (const invalid_argument& ex) {
+        cout << "捕获异常: " << ex.what() << endl;
+    }
 
     return 0;
 }
