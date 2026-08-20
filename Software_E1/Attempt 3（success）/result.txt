@@ -1,0 +1,16 @@
+(base) PS F:\资源夹\科研\zzlab (preparing)\pre\2524030232_张锐寒\Software_E1> D:\Anaconda\python.exe test.py
+    epoch 2000: 平均绝对误差 = 0.01106
+    epoch 4000: 平均绝对误差 = 0.00911
+    epoch 6000: 平均绝对误差 = 0.00808
+    epoch 2000: 平均绝对误差 = 0.04001
+    epoch 4000: 平均绝对误差 = 0.02194
+    epoch 6000: 平均绝对误差 = 0.01505
+    epoch 8000: 平均绝对误差 = 0.01309
+    epoch 10000: 平均绝对误差 = 0.01007
+    epoch 12000: 平均绝对误差 = 0.00902
+    epoch 14000: 平均绝对误差 = 0.00824
+    epoch 16000: 平均绝对误差 = 0.00768
+    epoch 18000: 平均绝对误差 = 0.00730
+    epoch 20000: 平均绝对误差 = 0.00705
+The 1D is Success! Average: 0.0099441164194809
+The 2D is Success! Average: 0.006281566920000093
