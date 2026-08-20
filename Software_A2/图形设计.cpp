@@ -1,92 +1,71 @@
 #include <iostream>
+#include <cmath>
 using namespace std;
 
-class Rational {
-private:
-    int num; // 分子
-    int den; // 分母
+const double PI = 3.14159265;
 
-    // 求最大公约数 (辗转相除法)
-    int gcd(int a, int b) {
-        a = a > 0 ? a : -a; // 取绝对值
-        b = b > 0 ? b : -b;
-        while (b != 0) {
-            int temp = b;
-            b = a % b;
-            a = temp;
-        }
-        return a;
-    }
-
-    // 约分函数：保证分母为正，且为最简分数
-    void simplify() {
-        if (den == 0) {
-            cout << "错误：分母不能为0" << endl;
-            return;
-        }
-        // 1. 符号处理：保证分母永远为正
-        if (den < 0) {
-            num = -num;
-            den = -den;
-        }
-        // 2. 约分
-        int common = gcd(num, den);
-        num /= common;
-        den /= common;
-    }
-
+// 1. 定义抽象基类 Shape
+class Shape {
 public:
-    // 构造函数
-    Rational(int n = 0, int d = 1) {
-        num = n;
-        den = d;
-        simplify(); // 构造时直接约分
-    }
+    // 纯虚函数：计算面积
+    virtual double area() = 0;
+    // 纯虚函数：计算周长
+    virtual double perimeter() = 0;
+    // 虚析构函数（好习惯，防止内存泄漏）
+    virtual ~Shape() {}
+};
 
-    // 加法重载
-    Rational operator+(const Rational& r) {
-        return Rational(num * r.den + r.num * den, den * r.den);
-    }
+// 2. 圆形类
+class Circle : public Shape {
+private:
+    double radius;
+public:
+    Circle(double r) : radius(r) {}
+    double area() override { return PI * radius * radius; }
+    double perimeter() override { return 2 * PI * radius; }
+};
 
-    // 减法重载
-    Rational operator-(const Rational& r) {
-        return Rational(num * r.den - r.num * den, den * r.den);
-    }
+// 3. 矩形类
+class Rectangle : public Shape {
+private:
+    double width, height;
+public:
+    Rectangle(double w, double h) : width(w), height(h) {}
+    double area() override { return width * height; }
+    double perimeter() override { return 2 * (width + height); }
+};
 
-    // 乘法重载
-    Rational operator*(const Rational& r) {
-        return Rational(num * r.num, den * r.den);
-    }
+// 4. 三角形类 (这里简化为直角三角形或已知三边，为了演示方便使用海伦公式计算任意三角形)
+class Triangle : public Shape {
+private:
+    double a, b, c; // 三边长
+public:
+    Triangle(double side_a, double side_b, double side_c) : a(side_a), b(side_b), c(side_c) {}
 
-    // 除法重载
-    Rational operator/(const Rational& r) {
-        return Rational(num * r.den, den * r.num);
-    }
+    double perimeter() override { return a + b + c; }
 
-    // 输出重载 (友元函数)
-    friend ostream& operator<<(ostream& os, const Rational& r) {
-        if (r.den == 1)
-            os << r.num;
-        else
-            os << r.num << "/" << r.den;
-        return os;
+    double area() override {
+        // 海伦公式
+        double p = perimeter() / 2.0;
+        return sqrt(p * (p - a) * (p - b) * (p - c));
     }
 };
 
 int main() {
-    // 测试代码
-    Rational a(1, 2); // 1/2
-    Rational b(1, 3); // 1/3
-    Rational c(2, -4); // -1/2 (自动约分)
+    // 创建对象
+    Circle c(5);
+    Rectangle r(4, 6);
+    Triangle t(3, 4, 5); // 直角三角形
 
-    cout << "a = " << a << endl;
-    cout << "b = " << b << endl;
-    cout << "c = " << c << endl;
+    // 使用基类指针数组实现动态绑定 (核心考点)
+    Shape* shapes[3] = {&c, &r, &t};
 
-    cout << "a + b = " << a + b << endl; // 5/6
-    cout << "a - b = " << a - b << endl; // 1/6
-    cout << "a * b = " << a * b << endl; // 1/6
-    cout << "a / b = " << a / b << endl; // 3/2
+    cout << "--- 图形计算结果 ---" << endl;
+    for (int i = 0; i < 3; i++) {
+        cout << "图形 " << i + 1 << ": "
+             << "面积 = " << shapes[i]->area()
+             << ", 周长 = " << shapes[i]->perimeter() << endl;
+    }
 
     return 0;
 }
