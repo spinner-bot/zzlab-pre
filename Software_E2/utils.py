@@ -1,5 +1,6 @@
 # utils.py —— 数据预处理、加载与准确率计算等工具
 import os
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")  # 规避本机 OpenMP 重复加载(OMP Error #15)
 import time
 import numpy as np
 import torch

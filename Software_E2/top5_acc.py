@@ -8,6 +8,7 @@
 #   - Top-5：看前 5 个预测，容忍模型把正确答案排在第 2~5 名的情况。
 #   Top-5 通常高于 Top-1，因为分类器往往“把正确答案排得比较靠前但未必第一”。
 import os
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")  # 规避本机 OpenMP 重复加载(OMP Error #15)
 import torch
 from utils import make_loaders, topk_accuracy, BASE
 from main import MLP

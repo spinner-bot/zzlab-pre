@@ -1,6 +1,7 @@
 # cnn.py —— CNN 卷积神经网络训练代码
 # 将 MLP 的全连接结构改造成卷积结构，利用空间局部性，通常精度更高、收敛更快。
 import os
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")  # 规避本机 OpenMP 重复加载(OMP Error #15)
 import torch.nn as nn
 from utils import make_loaders, train_model, BASE
 

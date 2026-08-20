@@ -1,5 +1,6 @@
 # main.py —— MLP 全连接网络训练代码
 import os
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")  # 规避本机 OpenMP 重复加载(OMP Error #15)
 import torch.nn as nn
 from utils import make_loaders, train_model, BASE
 
