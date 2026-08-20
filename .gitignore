@@ -6,3 +6,6 @@ __pycache__/
 
 # 已放弃的 D3（模板克隆）
 Software_D3/
+
+# C3 结果图压缩包过大，不入库（保留在磁盘，供打包提交）
+Software_C3/*.tar

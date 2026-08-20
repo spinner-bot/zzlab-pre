@@ -3,10 +3,10 @@
 - **学号**：2524030232
 - **姓名**：张锐寒
 - **选题方向**：软件类
-- **个人简介**：见 `自我介绍.md`（提交时请另导出为 `自我介绍.pdf`）
+- **个人简介**：见 `自我介绍.md`
 
 ## 选题说明
-软件类规则：A 类（面向对象）必做，其余四类（B/C/D/E）任选两类。本次完成 **A 类必做 + C/D/E 三类选做**，非 A 类预估 **13 分**（达标线 9 分）。
+软件类规则：A 类（面向对象）必做，其余四类（B/C/D/E）任选两类。本次完成 **A 类必做 + C/D/E 三类选做**。
 
 ## 目录结构
 ```
@@ -18,14 +18,13 @@
 ├── Base_C/  Linux 基础
 ├── Software_A1/  有理数类 Rational（C++ OOP）【必做】
 ├── Software_A2/  Shape 图形类体系（C++ OOP）【必做】
-├── Software_C1/  OpenCV 基础图像处理 + 人脸检测模糊【1分】
+├── Software_C1/  OpenCV 基础图像处理 + 人脸检测模糊
 ├── Software_C2/  YOLO 目标检测脚手架（数据待标注）【部分】
-├── Software_C3/  纯 OpenCV 红绿灯状态识别（含干扰鲁棒性）【5分】
+├── Software_C3/  纯 OpenCV 红绿灯状态识别（含干扰鲁棒性）
 ├── Software_D1/  强化学习研究笔记（OPD/多模态）【学习文档】
-├── Software_D2/  井字棋 Q-Learning 智能体【3分】
-├── Software_E1/  numpy 手写 BP 多层感知机【1分】
-├── Software_E2/  手写数字识别 MLP vs CNN（PyTorch）【3分】
-└── Software_E3/  泰坦尼克生还预测（Kaggle 复现，多模型+网格搜索）【3分】
+├── Software_D2/  井字棋 Q-Learning 智能体
+├── Software_E1/  numpy 手写 BP 多层感知机
+└── Software_E2/  手写数字识别 MLP vs CNN（PyTorch）
 ```
 
 ## 各题完成状态与运行
@@ -40,7 +39,6 @@
 | D2 井字棋 | ✅ 完整 | python Software_D2/main.py |
 | E1 BP-MLP | ✅ 完整 | python Software_E1/test.py |
 | E2 MLP vs CNN | ✅ 完整 | python Software_E2/main.py; cnn.py |
-| E3 泰坦尼克 | ⚠️ 半成品 | python Software_E3/titanic_solution.py |
 
 ## 说明
 - 各题均含**学习文档**（记录学习过程、关键知识点、踩坑记录）。
