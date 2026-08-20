@@ -1,0 +1,226 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:800px;margin:0 auto;padding:16px;line-height:1.7;color:#1a1a1a;background:#fff}h1{border-bottom:2px solid #2563eb;padding-bottom:8px}h2{color:#2563eb;margin-top:28px}h3{color:#374151}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.9em}pre{background:#1e293b;color:#e2e8f0;padding:12px;border-radius:8px;overflow-x:auto}pre code{background:none;color:inherit;padding:0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #d1d5db;padding:8px 12px;text-align:left}th{background:#f8fafc}blockquote{border-left:4px solid #2563eb;margin:0;padding:0 16px;color:#4b5563;background:#f8fafc}a{color:#2563eb}img{max-width:100%}</style><title>状态报告</title></head><body>
+<h1>复现环境状态报告</h1>
+<blockquote>
+<p>更新时间: 2026-08-12
+本地机器: Windows 11 + RTX 5060 Laptop 8GB
+目标服务器: 8×H200 (SSH 已可用，MobaXterm 连接成功)</p>
+</blockquote>
+<hr />
+<h2>当前进度</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>论文</th>
+<th>代码</th>
+<th>venv</th>
+<th>论文解读</th>
+<th>复现计划</th>
+<th>H200脚本</th>
+<th>环境文档</th>
+<th>权重/数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Vision-OPD</td>
+<td>✅</td>
+<td>✅ CPU</td>
+<td>✅ 详细</td>
+<td>✅ 5阶段</td>
+<td>✅</td>
+<td>✅</td>
+<td>⬜ 待下载</td>
+</tr>
+<tr>
+<td>2</td>
+<td>V-Zero</td>
+<td>✅</td>
+<td>⚠️ 空</td>
+<td>⚠️ 仅简介</td>
+<td>⬜</td>
+<td>✅</td>
+<td>⬜</td>
+<td>⬜ 待下载</td>
+</tr>
+<tr>
+<td>3</td>
+<td>PRISM</td>
+<td>✅</td>
+<td>✅ CPU</td>
+<td>⚠️ 仅简介</td>
+<td>⬜</td>
+<td>✅</td>
+<td>⬜</td>
+<td>⬜ 待下载</td>
+</tr>
+<tr>
+<td>4</td>
+<td>DiffusionOPD</td>
+<td>✅</td>
+<td>✅ CPU</td>
+<td>⚠️ 仅简介</td>
+<td>⬜</td>
+<td>✅</td>
+<td>⬜</td>
+<td>⬜ 待下载</td>
+</tr>
+</tbody>
+</table>
+<h3>图例</h3>
+<ul>
+<li>✅ 完成</li>
+<li>⚠️ 部分完成 / 待补充</li>
+<li>⬜ 未开始</li>
+<li>🔄 进行中</li>
+</ul>
+<hr />
+<h2>Git 状态</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本地 commits</td>
+<td>✅ 已分批提交</td>
+<td>所有未追踪文件已按最小单元分批 commit</td>
+</tr>
+<tr>
+<td>未推送 commits</td>
+<td>⚠️ 65 commits ahead</td>
+<td>需配置 GitHub SSH key 后 push</td>
+</tr>
+<tr>
+<td>工作区</td>
+<td>✅ 干净</td>
+<td><code>nothing to commit, working tree clean</code></td>
+</tr>
+</tbody>
+</table>
+<h3>最近提交记录（2026-08-12 新增）</h3>
+<pre class="codehilite"><code>783631d demo: add demo module HTML pages (module1/1+/2/3/5) for multimodal OPD presentation
+77d323d git: ignore broken AwesomeOPD-source nested clone
+493265e papers: add batch 169-171 (ExGRPO, HDPO, RLSD) paper data
+2d7f7a4 demo: add task note for multimodal OPD presentation and paper selection
+</code></pre>
+
+<hr />
+<h2>各论文详细状态</h2>
+<h3>1. Vision-OPD（最完备）</h3>
+<ul>
+<li>论文解读：✅ 6 节详解（问题→方法→数据→结果→消融→术语表）</li>
+<li>复现计划：✅ 5 阶段 ~4-5h（环境→推理→数据→训练→对比）</li>
+<li>学习指南：✅ L1/L2/L3 分级</li>
+<li>环境文档：✅ 详细的 why&amp;how</li>
+<li>代码：官方仓库完整（包括修改版 verl + vopd.yaml + 评估脚本）</li>
+<li><strong>可以立即开始在 H200 上部署</strong></li>
+</ul>
+<h3>2. V-Zero（需补文档）</h3>
+<ul>
+<li>论文解读：⚠️ 仅有 819 字节简介，缺少深入分析</li>
+<li>复现计划：⬜ 未编写</li>
+<li>环境文档：⬜ 未编写（部分可参考 Vision-OPD）</li>
+<li>代码：官方仓库完整（verl + 蒸馏 + 证据门控 + 标注 + 评估）</li>
+<li>特殊需求：需要 <code>.seed.env</code> 文件（Doubao Seed API key 用于 judge）</li>
+</ul>
+<h3>3. PRISM（需补文档）</h3>
+<ul>
+<li>论文解读：⚠️ 仅有简介，但在 <code>../papers/PRISM与Uni-OPD深度分析报告.md</code> 有 470 行深度分析</li>
+<li>复现计划：⬜ 未编写</li>
+<li>环境文档：⬜ 未编写</li>
+<li>代码：官方仓库完整（修改版 transformers + verl + MoE + 评估），规模最大（6436 文件）</li>
+<li>差异文档：✅ 中英文 diff 报告，记录了相比原版 transformers/verl 的所有改动</li>
+</ul>
+<h3>4. DiffusionOPD（需补文档）</h3>
+<ul>
+<li>论文解读：⚠️ 仅有简介</li>
+<li>复现计划：⬜ 未编写</li>
+<li>环境文档：⬜ 未编写</li>
+<li>代码：官方仓库完整（60 文件，最精简），需先训练教师模型</li>
+<li>特殊需求：mmcv/mmdetection（GenEval 评估）、PaddleOCR、HPSv2.1、多个 reward checkpoint</li>
+</ul>
+<hr />
+<h2>阻塞项</h2>
+<h3>1. GitHub Push ⚠️</h3>
+<ul>
+<li>状态：SSH 公钥需添加到 GitHub 账户 <code>spinner-bot</code></li>
+<li>公钥：<code>C:\Users\han\.ssh\id_rsa.pub</code>（已存在）</li>
+<li>操作：登录 github.com → Settings → SSH Keys → 粘贴公钥内容</li>
+<li>影响：65 个 commit 无法推送</li>
+</ul>
+<h3>2. H200 SSH ✅ 已解决</h3>
+<ul>
+<li>MobaXterm 已成功连接</li>
+</ul>
+<hr />
+<h2>文档待补充清单（按优先级）</h2>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>文档</th>
+<th>所属论文</th>
+<th>预计耗时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 高</td>
+<td>GitHub SSH key 配置</td>
+<td>全局</td>
+<td>5 min</td>
+</tr>
+<tr>
+<td>🟡 中</td>
+<td>V-Zero 论文解读</td>
+<td>2. V-Zero</td>
+<td>1-2 h</td>
+</tr>
+<tr>
+<td>🟡 中</td>
+<td>PRISM 论文解读</td>
+<td>3. PRISM</td>
+<td>1-2 h</td>
+</tr>
+<tr>
+<td>🟡 中</td>
+<td>DiffusionOPD 论文解读</td>
+<td>4. DiffusionOPD</td>
+<td>1-2 h</td>
+</tr>
+<tr>
+<td>🟢 低</td>
+<td>V-Zero 复现计划</td>
+<td>2. V-Zero</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>🟢 低</td>
+<td>PRISM 复现计划</td>
+<td>3. PRISM</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>🟢 低</td>
+<td>DiffusionOPD 复现计划</td>
+<td>4. DiffusionOPD</td>
+<td>30 min</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>解除阻塞后的操作顺序</h2>
+<ol>
+<li><strong>立即</strong>：添加 GitHub SSH key → <code>git push origin main</code></li>
+<li><strong>阅读</strong>：先读 Vision-OPD 论文解读（最详细），再读其余 3 篇简介</li>
+<li><strong>部署</strong>：在 H200 上按 Vision-OPD → V-Zero → PRISM → DiffusionOPD 顺序部署</li>
+<li><strong>复现</strong>：Vision-OPD 优先（有完整 5 阶段计划，半日内可完成）</li>
+</ol>
+</body></html>
