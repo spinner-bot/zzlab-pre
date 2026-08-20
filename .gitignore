@@ -3,3 +3,6 @@
 temp/
 __pycache__/
 *.pyc
+
+# 已放弃的 D3（模板克隆）
+Software_D3/
