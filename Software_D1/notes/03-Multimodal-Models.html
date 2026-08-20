@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌐 多模态模型（Multimodal Models）—— 发展全历程</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+:root {
+  --bg: #faf8f5; --surface: #ffffff; --surface2: #f5f2ed; --text: #2c2416; --text2: #5c5042; --text3: #8a7b6b;
+  --red: #c0392b; --red-bg: #fdf0ed; --blue: #1a6daa; --blue-bg: #edf4fa;
+  --green: #1e7a4a; --green-bg: #edf7f1; --gold: #b8860b; --gold-bg: #fdf8ed;
+  --purple: #7b3fa3; --purple-bg: #f6f0fa; --code-bg: #282c34; --code-text: #abb2bf;
+  --sidebar-w: 260px; --max-w: 920px; --radius: 8px; --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI','PingFang SC','Microsoft YaHei','Noto Sans SC',system-ui,sans-serif; background: var(--bg); color: var(--text); line-height: 1.82; font-size: 16px; display: flex; }
+nav#sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: #c8d6e5; overflow-y: auto; padding: 28px 20px; z-index: 100; font-size: 13.5px; box-shadow: 2px 0 20px rgba(0,0,0,0.15); }
+nav#sidebar h2 { color: #fff; font-size: 17px; margin-bottom: 8px; font-weight: 700; }
+nav#sidebar .subtitle { font-size: 12px; color: #7f8fa6; margin-bottom: 24px; }
+nav#sidebar a { display: block; color: #a4b0be; text-decoration: none; padding: 5px 10px; border-radius: 5px; margin: 1px 0; transition: all 0.15s; border-left: 2px solid transparent; }
+nav#sidebar a:hover, nav#sidebar a.active { color: #fff; background: rgba(255,255,255,0.06); border-left-color: #f9ca24; }
+nav#sidebar a.chapter { font-weight: 600; color: #dfe6e9; margin-top: 8px; font-size: 12.5px; text-transform: uppercase; letter-spacing: 1px; }
+nav#sidebar a.sub { padding-left: 18px; font-size: 12.5px; }
+main { margin-left: var(--sidebar-w); max-width: var(--max-w); width: 100%; padding: 48px 56px 80px; }
+h1 { font-size: 2.2em; font-weight: 800; background: linear-gradient(135deg, #6c5ce7, #a29bfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; line-height: 1.3; }
+h2 { font-size: 1.5em; font-weight: 700; color: #1a1a2e; margin-top: 40px; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 3px solid #6c5ce7; display: inline-block; }
+h3 { font-size: 1.2em; font-weight: 700; color: #2d3436; margin-top: 28px; margin-bottom: 8px; }
+h4 { font-size: 1.05em; font-weight: 700; margin-top: 18px; }
+p { margin: 12px 0; }
+a { color: var(--blue); }
+.callout { margin: 18px 0; padding: 16px 20px; border-radius: var(--radius); border-left: 5px solid; box-shadow: var(--shadow); }
+.callout.insight { background: var(--blue-bg); border-color: var(--blue); }
+.callout.warning { background: var(--red-bg); border-color: var(--red); }
+.callout.success { background: var(--green-bg); border-color: var(--green); }
+.callout.info { background: var(--purple-bg); border-color: var(--purple); }
+.callout.paper { background: #fffdf5; border-color: #f9ca24; }
+.callout .title { font-weight: 700; font-size: 1.02em; margin-bottom: 5px; }
+.callout.insight .title { color: var(--blue); }
+.callout.warning .title { color: var(--red); }
+.callout.success .title { color: var(--green); }
+.callout.info .title { color: var(--purple); }
+.callout.paper .title { color: #b8860b; }
+pre { background: var(--code-bg); color: var(--code-text); padding: 18px 22px; border-radius: var(--radius); overflow-x: auto; font-family: 'Cascadia Code','Fira Code','Consolas',monospace; font-size: 13px; line-height: 1.6; margin: 14px 0; box-shadow: var(--shadow); }
+:not(pre)>code { background: #f0ece6; color: #c0392b; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; box-shadow: var(--shadow); border-radius: var(--radius); overflow: hidden; }
+thead { background: linear-gradient(135deg, #2c3e50, #34495e); color: #fff; }
+th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.88em; }
+td { padding: 9px 14px; border-bottom: 1px solid #e8e3db; }
+tbody tr:nth-child(even) { background: #faf8f5; }
+tbody tr:hover { background: #f0ebe0; }
+.math-block { text-align: center; margin: 18px 0; padding: 14px; background: var(--surface2); border-radius: var(--radius); overflow-x: auto; }
+.section-divider { text-align: center; margin: 36px 0; color: var(--text3); font-size: 1.1em; letter-spacing: 4px; }
+.nav-row { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 18px; border-top: 1px solid #ddd; }
+.nav-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: #6c5ce7; color: #fff; text-decoration: none; border-radius: 20px; font-weight: 600; font-size: 0.88em; transition: all 0.2s; }
+.nav-btn:hover { background: #5a4bd1; text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(108,92,231,0.3); }
+.nav-btn.secondary { background: #636e72; }
+.nav-btn.secondary:hover { background: #4a5458; }
+.timeline { position: relative; padding-left: 30px; margin: 18px 0; }
+.timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #6c5ce7, #e17055); border-radius: 2px; }
+.timeline-item { position: relative; margin-bottom: 20px; padding: 13px 16px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
+.timeline-item::before { content: ''; position: absolute; left: -25px; top: 16px; width: 11px; height: 11px; background: #6c5ce7; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #6c5ce7; }
+.timeline-item .year { font-weight: 800; color: #6c5ce7; font-size: 0.82em; letter-spacing: 1px; }
+.era-box { padding: 16px 20px; border-radius: var(--radius); margin: 14px 0; box-shadow: var(--shadow); }
+.era-box.e1 { background: #e8f5e9; border: 2px solid #4caf50; }
+.era-box.e2 { background: #e3f2fd; border: 2px solid #2196f3; }
+.era-box.e3 { background: #fce4ec; border: 2px solid #e91e63; }
+.era-box.e4 { background: #fff3e0; border: 2px solid #ff9800; }
+.era-box .era-title { font-weight: 800; font-size: 1.1em; margin-bottom: 6px; }
+@media (max-width: 860px) { nav#sidebar { display: none; } main { margin-left: 0; padding: 24px 20px; } }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h2>🌐 多模态发展历程</h2>
+  <div class="subtitle">Multimodal Models<br>2020 → 2026</div>
+  <a href="#ch1" class="chapter">一、奠基期 2020–2022</a>
+  <a href="#ch2" class="chapter">二、VLM 崛起 2023</a>
+  <a href="#ch3" class="chapter">三、原生多模态 2024</a>
+  <a href="#ch4" class="chapter">四、世界模型 2025–2026</a>
+  <a href="#ch5" class="chapter">五、架构演进总览</a>
+  <a href="#ch6" class="chapter">六、核心技术深潜</a>
+</nav>
+
+<main>
+
+<h1>🌐 多模态模型（Multimodal Models）<br>发展全历程</h1>
+<p style="font-size:1.1em;color:var(--text2);">"From seeing and speaking separately, to understanding the world as one." — 2020–2026</p>
+
+<div class="callout info">
+<div class="title">📖 阅读指南</div>
+<p>本文按<strong>时间顺序</strong>完整梳理多模态模型从 2020 到 2026 的发展历程——从 ViT 到 GPT-5、从 CLIP 到 Any-to-Any 世界模型。预计阅读时间：50–70 分钟。</p>
+</div>
+
+<h3>🕰️ 全景时间线</h3>
+<div class="timeline">
+<div class="timeline-item"><div class="year">2020.10</div><strong>ViT</strong> (Google) — Transformer 打入视觉领域，打破 CV/NLP 架构壁垒</div>
+<div class="timeline-item"><div class="year">2021.01</div><strong>CLIP + DALL·E</strong> (OpenAI) — 图文统一语义空间 + 首个文本→图像生成</div>
+<div class="timeline-item"><div class="year">2022</div><strong>Stable Diffusion / Flamingo / BLIP-2</strong> — 扩散革命 + Q-Former 桥接</div>
+<div class="timeline-item"><div class="year">2023</div><strong>GPT-4V / LLaVA / Gemini 1.0</strong> — LLM "睁开眼睛"，VLM 全面爆发</div>
+<div class="timeline-item"><div class="year">2024</div><strong>GPT-4o / Sora / Gemini 1.5</strong> — 端到端全模态 + 视频生成 ChatGPT 时刻</div>
+<div class="timeline-item"><div class="year">2025</div><strong>GPT-5 / Gemini 2.5 / Qwen3.5</strong> — 世界模型与 Any-to-Any</div>
+<div class="timeline-item"><div class="year">2026</div><strong>GPT-5.4 / Gemini 3 / Claude Opus 4.6</strong> — 原生融合，统一 I/O</div>
+</div>
+
+<!-- ═══════════════ CHAPTER 1 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch1">第一章 · 奠基与探索期（2020–2022）</h2>
+<div class="callout info"><div class="title">📐 时代特征</div><p><strong>"模态独立处理"</strong> — 各模型在单一模态任务上取得突破，但模型间相互独立，缺乏深度融合。</p></div>
+
+<h3>1.1 🏛️ ViT (Vision Transformer) — 打破架构壁垒</h3>
+<div class="callout paper"><div class="title">📄 An Image is Worth 16x16 Words — Google, Oct 2020. ICLR 2021</div><p>作者: Alexey Dosovitskiy 等 | 引用: 50,000+</p></div>
+
+<p>在 ViT 之前，计算机视觉由 CNN（卷积神经网络）统治了整整十年。ViT 做了一个激进的事情：<strong>把图像切成固定大小的 patch，像处理文本 token 一样喂给纯 Transformer。</strong>这个看似简单的改变证明了 Transformer 在视觉任务上比 CNN 更有效——只要数据够多。</p>
+
+<pre><code># ViT 的核心思想（伪代码）
+class VisionTransformer(nn.Module):
+    def forward(self, image):  # image: [B, 3, 224, 224]
+        # 1. 将图像切成 16×16 的 patches
+        patches = rearrange(image, 'b c (h p1) (w p2) -> b (h w) (c p1 p2)',
+                           p1=16, p2=16)  # → [B, 196, 768]
+
+        # 2. 线性投影 + 位置编码 → 变成 "visual tokens"
+        tokens = self.patch_embed(patches) + self.pos_embed
+        tokens = torch.cat([self.cls_token, tokens], dim=1)  # [CLS] token
+
+        # 3. 喂给标准 Transformer（和 BERT 一模一样！）
+        for layer in self.transformer_layers:
+            tokens = layer(tokens)
+
+        return self.mlp_head(tokens[:, 0])  # [CLS] → 分类</code></pre>
+
+<p><strong>历史意义</strong>：ViT 证明了 <strong>Transformer 是模态无关的通用架构</strong>——处理图像和处理文本可以用同一个 backbone。这为后来的多模态融合铺平了道路。</p>
+
+<h3>1.2 🔗 CLIP — 图文语义的"罗塞塔石碑"</h3>
+<div class="callout paper"><div class="title">📄 Learning Transferable Visual Models From Natural Language Supervision — OpenAI, Jan 2021</div><p>4 亿图文对训练 | 零样本 ImageNet 77.9% (ResNet-50×64) | 引用: 30,000+</p></div>
+
+<p>CLIP 是<strong>整个多模态领域的基石</strong>。它的核心思想非常简单：在 4 亿个（图像，文字）对上做对比学习，让匹配的图文对在嵌入空间中靠近，不匹配的远离。</p>
+
+<h4>核心架构：双塔 + 对比损失</h4>
+<pre><code># CLIP 的训练逻辑
+# 视觉塔: ViT 或 ResNet → 图像嵌入 [B, dim]
+# 文本塔: Transformer → 文本嵌入 [B, dim]
+
+# 对比损失 (InfoNCE) —— CLIP 的灵魂
+def clip_loss(image_embeds, text_embeds, temperature=0.07):
+    # 归一化
+    image_embeds = F.normalize(image_embeds, dim=-1)
+    text_embeds = F.normalize(text_embeds, dim=-1)
+
+    # 计算相似度矩阵 [B, B]
+    logits = (image_embeds @ text_embeds.T) / temperature
+
+    # 对角线 = 匹配的图文对（正样本）
+    labels = torch.arange(len(logits))
+
+    # 双向对比损失
+    loss_i = F.cross_entropy(logits, labels)       # 图像→文本
+    loss_t = F.cross_entropy(logits.T, labels)     # 文本→图像
+
+    return (loss_i + loss_t) / 2</code></pre>
+
+<div class="math-block">
+$$\mathcal{L}_{\text{CLIP}} = -\frac{1}{2B}\sum_{i=1}^B \left[\log\frac{\exp(\mathbf{v}_i \cdot \mathbf{t}_i / \tau)}{\sum_j \exp(\mathbf{v}_i \cdot \mathbf{t}_j / \tau)} + \log\frac{\exp(\mathbf{t}_i \cdot \mathbf{v}_i / \tau)}{\sum_j \exp(\mathbf{t}_i \cdot \mathbf{v}_j / \tau)}\right]$$
+</div>
+
+<p><strong>为什么 CLIP 如此重要？</strong>它证明了自然语言可以作为视觉模型的<strong>超级监督信号</strong>。CLIP 之后，几乎所有多模态模型（DALL·E 2、Stable Diffusion、LLaVA、GPT-4V 的视觉编码器）都建立在 CLIP 的图文嵌入空间之上。</p>
+
+<h3>1.3 🎨 文生图的爆发：DALL·E → Stable Diffusion</h3>
+
+<h4>DALL·E (2021.01) — 首个大规模文本→图像生成</h4>
+<p>基于 VQ-VAE + 自回归 Transformer，将图像编码为离散 token 序列，像 GPT 一样自回归生成。展示了"文本→图像"这个方向的可能性，但生成质量有限。</p>
+
+<h4>DALL·E 2 (2022.04) — 扩散模型 + CLIP 引导</h4>
+<p>关键创新：① 用<strong>扩散模型</strong>替代自回归生成，大幅提升质量；② 用 <strong>CLIP 嵌入</strong>作为语义引导信号——文本经过 CLIP 编码后作为扩散过程的条件。</p>
+
+<h4>Stable Diffusion (2022.08) — 让 AI 绘画"大众化"</h4>
+<div class="callout insight"><div class="title">💡 SD 的核心创新：潜空间扩散</div>
+<p>不在像素空间直接做扩散（太慢），而是用 VAE 将图像压缩到<strong>潜空间（latent space）</strong>，在潜空间做扩散，再用 VAE 解码回像素。这使得在单张消费级 GPU 上运行成为可能。</p>
+</div>
+
+<pre><code># Stable Diffusion 的核心流程
+# 1. VAE Encoder: 图像 → 潜空间表示 z (压缩 8×)
+# 2. UNet + CLIP Text Encoder: 在潜空间做条件扩散
+# 3. VAE Decoder: 潜空间 → 图像
+
+def sd_sampling(prompt, num_steps=50):
+    text_embed = CLIP_text_encoder(prompt)  # CLIP 文本嵌入作为条件
+    z = torch.randn(1, 4, 64, 64)           # 随机噪声（潜空间）
+
+    for t in reversed(range(num_steps)):
+        noise_pred = UNet(z, t, text_embed)  # 预测噪声（条件 = 文本嵌入）
+        z = denoise_step(z, noise_pred, t)    # 去噪一步
+
+    image = VAE_decoder(z)  # 潜空间 → 像素
+    return image</code></pre>
+
+<h3>1.4 🔌 桥接视觉与语言：Flamingo → BLIP-2</h3>
+<table>
+<thead><tr><th>模型</th><th>架构</th><th>核心贡献</th></tr></thead>
+<tbody>
+<tr><td><strong>Flamingo</strong> (DeepMind, 2022.04)</td><td>冻结 LLM + 视觉编码器 + 交叉注意力</td><td>首个大规模 VLM，80B 参数，Few-shot</td></tr>
+<tr><td><strong>BLIP-2</strong> (Salesforce, 2023.01)</td><td>Q-Former 桥接冻结 ViT → 冻结 LLM</td><td>轻量桥接，7B-13B，高效 VQA</td></tr>
+</tbody>
+</table>
+
+<div class="callout insight"><div class="title">💡 桥接模式的核心创新</div><p><strong>不需要训练 ViT 或 LLM</strong>——两者都冻结。只训练一个轻量的"翻译层"（Q-Former / Perceiver Resampler），将视觉 token 翻译成 LLM 能理解的语言。这大大降低了训练成本。</p></div>
+
+<div class="nav-row"><span></span><a href="#ch2" class="nav-btn">下一章：VLM 崛起 →</a></div>
+
+<!-- ═══════════════ CHAPTER 2 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch2">第二章 · 视觉语言大模型崛起（2023）</h2>
+<div class="callout info"><div class="title">📐 时代特征</div><p><strong>"让大语言模型睁开眼睛"</strong> — 视觉理解能力直接集成到对话系统中，用户可上传图像进行问答与推理。</p></div>
+
+<h3>2.1 🔥 GPT-4V — LLM "睁开眼"</h3>
+<div class="callout paper"><div class="title">📄 GPT-4V(ision) — OpenAI, Sep 2023</div><p>首个广泛可用的视觉版大语言模型，支持复杂图像理解与多步视觉推理。GPT-4 的多模态版本在 2023 年 3 月限量发布，9 月通过 ChatGPT 广泛推出。</p></div>
+<p>GPT-4V 的意义远超技术本身。它向世界证明了：<strong>一个已经精通语言的模型，加上视觉能力后，可以产生"协同效应"——它不仅能看图说话，还能结合视觉信息进行推理。</strong></p>
+
+<h3>2.2 🦙 LLaVA — 开源 VLM 的崛起</h3>
+<div class="callout paper"><div class="title">📄 Visual Instruction Tuning — UW-Madison / Microsoft, Apr 2023. NeurIPS 2023 Oral</div></div>
+<p>LLaVA 是 GPT-4V 的<strong>开源对应物</strong>。它的核心创新是 <strong>视觉指令微调（Visual Instruction Tuning）</strong>——用 GPT-4 生成图像问答对话数据，然后训练 VLM。</p>
+
+<pre><code># LLaVA 的极简架构
+# 图像 → CLIP ViT → 视觉嵌入 (576 tokens)
+# 文本 → Tokenizer → 文本嵌入 (N tokens)
+# 视觉嵌入 → MLP投影 → [IMG1]...[IMG576] + 文本 tokens
+# → 喂给 Vicuna LLM → 自回归生成回答</code></pre>
+
+<p>LLaVA-1.5 (Oct 2023) 仅用 13B 参数就在多项视觉问答基准上接近 GPT-4V，成为 <strong>最广泛使用的开源 VLM 基线</strong>。</p>
+
+<h3>2.3 🌟 Gemini 1.0 — 首个原生多模态架构</h3>
+<div class="callout paper"><div class="title">📄 Gemini: A Family of Highly Capable Multimodal Models — Google DeepMind, Dec 2023</div></div>
+<p>与 LLaVA "先看图再说话"的 bolt-on 方式不同，Gemini 从<strong>架构设计之初就将多模态作为一等公民</strong>。32 项基准中 30 项超越 GPT-4。</p>
+
+<div class="callout insight"><div class="title">💡 Gemini 的关键区分</div>
+<p>"Bolt-on" VLM（如 LLaVA）= 视觉编码器 + 翻译层 + 语言模型（两个独立模块拼在一起）。<br>
+"Native" VLM（如 Gemini）= 一个统一的 transformer，从训练开始就交替喂入图像 patch 和文本 token。<br><br>
+<strong>后者是真正的"原生多模态"。</strong></p></div>
+
+<div class="nav-row"><a href="#ch1" class="nav-btn secondary">← 奠基期</a><a href="#ch3" class="nav-btn">下一章：原生多模态 →</a></div>
+
+<!-- ═══════════════ CHAPTER 3 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch3">第三章 · 原生多模态与视频生成（2024）</h2>
+<div class="callout info"><div class="title">📐 时代特征</div><p><strong>"原生多模态融合"</strong> — 从架构层面实现图文音视统一处理，不再是"先看图后说话"的分离式流程。</p></div>
+
+<h3>3.1 🎬 Sora — 视频生成的 ChatGPT 时刻</h3>
+<div class="callout paper"><div class="title">📄 Video Generation Models as World Simulators — OpenAI, Feb 2024</div></div>
+<p>Sora 基于 <strong>Diffusion Transformer (DiT)</strong>——将扩散模型从 U-Net 升级为纯 Transformer，可生成长达 60 秒的高质量视频。OpenAI 称之为 <strong>"世界模拟器"</strong>——暗示它不仅仅是视频生成，而是学习物理世界的运行规律。</p>
+
+<h3>3.2 🔊 GPT-4o — 端到端全模态实时交互</h3>
+<div class="callout paper"><div class="title">📄 GPT-4o ("omni") — OpenAI, May 2024</div></div>
+<p>GPT-4o 的核心突破：<strong>一个模型同时处理文本 + 图像 + 音频</strong>，端到端训练，延迟从 GPT-4V 的数秒降至 ~320ms（接近人类对话速度）。"o" = omni（全能）。它证明了<strong>多模态融合可以做到实时、自然、流畅</strong>——这是用户体验上的质变。</p>
+
+<h3>3.3 🌊 2024 VLM 大爆发</h3>
+<table>
+<thead><tr><th>模型</th><th>机构</th><th>关键创新</th></tr></thead>
+<tbody>
+<tr><td><strong>MM1</strong></td><td>Apple</td><td>证明数据混合策略比架构更重要</td></tr>
+<tr><td><strong>Phi-3-Vision</strong></td><td>Microsoft</td><td>4B 参数的小而强 VLM</td></tr>
+<tr><td><strong>InternVL 2.0</strong></td><td>上海 AI Lab</td><td>多尺度视觉编码器，OCR 强</td></tr>
+<tr><td><strong>LLaVA-OneVision</strong></td><td>ByteDance</td><td>统一单图/多图/视频任务</td></tr>
+<tr><td><strong>Qwen2-VL</strong></td><td>Alibaba</td><td>7B-72B，定位能力（检测+指向）</td></tr>
+<tr><td><strong>Pixtral</strong></td><td>Mistral</td><td>12B，Mistral 首个 VLM</td></tr>
+<tr><td><strong>LLaMA 3.2-Vision</strong></td><td>Meta</td><td>Meta 首个开源多模态 LLaMA</td></tr>
+<tr><td><strong>Molmo</strong></td><td>Allen AI</td><td>完全开源（数据+代码+权重）</td></tr>
+</tbody>
+</table>
+<p>2024 年下半年几乎<strong>每两周就有一个新的 VLM 发布</strong>。这标志着多模态能力从一个高端特性变成了<strong>所有大模型的标准配置</strong>。</p>
+
+<div class="nav-row"><a href="#ch2" class="nav-btn secondary">← VLM 崛起</a><a href="#ch4" class="nav-btn">下一章：世界模型 →</a></div>
+
+<!-- ═══════════════ CHAPTER 4 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch4">第四章 · 世界模型与 Any-to-Any（2025–2026）</h2>
+<div class="callout info"><div class="title">📐 时代特征</div><p><strong>"世界模型与 Any-to-Any"</strong> — 打破模态界限，灵活实现任意模态间的转换与生成，视频理解+生成+物理推理走向融合。</p></div>
+
+<h3>4.1 2025 关键里程碑</h3>
+<table>
+<thead><tr><th>时间</th><th>模型</th><th>核心贡献</th></tr></thead>
+<tbody>
+<tr><td>2025.01</td><td><strong>DeepSeek-Janus-Pro</strong></td><td><strong>解耦设计</strong>：理解路径和生成路径分离，统一多模态</td></tr>
+<tr><td>2025.02</td><td><strong>Qwen3.5</strong> (Alibaba)</td><td>Era 3a：单 Transformer 从零训练万亿多模态 token，0.8B-397B</td></tr>
+<tr><td>2025.03</td><td><strong>Gemma 3</strong> (Google)</td><td>128K 上下文，140+ 语言</td></tr>
+<tr><td>2025.05</td><td><strong>GPT-5</strong> (OpenAI)</td><td>深度融合多模态 + Agent 工作流</td></tr>
+<tr><td>2025.05</td><td><strong>BAGEL</strong> (ByteDance)</td><td>单模型图文视频生成——早期统一 I/O</td></tr>
+<tr><td>2025.06</td><td><strong>Gemini 2.5 Pro</strong> (Google)</td><td>200 万 token 上下文，多模态推理</td></tr>
+</tbody>
+</table>
+
+<h3>4.2 2026 旗舰模型</h3>
+<table>
+<thead><tr><th>模型</th><th>架构</th><th>特征</th></tr></thead>
+<tbody>
+<tr><td><strong>GPT-5.4</strong></td><td>Native Early Fusion</td><td>从训练开始多模态融合</td></tr>
+<tr><td><strong>Gemini 3</strong></td><td>Unified Model</td><td>下一代表现飞跃</td></tr>
+<tr><td><strong>Claude Opus 4.6</strong></td><td>Early Fusion + Agent</td><td>多模态 + 代理深度结合</td></tr>
+<tr><td><strong>Qwen3.5-Omni</strong></td><td>Thinker-Talker</td><td>Any-to-Any（文本+图像+音频+视频）</td></tr>
+</tbody>
+</table>
+
+<h3>4.3 Janus-Pro 的解耦设计 —— 理解与生成分离</h3>
+<div class="callout insight"><div class="title">💡 DeepSeek Janus-Pro 的核心洞察</div><p>理解（看图说话）和生成（文生图）的视觉需求<strong>完全不同</strong>：理解需要<strong>语义特征</strong>（CLIP 式的），生成需要<strong>细节特征</strong>（VQ-VAE 式的）。强行用一个视觉编码器同时做两件事 = 两件事都做不到最优。Janus-Pro 用<strong>两套视觉路径</strong>，各自优化——然后将结果统一整合。</p></div>
+
+<div class="nav-row"><a href="#ch3" class="nav-btn secondary">← 原生多模态</a><a href="#ch5" class="nav-btn">下一章：架构演进 →</a></div>
+
+<!-- ═══════════════ CHAPTER 5 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch5">第五章 · 四大架构时代的演进总览</h2>
+
+<div class="era-box e1">
+<div class="era-title">🏗️ Era 1 — 双塔对比学习（2021–2022）</div>
+<p><strong>范式</strong>：冻结视觉编码器 + 冻结文本编码器 + 可学习的跨模态桥<br>
+<strong>代表</strong>：CLIP, BLIP, Flamingo<br>
+<strong>局限</strong>：只能输出文本；跨模态交互浅层</p>
+</div>
+
+<div class="era-box e2">
+<div class="era-title">🔌 Era 2 — LLM 为中心的 Bolt-On（2023–2024）</div>
+<p><strong>范式</strong>：预训练 LLM 做主干，MLP/Q-Former 将视觉 token 投影到 LLM 词表<br>
+<strong>代表</strong>：LLaVA, Qwen2-VL, GPT-4V, InternVL<br>
+<strong>突破</strong>：视觉指令微调让推理从 LLM 主干预自然涌现</p>
+</div>
+
+<div class="era-box e3">
+<div class="era-title">🧬 Era 3a — 原生多模态 Text-Out（2025–2026）</div>
+<p><strong>范式</strong>：单个 Transformer 从零开始在混合模态数据上训练；早期融合 token 流<br>
+<strong>代表</strong>：Qwen3.5, Gemma 4, Gemini 3, GPT-5.4, Claude Opus 4.6<br>
+<strong>局限</strong>：仍然只能输出文本（自回归文本生成）</p>
+</div>
+
+<div class="era-box e4">
+<div class="era-title">🌐 Era 3b — 全模态统一 I/O（2025–2026）</div>
+<p><strong>范式</strong>：相同的融合主干 + 专用图像/音频解码器头<br>
+<strong>代表</strong>：BAGEL, Qwen3.5-Omni, InternVL-U, Emu3.5, Janus-Pro<br>
+<strong>能力</strong>：原生生成文本 + 图像 + 语音——真正的 Any-to-Any</p>
+</div>
+
+<h3>📊 研究趋势（基于 26,000 篇论文的调查）</h3>
+<table>
+<thead><tr><th>指标</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+<tbody>
+<tr><td>VLM/LLM 论文占比</td><td>~16%</td><td>~30%</td><td>~40%</td></tr>
+<tr><td>扩散模型论文占比</td><td>~8%</td><td>~15%</td><td>~19%</td></tr>
+<tr><td>LLaVA 被提及率</td><td>0.1%</td><td>1.2%</td><td>2.7%</td></tr>
+<tr><td>MoE 被提及率</td><td>0.6%</td><td>0.6%</td><td>1.3%</td></tr>
+</tbody>
+</table>
+<p><strong>关键洞察</strong>（Jina AI 2025 调查）：训练方法 > 编码器大小。SigLIP 2 (400M 参数) 在大多数 VLM 基准上超过 InternViT-6B (5.9B 参数)。</p>
+
+<div class="nav-row"><a href="#ch4" class="nav-btn secondary">← 世界模型</a><a href="#ch6" class="nav-btn">下一章：核心技术 →</a></div>
+
+<!-- ═══════════════ CHAPTER 6 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch6">第六章 · 核心技术深潜</h2>
+
+<h3>6.1 🔗 对比学习：CLIP 的数学本质</h3>
+<p>CLIP 训练的是<strong>最大化匹配图文对的互信息</strong>。InfoNCE 损失可以理解为：在 batch 内，正确的图文对是正样本，其余所有 B²-B 对都是负样本。</p>
+<pre><code># CLIP 训练的核心（完整版）
+def clip_training_step(images, texts, model, optimizer):
+    # 1. 前向传播
+    img_emb = model.encode_image(images)  # [B, dim]
+    txt_emb = model.encode_text(texts)    # [B, dim]
+
+    # 2. 归一化
+    img_emb = F.normalize(img_emb, dim=-1)
+    txt_emb = F.normalize(txt_emb, dim=-1)
+
+    # 3. 可学习的温度参数（初始化为 0.07）
+    logit_scale = model.logit_scale.exp()
+
+    # 4. 计算相似度矩阵
+    logits_per_image = logit_scale * img_emb @ txt_emb.T  # [B, B]
+    logits_per_text = logits_per_image.T
+
+    # 5. 对角线 = 正样本
+    labels = torch.arange(B, device=device)
+
+    # 6. 双向交叉熵
+    loss = (F.cross_entropy(logits_per_image, labels) +
+            F.cross_entropy(logits_per_text, labels)) / 2
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    return loss.item()</code></pre>
+
+<h3>6.2 🌀 扩散模型：从噪声到图像</h3>
+<p>扩散模型的核心思想是<strong>学习一个反向过程</strong>——正向过程（fixed）逐步添加噪声直至纯噪声；反向过程（learned）逐步去除噪声恢复原始数据。</p>
+
+<div class="math-block">
+$$\text{Forward: } q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t\mathbf{I})$$
+$$\text{Reverse: } p_\theta(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \sigma_t^2\mathbf{I})$$
+</div>
+
+<pre><code># 扩散模型的训练（DDPM 简化版）
+def diffusion_training_step(model, x_0, t, noise):
+    """预测添加到 x_0 上的噪声"""
+    # 正向：加噪声
+    alpha_bar = cumulative_product(alphas)[t]
+    x_t = sqrt(alpha_bar) * x_0 + sqrt(1 - alpha_bar) * noise
+
+    # 反向：预测噪声
+    noise_pred = model(x_t, t)  # U-Net 或 DiT
+
+    # 损失：预测噪声 vs 真实噪声的 MSE
+    loss = F.mse_loss(noise_pred, noise)
+    return loss
+
+# 条件生成（文本→图像）：将文本嵌入注入每一步
+def diffusion_sampling_with_text(model, text_embed, num_steps=50):
+    x_t = torch.randn(1, 3, 512, 512)  # 纯噪声
+    for t in reversed(range(num_steps)):
+        noise_pred = model(x_t, t, text_embed)  # 文本 = 条件！
+        x_t = denoise(x_t, noise_pred, t)
+    return x_t  # 生成的图像</code></pre>
+
+<h3>6.3 🔌 Q-Former：轻量跨模态翻译器</h3>
+<p>BLIP-2 的 Q-Former 是 VLM "bolt-on" 时代的标志性设计。它的结构：</p>
+<pre><code># Q-Former 的架构
+# 输入侧：可学习的 query tokens [32, 768] + 图像特征（从 ViT 获得）
+# 输出侧：32 个 query tokens 的更新版本 → 送到 LLM
+
+class QFormer(nn.Module):
+    def __init__(self, num_queries=32, hidden_dim=768):
+        self.queries = nn.Parameter(torch.randn(num_queries, hidden_dim))
+        self.cross_attention = nn.MultiheadAttention(...)
+        self.self_attention = nn.MultiheadAttention(...)
+        self.ffn = FeedForward(...)
+
+    def forward(self, image_features):
+        # image_features: [B, 257, 1024] (ViT 输出)
+        x = self.queries.unsqueeze(0).expand(B, -1, -1)  # [B, 32, 768]
+
+        # Self-attention among queries
+        x = self.self_attention(x, x, x)
+
+        # Cross-attention: queries attend to image features
+        x = self.cross_attention(x, image_features, image_features)
+
+        # Feed-forward
+        x = self.ffn(x)
+
+        return x  # [B, 32, 768] → 送到 LLM 作为 "visual tokens"</code></pre>
+
+<p><strong>为什么 32 个 query 就够了？</strong>Q-Former 学会了将 257 个图像 patch token <strong>压缩为 32 个高质量的视觉 token</strong>，只保留对语言理解最重要的信息。这比直接喂 257 个 token 给 LLM 更高效。</p>
+
+<div class="callout success"><div class="title">✅ 多模态学习路线推荐</div>
+<p><strong>Week 1-2</strong>: ViT (2020) → CLIP (2021) ★必读 → Stable Diffusion<br>
+<strong>Week 3-4</strong>: LLaVA (2023) ★必读 → BLIP-2 / Q-Former → 视觉指令微调<br>
+<strong>Week 5-6</strong>: GPT-4V 分析报告 → MM1（数据混合）→ InternVL（大视觉编码器）<br>
+<strong>Week 7+</strong>: Sora / DiT → Janus-Pro（解耦设计）→ Era 3a/3b 原生融合</p></div>
+
+<div class="nav-row">
+<a href="#ch5" class="nav-btn secondary">← 架构演进</a>
+<a href="#top" class="nav-btn secondary">↑ 回到顶部</a>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ref">📚 关键论文索引</h2>
+
+<table>
+<thead><tr><th>年份</th><th>论文</th><th>机构</th><th>核心贡献</th><th>论文链接</th></tr></thead>
+<tbody>
+<tr><td>2017</td><td><strong>Attention Is All You Need</strong></td><td>Google</td><td>Transformer 架构——所有后续工作的基础</td><td><a href="https://arxiv.org/abs/1706.03762" target="_blank">1706.03762</a></td></tr>
+<tr><td>2020</td><td><strong>ViT (Vision Transformer)</strong></td><td>Google</td><td>将 Transformer 应用于图像，打破 CV/NLP 架构壁垒</td><td><a href="https://arxiv.org/abs/2010.11929" target="_blank">2010.11929</a></td></tr>
+<tr><td>2020</td><td><strong>DDPM (Denoising Diffusion Probabilistic Models)</strong></td><td>UC Berkeley</td><td>扩散模型的现代形式化——高质量图像生成的基础</td><td><a href="https://arxiv.org/abs/2006.11239" target="_blank">2006.11239</a></td></tr>
+<tr><td>2021</td><td><strong>CLIP</strong></td><td>OpenAI</td><td>4亿图文对对比学习，统一图文语义空间——多模态基石</td><td><a href="https://arxiv.org/abs/2103.00020" target="_blank">2103.00020</a></td></tr>
+<tr><td>2021</td><td><strong>DALL·E (Zero-Shot Text-to-Image Generation)</strong></td><td>OpenAI</td><td>首个大规模文本→图像自回归生成模型</td><td><a href="https://arxiv.org/abs/2102.12092" target="_blank">2102.12092</a></td></tr>
+<tr><td>2022</td><td><strong>DALL·E 2 (Hierarchical Text-Conditional Image Generation with CLIP Latents)</strong></td><td>OpenAI</td><td>扩散模型+CLIP语义引导，文生图质量飞跃</td><td><a href="https://arxiv.org/abs/2204.06125" target="_blank">2204.06125</a></td></tr>
+<tr><td>2022</td><td><strong>Flamingo</strong></td><td>DeepMind</td><td>首个大规模VLM，80B参数，Few-shot多任务视觉理解</td><td><a href="https://arxiv.org/abs/2204.14198" target="_blank">2204.14198</a></td></tr>
+<tr><td>2022</td><td><strong>Stable Diffusion (High-Resolution Image Synthesis with LDM)</strong></td><td>LMU Munich + Stability AI</td><td>潜空间扩散模型(LDM)，引爆AI绘画应用爆发</td><td><a href="https://arxiv.org/abs/2112.10752" target="_blank">2112.10752</a></td></tr>
+<tr><td>2022</td><td><strong>BLIP (Bootstrapping Language-Image Pre-training)</strong></td><td>Salesforce</td><td>统一理解与生成的多模态混合编解码器框架</td><td><a href="https://arxiv.org/abs/2201.12086" target="_blank">2201.12086</a></td></tr>
+<tr><td>2023</td><td><strong>BLIP-2 (Bootstrapping Language-Image Pre-training with Frozen Image Encoders and LLMs)</strong></td><td>Salesforce</td><td>Q-Former桥接冻结视觉编码器与冻结LLM</td><td><a href="https://arxiv.org/abs/2301.12597" target="_blank">2301.12597</a></td></tr>
+<tr><td>2023</td><td><strong>GPT-4 Technical Report</strong></td><td>OpenAI</td><td>首个商业级多模态大语言模型（GPT-4V系列）</td><td><a href="https://arxiv.org/abs/2303.08774" target="_blank">2303.08774</a></td></tr>
+<tr><td>2023</td><td><strong>LLaVA (Visual Instruction Tuning)</strong></td><td>UW-Madison / Microsoft</td><td>视觉指令微调——开源VLM标杆，被誉为"开源GPT-4V"</td><td><a href="https://arxiv.org/abs/2304.08485" target="_blank">2304.08485</a></td></tr>
+<tr><td>2023</td><td><strong>LLaVA-1.5 (Improved Baselines with Visual Instruction Tuning)</strong></td><td>UW-Madison / Microsoft</td><td>改进版开源VLM，13B参数，最广泛使用的开源VLM基线</td><td><a href="https://arxiv.org/abs/2310.03744" target="_blank">2310.03744</a></td></tr>
+<tr><td>2023</td><td><strong>Gemini 1.0</strong></td><td>Google DeepMind</td><td>首个从零训练的原生多模态架构，32/32项基准中30项SOTA</td><td><a href="https://arxiv.org/abs/2312.11805" target="_blank">2312.11805</a></td></tr>
+<tr><td>2024</td><td><strong>Sora (Video Generation Models as World Simulators)</strong></td><td>OpenAI</td><td>基于DiT的视频生成——被描述为"世界模拟器"</td><td><a href="https://openai.com/research/video-generation-models-as-world-simulators" target="_blank">OpenAI Tech Report</a></td></tr>
+<tr><td>2024</td><td><strong>Phi-3 Technical Report</strong></td><td>Microsoft</td><td>小而强的VLM (4B参数)——小模型的视觉推理能力验证</td><td><a href="https://arxiv.org/abs/2404.14219" target="_blank">2404.14219</a></td></tr>
+<tr><td>2024</td><td><strong>MM1 (Methods, Analysis & Insights from Multimodal LLM Pre-training)</strong></td><td>Apple</td><td>证明数据混合策略比架构选择更重要</td><td><a href="https://arxiv.org/abs/2403.09611" target="_blank">2403.09611</a></td></tr>
+<tr><td>2024</td><td><strong>InternVL 2.0 (Better than the Best—Expanding the Frontiers of VLMs)</strong></td><td>上海AI Lab</td><td>多尺度视觉编码器，强OCR与文档理解能力</td><td><a href="https://arxiv.org/abs/2407.06284" target="_blank">2407.06284</a></td></tr>
+<tr><td>2024</td><td><strong>Molmo (Molmo and PixMo: Open Weights and Open Data for SOTA VLMs)</strong></td><td>Allen AI (AI2)</td><td>完全开源VLM（数据+代码+权重），像素级指向能力</td><td><a href="https://arxiv.org/abs/2409.17146" target="_blank">2409.17146</a></td></tr>
+<tr><td>2024</td><td><strong>Pixtral 12B</strong></td><td>Mistral AI</td><td>Mistral首个VLM，12B参数的高效多模态模型</td><td><a href="https://arxiv.org/abs/2410.07073" target="_blank">2410.07073</a></td></tr>
+<tr><td>2024</td><td><strong>LLaMA 3.2-Vision</strong></td><td>Meta</td><td>Meta首个开源多模态LLaMA，11B-90B参数</td><td><a href="https://ai.meta.com/blog/llama-3-2-connect-2024/" target="_blank">Meta AI Blog</a></td></tr>
+<tr><td>2025</td><td><strong>DeepSeek-Janus-Pro</strong></td><td>DeepSeek</td><td>解耦设计：分离理解路径与生成路径，统一多模态模型</td><td><a href="https://arxiv.org/abs/2501.17811" target="_blank">2501.17811</a></td></tr>
+<tr><td>2025</td><td><strong>Qwen2.5-VL</strong></td><td>Alibaba</td><td>定位能力+Agent能力+长视频理解（小时级），3B-72B</td><td><a href="https://arxiv.org/abs/2502.13923" target="_blank">2502.13923</a></td></tr>
+<tr><td>2025</td><td><strong>BAGEL (Bootstrapping All GEnerative Latents)</strong></td><td>ByteDance</td><td>单模型图文视频生成——Era 3b统一I/O早期代表</td><td><a href="https://arxiv.org/abs/2505.18816" target="_blank">2505.18816</a></td></tr>
+</tbody>
+</table>
+
+<div class="nav-row">
+<a href="#ch6" class="nav-btn secondary">← 核心技术</a>
+<a href="#top" class="nav-btn secondary">↑ 回到顶部</a>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+<p style="text-align:center;color:var(--text3);font-size:0.9em;margin-top:36px;">
+🌐 多模态模型（Multimodal Models）—— 发展全历程 · 完<br>
+构建于 2026 年 7 月，基于截至 2026 年 7 月的公开研究文献
+</p>
+
+</main>
+</body>
+</html>

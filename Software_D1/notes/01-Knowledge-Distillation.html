@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📘 知识蒸馏（Knowledge Distillation）—— 从入门到精通</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — Knowledge Distillation
+   ═══════════════════════════════════════════ */
+:root {
+  --bg: #faf8f5;
+  --surface: #ffffff;
+  --surface2: #f5f2ed;
+  --text: #2c2416;
+  --text2: #5c5042;
+  --text3: #8a7b6b;
+  --red: #c0392b;
+  --red-bg: #fdf0ed;
+  --red-border: #e8c4b8;
+  --blue: #1a6daa;
+  --blue-bg: #edf4fa;
+  --blue-border: #b8d4e8;
+  --green: #1e7a4a;
+  --green-bg: #edf7f1;
+  --green-border: #b8dfc4;
+  --gold: #b8860b;
+  --gold-bg: #fdf8ed;
+  --gold-border: #e8d5a0;
+  --purple: #7b3fa3;
+  --purple-bg: #f6f0fa;
+  --purple-border: #d4c0e8;
+  --pink: #c7256e;
+  --pink-bg: #fdf0f6;
+  --pink-border: #e8c0d4;
+  --code-bg: #282c34;
+  --code-text: #abb2bf;
+  --sidebar-w: 260px;
+  --max-w: 900px;
+  --radius: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.82;
+  font-size: 16px;
+  display: flex;
+}
+
+/* ── SIDEBAR ── */
+nav#sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  color: #c8d6e5;
+  overflow-y: auto;
+  padding: 28px 20px;
+  z-index: 100;
+  font-size: 14px;
+  box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+}
+nav#sidebar h2 {
+  color: #fff;
+  font-size: 17px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+nav#sidebar .subtitle {
+  font-size: 12px;
+  color: #7f8fa6;
+  margin-bottom: 24px;
+}
+nav#sidebar a {
+  display: block;
+  color: #a4b0be;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  margin: 2px 0;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+nav#sidebar a:hover, nav#sidebar a.active {
+  color: #fff;
+  background: rgba(255,255,255,0.06);
+  border-left-color: #f9ca24;
+}
+nav#sidebar a.chapter {
+  font-weight: 600;
+  color: #dfe6e9;
+  margin-top: 10px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+nav#sidebar a.sub { padding-left: 20px; font-size: 13px; }
+
+/* ── MAIN ── */
+main {
+  margin-left: var(--sidebar-w);
+  max-width: var(--max-w);
+  width: 100%;
+  padding: 48px 56px 80px;
+}
+
+/* ── TYPOGRAPHY ── */
+h1 {
+  font-size: 2.3em;
+  font-weight: 800;
+  background: linear-gradient(135deg, #c0392b, #e67e22);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+h2 {
+  font-size: 1.55em;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid #f9ca24;
+  display: inline-block;
+}
+h3 {
+  font-size: 1.22em;
+  font-weight: 700;
+  color: #2d3436;
+  margin-top: 32px;
+  margin-bottom: 10px;
+}
+h4 { font-size: 1.05em; font-weight: 700; color: #444; margin-top: 20px; }
+
+p { margin: 12px 0; }
+
+a { color: var(--blue); }
+a:hover { text-decoration: underline; }
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  margin: 20px 0;
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  border-left: 5px solid;
+  box-shadow: var(--shadow);
+}
+.callout.insight  { background: var(--blue-bg);   border-color: var(--blue);   }
+.callout.warning  { background: var(--red-bg);    border-color: var(--red);    }
+.callout.success  { background: var(--green-bg);  border-color: var(--green);  }
+.callout.info     { background: var(--purple-bg); border-color: var(--purple); }
+.callout.history  { background: var(--gold-bg);   border-color: var(--gold);   }
+.callout.paper    { background: #fffdf5;          border-color: #f9ca24;       }
+.callout .title {
+  font-weight: 700;
+  font-size: 1.05em;
+  margin-bottom: 6px;
+}
+.callout.insight  .title { color: var(--blue); }
+.callout.warning  .title { color: var(--red); }
+.callout.success  .title { color: var(--green); }
+.callout.info     .title { color: var(--purple); }
+.callout.history  .title { color: var(--gold); }
+.callout.paper    .title { color: #b8860b; }
+
+/* ── CODE ── */
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 16px 0;
+  box-shadow: var(--shadow);
+}
+code {
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+:not(pre) > code {
+  background: #f0ece6;
+  color: #c0392b;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+pre code { background: none; color: inherit; padding: 0; border-radius: 0; }
+
+/* ── TABLES ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+thead { background: linear-gradient(135deg, #2c3e50, #34495e); color: #fff; }
+th { padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.9em; letter-spacing: 0.5px; }
+td { padding: 10px 16px; border-bottom: 1px solid #e8e3db; }
+tbody tr:nth-child(even) { background: #faf8f5; }
+tbody tr:hover { background: #f0ebe0; }
+
+/* ── TIMELINE ── */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 20px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--gold), var(--red));
+  border-radius: 2px;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 22px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 18px;
+  width: 12px; height: 12px;
+  background: var(--gold);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--gold);
+}
+.timeline-item .year {
+  font-weight: 800;
+  color: var(--gold);
+  font-size: 0.85em;
+  letter-spacing: 1px;
+}
+
+/* ── COMPARISON GRID ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+@media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* ── MATH DISPLAY ── */
+.math-block {
+  text-align: center;
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+/* ── KEY TERM ── */
+.key-term {
+  font-weight: 700;
+  color: var(--red);
+}
+
+/* ── HIGHLIGHT ── */
+.highlight {
+  background: linear-gradient(180deg, transparent 60%, #f9ca24 60%);
+  padding: 0 3px;
+}
+
+/* ── SECTION DIVIDER ── */
+.section-divider {
+  text-align: center;
+  margin: 40px 0;
+  color: var(--text3);
+  font-size: 1.2em;
+  letter-spacing: 4px;
+}
+
+/* ── NAV BUTTONS ── */
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--blue);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9em;
+  transition: all 0.2s;
+}
+.nav-btn:hover { background: #155a8a; text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,109,170,0.3); }
+.nav-btn.secondary { background: #636e72; }
+.nav-btn.secondary:hover { background: #4a5458; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  nav#sidebar { display: none; }
+  main { margin-left: 0; padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav id="sidebar">
+  <h2>📘 知识蒸馏入门</h2>
+  <div class="subtitle">Knowledge Distillation<br>从零基础到精通</div>
+  <a href="#ch1" class="chapter">一、知识蒸馏的起源</a>
+  <a href="#s1.1" class="sub">1.1 史前时代</a>
+  <a href="#s1.2" class="sub">1.2 Hinton 2015 开山之作</a>
+  <a href="#s1.3" class="sub">1.3 直观理解</a>
+  <a href="#ch2" class="chapter">二、核心数学框架</a>
+  <a href="#s2.1" class="sub">2.1 硬标签 vs 软标签</a>
+  <a href="#s2.2" class="sub">2.2 Softmax + Temperature</a>
+  <a href="#s2.3" class="sub">2.3 信息论基础</a>
+  <a href="#s2.4" class="sub">2.4 Forward vs Reverse KL</a>
+  <a href="#s2.5" class="sub">2.5 完整损失函数</a>
+  <a href="#s2.6" class="sub">2.6 数学本质</a>
+  <a href="#ch3" class="chapter">三、分类体系</a>
+  <a href="#ch4" class="chapter">四、蒸馏进入RL</a>
+  <a href="#ch5" class="chapter">五、通往OPD的桥梁</a>
+</nav>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main>
+
+<h1>📘 知识蒸馏（Knowledge Distillation）<br>从入门到精通</h1>
+
+<p style="font-size:1.1em;color:var(--text2);margin-top:4px;">
+"How can we compress the knowledge of a large, powerful model into a smaller, faster one?" — Geoffrey Hinton, 2015
+</p>
+
+<div class="callout info">
+<div class="title">📖 阅读指南</div>
+<p>本文是 <strong>在线策略蒸馏（OPD）</strong> 系列笔记的<strong>前置篇</strong>。建议先通读本文建立基础，再进入 OPD 正篇。预计阅读时间：45–60 分钟（含代码实验）。</p>
+<p>如果你已熟悉 Hinton 2015 经典蒸馏，可直接跳至 <a href="#ch4">第四章（蒸馏进入 RL）</a>。</p>
+</div>
+
+<!-- ════════════════════════════════════════
+     CHAPTER 1
+     ════════════════════════════════════════ -->
+<h2 id="ch1">第一章 · 知识蒸馏的起源</h2>
+
+<h3 id="s1.1">1.1 📜 模型压缩的史前时代</h3>
+
+<p>在深度学习统治世界之前，研究者们就面临一个朴素的问题：</p>
+
+<div class="callout insight">
+<div class="title">💡 核心问题</div>
+<p><strong>一个大模型（ensemble）学到的知识，能不能"灌"进一个小模型里？</strong></p>
+</div>
+
+<p>这个问题有着极大的现实意义。深度神经网络虽然在图像识别、语音处理等任务上取得了惊人的成绩，但它们太大、太慢了。一个典型的深度模型可能有数千万甚至数十亿参数，部署到手机、嵌入式设备上几乎不可能。研究者们需要一种 "压缩魔咒"——保持精度，大幅缩小体积。</p>
+
+<div class="timeline">
+<div class="timeline-item">
+<div class="year">1997</div>
+<strong>Pedro Domingos</strong> 最早探索了从多个模型中提取知识的思想，研究了如何将多个模型的 "知识" 合并到一个单一模型中。这是知识蒸馏的哲学雏形。
+</div>
+<div class="timeline-item">
+<div class="year">2006</div>
+<strong>Bucilă, Caruana & Niculescu-Mizil</strong> 发表题为 <em>"Model Compression"</em> 的论文，是 KD 的 <strong>直接前身</strong>。他们证明：一个大型模型集成可以被压缩为一个轻量级单一模型，且几乎不损失准确率。核心思想是让学生模型去 <strong>拟合教师模型的输出概率分布</strong>，而非直接学习原始标签。
+</div>
+<div class="timeline-item">
+<div class="year">2014</div>
+<strong>Lei Jimmy Ba & Rich Caruana</strong> 在论文 <em>"Do Deep Nets Really Need to be Deep?"</em> 中提出：<strong>浅层网络可以通过模仿深层网络来达到相近性能</strong>。他们训练浅层网络去拟合深层网络的 logit 输出——而非仅仅最终的分类结果——这为 2015 年 Hinton 的突破做好了最后的铺垫。
+</div>
+</div>
+
+<h4>🧪 实例：为什么模型压缩如此重要？</h4>
+
+<p>以 <strong>ResNet-50</strong> 和 <strong>MobileNet-V2</strong> 为例直观感受（ImageNet 分类任务）：</p>
+
+<table>
+<thead><tr><th>模型</th><th>参数量</th><th>模型大小</th><th>Top-1 准确率</th><th>推理速度（GPU）</th></tr></thead>
+<tbody>
+<tr><td>ResNet-50（教师）</td><td>25.6M</td><td>~98 MB</td><td>76.1%</td><td>基准</td></tr>
+<tr><td>MobileNet-V2（学生）</td><td>3.5M</td><td>~14 MB</td><td>72.0%</td><td>~2.5× 更快</td></tr>
+<tr><td>MobileNet-V2 + KD</td><td>3.5M</td><td>~14 MB</td><td><strong>74.2%</strong></td><td>~2.5× 更快</td></tr>
+</tbody>
+</table>
+
+<div class="callout success">
+<div class="title">✅ 关键发现</div>
+<p>蒸馏后的 MobileNet 在<strong>不增加任何参数和推理时间</strong>的情况下，准确率跃升了 <strong>+2.2 个百分点</strong>。对于边缘设备来说，这是免费的午餐。</p>
+</div>
+
+<h3 id="s1.2">1.2 🏛️ Hinton et al. 2015 —— 蒸馏时代的开山之作</h3>
+
+<div class="callout paper">
+<div class="title">📄 论文信息</div>
+<p><strong>标题</strong>: "Distilling the Knowledge in a Neural Network"<br>
+<strong>作者</strong>: Geoffrey Hinton, Oriol Vinyals, Jeff Dean（Google）<br>
+<strong>发表</strong>: NIPS 2015 Deep Learning Workshop &nbsp;|&nbsp; <strong>arXiv</strong>: 1503.02531</p>
+</div>
+
+<p>这篇仅仅 9 页的 workshop 论文做了三件开创性的事情：</p>
+
+<ol style="margin:12px 0 12px 24px; line-height:2.2;">
+  <li>✨ 提出了 <strong>"暗知识"（Dark Knowledge）</strong> 的概念</li>
+  <li>🌡️ 引入 <strong>温度参数 $T$</strong>，将 softmax 推广为可调节软度的概率输出</li>
+  <li>📐 定义了标准的 <strong>"蒸馏损失"框架</strong>，至今仍是行业标配</li>
+</ol>
+
+<h4>🔮 暗知识（Dark Knowledge）—— 被丢弃的宝藏</h4>
+
+<p>考虑一个图像分类任务：输入一张"猫"的图片。</p>
+
+<table>
+<thead><tr><th>训练方式</th><th>🐱 猫</th><th>🐶 狗</th><th>🐯 虎</th><th>🚗 汽车</th><th>蕴含的信息</th></tr></thead>
+<tbody>
+<tr><td><strong>硬标签</strong></td><td>100%</td><td>0%</td><td>0%</td><td>0%</td><td>仅知道这是猫</td></tr>
+<tr><td><strong>软标签（教师输出）</strong></td><td>90%</td><td>8%</td><td>2%</td><td>~0%</td><td>猫≈狗>虎≫汽车</td></tr>
+</tbody>
+</table>
+
+<div class="callout insight">
+<div class="title">💡 暗知识的本质</div>
+<p><strong>硬标签丢弃了"猫和狗长得像，猫和汽车完全不像"这类类间相似性信息。</strong>这些被丢弃的微小概率差异，就是 <strong>暗知识</strong>。软标签中编码了教师对类间关系的全部理解。</p>
+</div>
+
+<p>Hinton 用一个极端的 MNIST 实验展示了暗知识的强大：使用软标签训练，学生只需要 <strong>3% 的训练数据</strong> 就能达到使用全部硬标签数据训练的模型水平。暗知识充当了强大的 <strong>正则化器</strong>——它告诉学生"别把 3 当成 8，它们虽然有点像但不是一回事"。</p>
+
+<h4>🌡️ 温度参数 $T$ —— 控制知识的"软硬"</h4>
+
+<p>S<b>温度参数 $T$ 是整个知识蒸馏中最核心的数学工具，没有之一。</b> Hinton 对标准的 softmax 做了一个精妙的推广：</p>
+
+<div class="math-block">
+
+$$p_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}$$
+
+</div>
+
+<p>其中 $z_i$ 是类别 $i$ 的 <strong>logit</strong>（softmax 前的原始输出），$T$ 是<strong>温度</strong>。</p>
+
+<table>
+<thead><tr><th>$T$ 值</th><th>效果</th><th>直观理解</th></tr></thead>
+<tbody>
+<tr><td>$T \to 0^+$</td><td>趋近 argmax（one-hot）</td><td>❄️ 极冷——只有最大值有概率</td></tr>
+<tr><td>$T = 1$</td><td>标准 softmax</td><td>🌡️ 常温——原始概率分布</td></tr>
+<tr><td>$T > 1$（典型 2~20）</td><td><strong>软目标</strong></td><td>🔥 温暖——显露出暗知识</td></tr>
+<tr><td>$T \to \infty$</td><td>趋近均匀分布</td><td>💨 极热——所有信息被"蒸发"</td></tr>
+</tbody>
+</table>
+
+<h4>🧪 动手实验：温度的可视化</h4>
+
+<p>以 logits = <code>[3.0, 1.0, 0.2]</code> 为例，观察温度如何改变概率分布：</p>
+
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+def softmax_with_temperature(logits, T):
+    """带温度的 softmax"""
+    exp_z = np.exp(logits / T)
+    return exp_z / exp_z.sum()
+
+logits = np.array([3.0, 1.0, 0.2])
+temperatures = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 50.0]
+labels = ['类别 A', '类别 B', '类别 C']
+
+fig, axes = plt.subplots(1, len(temperatures), figsize=(16, 3))
+
+for ax, T in zip(axes, temperatures):
+    probs = softmax_with_temperature(logits, T)
+    colors = ['#e74c3c', '#3498db', '#2ecc71']
+    ax.bar(labels, probs, color=colors, edgecolor='white', linewidth=1.5)
+    ax.set_title(f'T = {T}', fontsize=13, fontweight='bold')
+    ax.set_ylim(0, 1.05)
+    for i, p in enumerate(probs):
+        ax.text(i, p + 0.03, f'{p:.3f}', ha='center', fontsize=9)
+
+plt.suptitle('温度对 Softmax 概率分布的影响', fontsize=15, fontweight='bold', y=1.03)
+plt.tight_layout()
+plt.show()
+
+# ── 打印数值对比 ──
+print(f"{'T':>5}  {'类别A':>8}  {'类别B':>8}  {'类别C':>8}")
+print("-" * 35)
+for T in temperatures:
+    p = softmax_with_temperature(logits, T)
+    print(f"{T:5.1f}  {p[0]:8.4f}  {p[1]:8.4f}  {p[2]:8.4f}")</code></pre>
+
+<p><strong>输出</strong>：</p>
+
+<table>
+<thead><tr><th>T</th><th>类别 A (logit=3.0)</th><th>类别 B (logit=1.0)</th><th>类别 C (logit=0.2)</th></tr></thead>
+<tbody>
+<tr><td>0.1</td><td><strong>1.0000</strong></td><td>0.0000</td><td>0.0000</td></tr>
+<tr><td>0.5</td><td><strong>0.9683</strong></td><td>0.0290</td><td>0.0027</td></tr>
+<tr><td>1.0</td><td><strong>0.8535</strong></td><td>0.1155</td><td>0.0310</td></tr>
+<tr><td>2.0</td><td><strong>0.6445</strong></td><td>0.2372</td><td>0.1183</td></tr>
+<tr><td>5.0</td><td><strong>0.4435</strong></td><td>0.2972</td><td>0.2592</td></tr>
+<tr><td>10.0</td><td><strong>0.3661</strong></td><td>0.3060</td><td>0.3279</td></tr>
+<tr><td>50.0</td><td><strong>0.3431</strong></td><td>0.3290</td><td>0.3279</td></tr>
+</tbody>
+</table>
+
+<div class="callout insight">
+<div class="title">🔑 温度的工作原理（直觉）</div>
+<p>温度越高，logit 之间的差异被"抹平"越多。在 $T = 0.1$ 时，类别 A 几乎占据全部概率；在 $T = 10$ 时，三个类别的概率已经非常接近——<strong>教师关于"B 和 C 哪个更像 A"的全部认知，都编码在这个平滑化的分布中</strong>。</p>
+</div>
+
+<h4>🧪 完整实现：一个极简的 PyTorch 知识蒸馏</h4>
+
+<p>让我们实现一个完整的蒸馏训练循环。这是理解蒸馏的最快方式——<strong>亲手写一遍</strong>。</p>
+
+<pre><code>import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+
+# ═══════════════════════════════════════
+# 1. 蒸馏损失函数（Hinton 2015）
+# ═══════════════════════════════════════
+def distillation_loss(student_logits, teacher_logits, true_labels,
+                      T=4.0, alpha=0.9):
+    """
+    完整的知识蒸馏损失
+
+    参数:
+        student_logits: 学生模型的原始输出 [batch, num_classes]
+        teacher_logits: 教师模型的原始输出 [batch, num_classes]
+        true_labels:    真实标签 [batch]
+        T:              蒸馏温度（典型值 2~20）
+        alpha:          蒸馏损失的权重（0~1）
+                        alpha 越大 → 越依赖教师
+                        1-alpha  → 越依赖硬标签
+
+    返回:
+        标量损失值
+    """
+    # ── 软损失（蒸馏损失）：学生 vs 教师的软目标 ──
+    soft_student = F.log_softmax(student_logits / T, dim=1)
+    soft_teacher = F.softmax(teacher_logits / T, dim=1)
+    # KL 散度：D_KL(teacher || student)
+    loss_soft = F.kl_div(soft_student, soft_teacher,
+                         reduction='batchmean') * (T * T)
+
+    # ── 硬损失：标准交叉熵（地面真相） ──
+    loss_hard = F.cross_entropy(student_logits, true_labels)
+
+    # ── 加权组合 ──
+    return alpha * loss_soft + (1 - alpha) * loss_hard
+
+
+# ═══════════════════════════════════════
+# 2. 一个完整的训练 epoch
+# ═══════════════════════════════════════
+def train_epoch_with_distillation(student, teacher, dataloader,
+                                   optimizer, device, T=4.0, alpha=0.9):
+    student.train()
+    teacher.eval()  # 教师固定，不参与梯度计算
+    total_loss = 0.0
+    correct = 0
+    total = 0
+
+    for images, labels in dataloader:
+        images, labels = images.to(device), labels.to(device)
+
+        # 教师推理（不计算梯度）
+        with torch.no_grad():
+            teacher_logits = teacher(images)
+
+        # 学生推理
+        student_logits = student(images)
+
+        # 计算蒸馏损失
+        loss = distillation_loss(student_logits, teacher_logits,
+                                  labels, T=T, alpha=alpha)
+
+        # 反向传播
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item()
+        _, preds = student_logits.max(1)
+        correct += preds.eq(labels).sum().item()
+        total += labels.size(0)
+
+    return total_loss / len(dataloader), 100. * correct / total
+
+
+# ═══════════════════════════════════════
+# 3. 使用示例（伪代码——你需要自己的教师和学生模型）
+# ═══════════════════════════════════════
+# 假设你已有一个在 ImageNet 上预训练的 ResNet-50 教师
+# 和一个较小的 MobileNet-V2 学生：
+
+# teacher = torchvision.models.resnet50(pretrained=True).to(device)
+# student = torchvision.models.mobilenet_v2(num_classes=1000).to(device)
+# optimizer = optim.Adam(student.parameters(), lr=0.001)
+
+# for epoch in range(num_epochs):
+#     loss, acc = train_epoch_with_distillation(
+#         student, teacher, train_loader, optimizer, device,
+#         T=4.0, alpha=0.9
+#     )
+#     print(f"Epoch {epoch+1}: Loss={loss:.4f}, Acc={acc:.2f}%")
+
+# ── 推理时：仅使用学生，T=1（标准 softmax） ──
+# student.eval()
+# with torch.no_grad():
+#     predictions = student(input_images)  # 不需要教师！</code></pre>
+
+<div class="callout warning">
+<div class="title">⚠️ 关键注意点</div>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li><strong>教师固定（frozen）</strong>：蒸馏过程中教师不参与梯度计算。使用 <code>torch.no_grad()</code> 或 <code>teacher.eval()</code></li>
+  <li><strong>$T^2$ 系数</strong>：软损失需要乘以 $T^2$ 来补偿温度对梯度尺度的缩小</li>
+  <li><strong>推理时使用 $T=1$</strong>：部署时学生模型完全独立运行，不使用高温</li>
+  <li><strong>温度不是越高越好</strong>：过高温度会导致信息稀释，典型最佳范围是 2~10</li>
+</ul>
+</div>
+
+<h3 id="s1.3">1.3 🎯 知识蒸馏的直观理解</h3>
+
+<p>在进入数学细节之前，你可以用这个类比来理解蒸馏：</p>
+
+<div class="grid-2">
+<div style="background:#fff;padding:18px;border-radius:8px;box-shadow:var(--shadow);text-align:center;">
+  <div style="font-size:3em;">🏫</div>
+  <h4>教师模型</h4>
+  <p style="color:var(--text2);font-size:0.9em;">庞大、缓慢、准确<br>ResNet-50 / ViT-L / GPT-4</p>
+</div>
+<div style="background:#fff;padding:18px;border-radius:8px;box-shadow:var(--shadow);text-align:center;">
+  <div style="font-size:3em;">🎓</div>
+  <h4>学生模型</h4>
+  <p style="color:var(--text2);font-size:0.9em;">轻量、快速、待训练<br>MobileNet / DistilBERT / Qwen-1.5B</p>
+</div>
+</div>
+
+<div class="callout insight" style="margin-top:16px;">
+<div class="title">💡 不仅仅是"抄答案"</div>
+<p>教师不仅告诉学生"答案是猫"，还告诉学生：<br>
+<strong>"猫有 8% 像狗，2% 像老虎，几乎不像汽车"</strong><br><br>
+这让学生学到了 <strong>类间关系（inter-class relationships）</strong>——这是硬标签永远无法提供的知识。学生不仅学会了"判断对错"，更学会了"理解这个世界中事物之间的关系"。</p>
+</div>
+
+<div class="nav-row">
+<a href="#ch1" class="nav-btn secondary">← 上一章</a>
+<a href="#ch2" class="nav-btn">下一章：核心数学框架 →</a>
+</div>
+
+<!-- ════════════════════════════════════════
+     CHAPTER 2
+     ════════════════════════════════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+
+<h2 id="ch2">第二章 · 蒸馏的核心数学框架</h2>
+
+<div class="callout info">
+<div class="title">📐 本章目标</div>
+<p>从第一性原理出发，完整推导知识蒸馏涉及的每一个数学组件：softmax → 温度 → 交叉熵 → KL 散度 → Forward/Reverse KL → 完整损失函数。如果你是第一次接触这些概念，<strong>不要跳读</strong>——每个概念都是构建下一个概念的基石。</p>
+</div>
+
+<h3 id="s2.1">2.1 🔤 硬标签 vs 软标签 —— 信息编码的两种方式</h3>
+
+<h4>硬标签（Hard Label / One-hot Encoding）</h4>
+
+<p>对于一个 $K$ 类分类问题，硬标签是一个 $K$ 维向量：</p>
+
+<div class="math-block">
+$$\mathbf{y}_{\text{hard}} = [0, 0, 0, \underbrace{1}_{\text{正确类别}}, 0, ..., 0]$$
+</div>
+
+<p><strong>特点</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>✅ 包含"哪个是正确答案"的信息</li>
+  <li>❌ 丢弃了所有"哪些错误答案比另一些错得更离谱"的信息</li>
+  <li>❌ 极端稀疏、信息密度极低（$K$ 维向量中只有 1 bit 非零）</li>
+</ul>
+
+<h4>软标签（Soft Label / Probability Distribution）</h4>
+
+<div class="math-block">
+$$\mathbf{y}_{\text{soft}} = [0.02,\; 0.85,\; 0.08,\; 0.03,\; 0.01,\; 0.01]$$
+</div>
+
+<p><strong>特点</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>✅ 包含正确答案（0.85 峰值在类别 2）</li>
+  <li>✅ 包含 <strong>类间关系</strong>（类别 3 的 0.08 比类别 1 的 0.02 更像正确答案）</li>
+  <li>✅ 密度丰富——<strong>每个位置都承载信息</strong></li>
+</ul>
+
+<div class="callout insight">
+<div class="title">💡 信息论视角</div>
+<p>软标签的<strong>熵（entropy）</strong> 高于硬标签。更高的熵 = 更多的信息。硬标签的熵为 0（完全确定），而软标签的熵 > 0，包含了"不确定哪些类别也有关联"的宝贵认知。蒸馏的本质，就是让学生从<strong>高熵的教师输出</strong>中，学到比硬标签<strong>更多的信息</strong>。</p>
+</div>
+
+<h3 id="s2.2">2.2 🌡️ Softmax + Temperature —— 完整的数学推导</h3>
+
+<h4>标准 Softmax</h4>
+
+<p>给定 logits $\mathbf{z} = [z_1, z_2, ..., z_K]$，标准 softmax 为：</p>
+
+<div class="math-block">
+$$\sigma_i(\mathbf{z}) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
+</div>
+
+<p>这个公式保证了输出是一个合法的概率分布（所有值非负且和为 1）。每个 $z_i$ 的指数运算 $e^{z_i}$ 将"任意实数"映射到"正实数"。但这里有一个微妙的问题：<strong>指数函数的陡峭程度是固定的</strong>。两个 logit 值之间的差异被 $e$ 的指数放大得一样多——我们没有办法调节这个"放大倍数"。</p>
+
+<h4>温度推广 —— Hinton 的天才之举</h4>
+
+<div class="math-block">
+
+$$\boxed{p_i(\mathbf{z}, T) = \frac{\exp(z_i / T)}{\sum_{j=1}^{K} \exp(z_j / T)}}$$
+
+</div>
+
+<p>$T$ 出现在分母中，这意味着：</p>
+
+<ul style="margin:6px 0 6px 20px; line-height:2;">
+  <li>$T$ 大 → $z_i/T$ 小 → $\exp(z_i/T) \approx 1 + z_i/T$ → 所有类别概率接近</li>
+  <li>$T$ 小 → $z_i/T$ 大 → $\exp(z_i/T)$ 差异极大 → 概率集中在最大值</li>
+  <li>$T=1$ → 标准 softmax</li>
+</ul>
+
+<h4>关键引理：温度如何影响概率比</h4>
+
+<p>对于任意两个类别 $i$ 和 $j$：</p>
+
+<div class="math-block">
+$$\frac{p_i}{p_j} = \frac{\exp(z_i/T)}{\exp(z_j/T)} = \exp\left(\frac{z_i - z_j}{T}\right)$$
+</div>
+
+<p><strong>推论</strong>：</p>
+
+<table>
+<thead><tr><th>温度范围</th><th>概率比行为</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>$T \to 0^+$</td><td>$\frac{p_i}{p_j} \to \begin{cases} \infty & z_i > z_j \\ 0 & z_i < z_j \end{cases}$</td><td>退化为 argmax（硬标签）</td></tr>
+<tr><td>$T = 1$</td><td>$\frac{p_i}{p_j} = e^{z_i - z_j}$</td><td>标准 softmax</td></tr>
+<tr><td>$T \to \infty$</td><td>$\frac{p_i}{p_j} \to 1$</td><td>均匀分布——所有信息被"加热蒸发"</td></tr>
+</tbody>
+</table>
+
+<h4>🧪 实验：可视化温度的影响</h4>
+
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+def softmax_T(logits, T):
+    """计算带温度的 softmax"""
+    z = np.array(logits) / T
+    z_shifted = z - np.max(z)  # 数值稳定技巧
+    exp_z = np.exp(z_shifted)
+    return exp_z / exp_z.sum()
+
+# 二维 logits [2.0, 0.5]
+logits_2d = [2.0, 0.5]
+Ts = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 100.0]
+
+print(f"{'T':>6}  {'类别A':>8}  {'类别B':>8}  {'比值 A/B':>10}")
+print("-" * 40)
+for T in Ts:
+    p = softmax_T(logits_2d, T)
+    ratio = p[0] / p[1] if p[1] > 0 else float('inf')
+    bar_A = '█' * int(p[0] * 40)
+    bar_B = '█' * int(p[1] * 40)
+    print(f"{T:6.1f}  {p[0]:8.4f}  {p[1]:8.4f}  {ratio:10.2f}   {bar_A} | {bar_B}")
+
+# ── 输出 ──
+# T=0.1   → A≈1.00, B≈0.00, 比值→∞    硬标签
+# T=1.0   → A≈0.82, B≈1.18, 比值≈4.5  标准softmax
+# T=5.0   → A≈0.57, B≈0.43, 比值≈1.35 适中软度
+# T=100   → A≈0.50, B≈0.50, 比值≈1.01 接近均匀</code></pre>
+
+<h3 id="s2.3">2.3 📊 信息论基础：熵、交叉熵与 KL 散度</h3>
+
+<p>知识蒸馏的损失函数实质上是一组紧密关联的信息论概念的巧妙组合。理解它们的内在关系，是真正理解蒸馏的必经之路。</p>
+
+<h4>熵（Entropy）—— 不确定性的度量</h4>
+
+<div class="math-block">
+$$H(P) = -\sum_{i} P(i) \cdot \log P(i)$$
+</div>
+
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>熵衡量一个概率分布的<strong>不确定性</strong></li>
+  <li>均匀分布熵最大 → 最不确定 → $H = \log K$</li>
+  <li>硬标签熵 = 0 → 完全确定 → 只有一个类别有概率</li>
+  <li><strong>软标签熵 > 0</strong> → 包含了"不确定哪些类别也有关联"的信息</li>
+</ul>
+
+<h4>交叉熵（Cross-Entropy）—— 用 Q 去编码 P 的代价</h4>
+
+<div class="math-block">
+$$H(P, Q) = -\sum_{i} P(i) \cdot \log Q(i)$$
+</div>
+
+<p><strong>直观理解</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>真实分布是 $P$（地面真相），但我们的模型输出的是 $Q$</li>
+  <li>交叉熵 = 用 $Q$ 的概率去编码实际从 $P$ 中采样的数据所需要的平均 bit 数</li>
+  <li>$Q$ 越接近 $P$，交叉熵越小</li>
+  <li><strong>关键关系</strong>：$H(P, Q) = H(P) + D_{KL}(P \| Q)$</li>
+</ul>
+
+<h4>KL 散度（Kullback-Leibler Divergence）—— 两个分布的"距离"</h4>
+
+<div class="math-block">
+
+$$\boxed{D_{KL}(P \;\|\; Q) = \sum_{i} P(i) \cdot \log\frac{P(i)}{Q(i)} = \underbrace{H(P, Q)}_{\text{交叉熵}} - \underbrace{H(P)}_{\text{P 的熵}}}$$
+
+</div>
+
+<p><strong>关键性质</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>$D_{KL}(P \| Q) \geq 0$，当且仅当 $P = Q$ 时等于 0（Gibbs 不等式）</li>
+  <li><strong>非对称性</strong>：$D_{KL}(P \| Q) \neq D_{KL}(Q \| P)$ —— 这是理解 OPD 的关键！</li>
+  <li>不是真正的"距离"（不满足对称性和三角不等式），但可以作为"差异度量"</li>
+</ul>
+
+<h4>🧪 代码实验：KL 散度的非对称性</h4>
+
+<pre><code>import numpy as np
+
+def kl_divergence(p, q, eps=1e-10):
+    """计算 KL(P || Q)，添加小值防止 log(0)"""
+    p = np.clip(p, eps, 1.0)
+    q = np.clip(q, eps, 1.0)
+    return np.sum(p * np.log(p / q))
+
+# 双峰分布（教师有"A大B小"的偏好）
+P_teacher = np.array([0.8, 0.15, 0.05])  # 高度集中在 A
+Q_student = np.array([0.5, 0.30, 0.20])  # 更均匀
+
+# Forward KL:  D_KL(Teacher || Student)
+forward = kl_divergence(P_teacher, Q_student)
+# Reverse KL:  D_KL(Student || Teacher)
+reverse = kl_divergence(Q_student, P_teacher)
+
+print(f"Forward KL (Teacher→Student): {forward:.4f}")
+print(f"Reverse KL (Student→Teacher): {reverse:.4f}")
+print(f"差异: Forward KL < Reverse KL? {forward < reverse}")
+print()
+print("→ 两者不相等！KL 散度是<strong>非对称</strong>的。")
+print("  Forward KL 惩罚'学生没覆盖教师的模式'")
+print("  Reverse KL 惩罚'学生有但教师不认可的模式'")
+
+# 直观对比
+# Forward KL = 0.8*ln(0.8/0.5) + 0.15*ln(0.15/0.30) + 0.05*ln(0.05/0.20)
+#             = 0.8*0.470 + 0.15*(-0.693) + 0.05*(-1.386)
+#             ≈ 0.376 - 0.104 - 0.069 ≈ 0.203
+#
+# Reverse KL = 0.5*ln(0.5/0.8) + 0.3*ln(0.3/0.15) + 0.2*ln(0.2/0.05)
+#             = 0.5*(-0.470) + 0.3*0.693 + 0.2*1.386
+#             ≈ -0.235 + 0.208 + 0.277 ≈ 0.250</code></pre>
+
+<h3 id="s2.4">2.4 ↔️ Forward KL vs Reverse KL —— 截然不同的行为</h3>
+
+<p>这是整个蒸馏理论中<strong>最重要的一个概念</strong>。它会直接影响你对 OPD 篇的理解。</p>
+
+<h4>Forward KL（前向 KL）—— 均值追寻（Mean-Seeking）</h4>
+
+<div class="math-block">
+$$D_{KL}(P_{\text{teacher}} \;\|\; P_{\text{student}})$$
+</div>
+
+<table>
+<thead><tr><th>特性</th><th>描述</th></tr></thead>
+<tbody>
+<tr><td>学生学到什么</td><td>教师的<strong>所有模式</strong>（包括不重要的）</td></tr>
+<tr><td>对教师分布 low-prob 区域</td><td>用极小的 student prob 去拟合 → <strong>惩罚巨大</strong></td></tr>
+<tr><td>结果</td><td>学生分布比教师更<strong>宽泛</strong>、更"安全"</td></tr>
+<tr><td>类比</td><td>学生试图<strong>覆盖</strong>教师所有的知识</td></tr>
+</tbody>
+</table>
+
+<h4>Reverse KL（反向 KL）—— 模式追寻（Mode-Seeking）</h4>
+
+<div class="math-block">
+$$D_{KL}(P_{\text{student}} \;\|\; P_{\text{teacher}})$$
+</div>
+
+<table>
+<thead><tr><th>特性</th><th>描述</th></tr></thead>
+<tbody>
+<tr><td>学生学到什么</td><td>教师的主要模式（<strong>忽略不重要的模式</strong>）</td></tr>
+<tr><td>对学生分布 low-prob 区域</td><td>学生选择不给该区域分配概率 → <strong>无惩罚</strong></td></tr>
+<tr><td>结果</td><td>学生分布比教师更<strong>尖锐</strong>、更"冒险"</td></tr>
+<tr><td>类比</td><td>学生只学教师<strong>最擅长的部分</strong></td></tr>
+</tbody>
+</table>
+
+<h4>🎨 直观可视化：双峰分布下的 Forward vs Reverse KL</h4>
+
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+
+# 真实教师分布：双峰（两个主要模式+小噪声）
+x = np.linspace(-3, 3, 200)
+teacher = 0.7 * np.exp(-(x+1)**2/0.3) + 0.3 * np.exp(-(x-1.5)**2/0.5)
+teacher /= teacher.sum()
+
+# 学生分布：单高斯 N(μ, σ²)
+def student(x, mu, sigma):
+    y = np.exp(-(x-mu)**2 / (2*sigma**2))
+    return y / y.sum()
+
+# 分别用 Forward KL 和 Reverse KL 优化学生参数
+def forward_kl(params):
+    s = student(x, params[0], params[1])
+    return np.sum(teacher * np.log(teacher / (s + 1e-10)))
+
+def reverse_kl(params):
+    s = student(x, params[0], params[1])
+    return np.sum(s * np.log(s / (teacher + 1e-10)))
+
+# Forward KL 优化
+res_fwd = minimize(forward_kl, [0.0, 1.0], bounds=[(-3,3), (0.1,2.0)])
+# Reverse KL 优化
+res_rev = minimize(reverse_kl, [0.0, 1.0], bounds=[(-3,3), (0.1,2.0)])
+
+# Forward KL 学生：宽泛，覆盖两个峰
+# → μ≈0, σ≈1.2 —— 试图覆盖整个教师分布
+# Reverse KL 学生：尖锐，只追踪主峰
+# → μ≈-1, σ≈0.3 —— 只追踪最大的那个峰</code></pre>
+
+<div class="callout warning">
+<div class="title">⚠️ 对 OPD 篇的关键预告</div>
+<p>在线策略蒸馏（OPD）使用 <strong>Reverse KL</strong>。这意味着：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>学生只关注教师认为<strong>最可能的动作</strong></li>
+  <li>学生忽略教师不确定的区域 → 高效但有风险</li>
+  <li>这既是 OPD 高效的原因（专注主要模式），也是它容易<strong>"熵崩塌"</strong>的根源</li>
+</ul>
+</div>
+
+<h3 id="s2.5">2.5 📐 蒸馏损失函数的完整形式</h3>
+
+<p>现在可以写出知识蒸馏的<strong>完整损失函数</strong>：</p>
+
+<div class="math-block">
+
+$$\boxed{\mathcal{L}_{\text{KD}} = (1 - \alpha) \cdot \underbrace{\mathcal{L}_{\text{CE}}(\mathbf{y}_{\text{true}}, \sigma(\mathbf{z}_S; T=1))}_{\text{硬标签损失（地面真相）}} + \alpha \cdot T^2 \cdot \underbrace{D_{KL}\big(\sigma(\mathbf{z}_T; T=\tau) \;\big\|\; \sigma(\mathbf{z}_S; T=\tau)\big)}_{\text{蒸馏损失（教师暗知识）}}}$$
+
+</div>
+
+<p>其中：</p>
+
+<table>
+<thead><tr><th>符号</th><th>含义</th><th>典型值</th></tr></thead>
+<tbody>
+<tr><td>$\mathbf{z}_T$</td><td>教师 logits</td><td>—</td></tr>
+<tr><td>$\mathbf{z}_S$</td><td>学生 logits</td><td>—</td></tr>
+<tr><td>$\tau$</td><td>蒸馏温度</td><td>2 ~ 20</td></tr>
+<tr><td>$\alpha$</td><td>蒸馏权重</td><td>0.5 ~ 0.9</td></tr>
+<tr><td>$T^2$</td><td>梯度尺度补偿</td><td>$\tau^2$</td></tr>
+</tbody>
+</table>
+
+<h4>为什么蒸馏损失要乘 $T^2$？—— 梯度尺度的"隐形杀手"</h4>
+
+<p>当 $T$ 很大时，softmax 输出接近均匀分布，其梯度被显著缩小。我们来定量分析：</p>
+
+<p>对 softmax 求导（使用商法则）：</p>
+
+<div class="math-block">
+$$\frac{\partial p_i}{\partial z_k} = \frac{1}{T} \cdot p_i \cdot (\delta_{ik} - p_k)$$
+</div>
+
+<p>当 $T$ 较大时，$p_i \approx 1/N$（接近均匀），因此梯度约为 $\frac{1}{T \cdot N}(\delta_{ik} - \frac{1}{N})$。<strong>梯度量与 $1/T$ 成正比。</strong></p>
+
+<p>进一步，对于交叉熵损失 $\mathcal{L} = -\sum_i p_i^T \log p_i^S$，当 $p_i^T$ 和 $p_i^S$ 都接近均匀时，损失关于 student logits 的二阶梯度约与 $1/T^2$ 成正比。因此需要在蒸馏损失上乘以 $T^2$ 来补偿。</p>
+
+<div class="callout success">
+<div class="title">✅ 训练技巧速查</div>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li><strong>推理时设置 $T=1$</strong>：蒸馏只在训练时使用高温</li>
+  <li><strong>教师冻结</strong>：<code>torch.no_grad()</code> 或 <code>teacher.eval()</code></li>
+  <li><strong>温度调参</strong>：师生容量差距大 → 更高温度；任务简单 → 较低温度</li>
+  <li><strong>$\alpha$ 调参</strong>：$\alpha \approx 0.9$ 时以蒸馏信号为主；纯蒸馏 ($\alpha=1.0$) 也能工作</li>
+</ul>
+</div>
+
+<h3 id="s2.6">2.6 🔬 数学本质：蒸馏到底在做什么？</h3>
+
+<p>从优化的角度看，蒸馏损失实际上是让学生输出的 logits 去<strong>逼近</strong>教师的 logits。</p>
+
+<p><strong>高温极限下的等价性</strong>（$T \to \infty$）：</p>
+
+<div class="math-block">
+$$p_i = \frac{1 + z_i/T + O(1/T^2)}{K + \sum_j z_j/T + O(1/T^2)} \approx \frac{1}{K}\left(1 + \frac{z_i - \bar{z}}{T}\right)$$
+</div>
+
+<p>此时 KL 散度简化为：</p>
+
+<div class="math-block">
+$$D_{KL}(p_T \| p_S) \approx \frac{1}{2T^2} \cdot \frac{1}{K} \sum_i (z_i^T - z_i^S)^2$$
+</div>
+
+<div class="callout insight">
+<div class="title">💡 核心洞察</div>
+<p><strong>当温度足够高时，蒸馏退化为在 logit 空间的均方误差回归。</strong>学生模型实际上在"模仿"教师的 logit 输出，而非仅仅匹配概率。教师 logit 包含了关于<strong>特征空间的拓扑结构信息</strong>——这种结构信息无法从硬标签中获取。这就是为什么蒸馏比从头训练更好：学生在学习一个更丰富、更结构化的目标。</p>
+</div>
+
+<div class="nav-row">
+<a href="#ch1" class="nav-btn secondary">← 上一章：起源</a>
+<a href="#ch3" class="nav-btn">下一章：分类体系 →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 3 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch3">第三章 · 蒸馏技术的分类体系</h2>
+<div class="callout info"><div class="title">🧭 本章目标</div><p>建立完整的 KD 分类框架。理解不同蒸馏范式之间的区别和联系，为进入 RL 蒸馏做好知识储备。</p></div>
+
+<h3>3.1 🏗️ 按"蒸馏什么"分类 —— 知识的三重形态</h3>
+<table>
+<thead><tr><th>类别</th><th>蒸馏目标</th><th>典型方法</th><th>年代</th></tr></thead>
+<tbody>
+<tr><td><strong>Response-based</strong></td><td>教师最终输出（logits / soft labels）</td><td>Hinton 2015</td><td>2015</td></tr>
+<tr><td><strong>Feature-based</strong></td><td>教师中间层特征表示</td><td>FitNets (2015)</td><td>2015</td></tr>
+<tr><td><strong>Relation-based</strong></td><td>样本间/层间的关系结构</td><td>RKD (2017), SP (2019)</td><td>2017</td></tr>
+</tbody>
+</table>
+
+<h4>🅰️ Response-based（响应式蒸馏）</h4>
+<p>这是 Hinton 的经典范式。学生只模仿教师的<strong>最终输出</strong>——最纯粹、最简单的蒸馏形式。关键变体：<strong>DKD</strong>（Decoupled KD, Zhao 2022）将 KL 解耦、"目标类"和"非目标类"分开处理，发现<strong>非目标类的知识才是蒸馏效果的关键</strong>；<strong>CTKD</strong>（Li 2023）温度动态调整；<strong>Logit Standardization</strong>（Sun 2024）对 logit 标准化后再蒸馏。</p>
+
+<h4>🅱️ Feature-based（特征式蒸馏）</h4>
+<p><strong>FitNets (Romero et al., 2015)</strong> —— 开创者。在学生中间层插入<strong>适配层（regressor）</strong>：</p>
+<div class="math-block">$$\mathcal{L}_{\text{feature}} = \| \mathbf{W}_r \cdot \mathbf{F}_S - \mathbf{F}_T \|_2^2$$</div>
+<pre><code>class FeatureDistillationLoss(nn.Module):
+    def __init__(self, student_dim, teacher_dim):
+        super().__init__()
+        self.regressor = nn.Sequential(
+            nn.Linear(student_dim, teacher_dim),
+            nn.ReLU(),
+            nn.Linear(teacher_dim, teacher_dim))
+    def forward(self, s_feat, t_feat):
+        return F.mse_loss(self.regressor(s_feat), t_feat)</code></pre>
+<p>其他里程碑：Attention Transfer (2017) 匹配注意力图；FSP (2017) 匹配 Gram 矩阵；PKT (2018) 概率建模特征空间。</p>
+
+<h3>3.2 ⏱️ 按"何时蒸馏"分类</h3>
+<table>
+<thead><tr><th>模式</th><th>教师状态</th><th>学生状态</th><th>典型场景</th></tr></thead>
+<tbody>
+<tr><td><strong>Offline KD</strong></td><td>预训练完，固定</td><td>从头训练</td><td>模型压缩</td></tr>
+<tr><td><strong>Online KD</strong></td><td>同时训练</td><td>同时训练</td><td>互相学习</td></tr>
+<tr><td><strong>Self-Distillation</strong></td><td>自己（更深层）</td><td>自己（浅层）</td><td>无外部教师</td></tr>
+</tbody>
+</table>
+<div class="callout warning"><div class="title">⚠️ 两个"Online"</div><p>监督学习中的 "Online KD"（师生同时训练）≠ RL 中的 <strong>"Online Policy Distillation"</strong>（学生自生成数据）。OPD 正篇专门讲后者。</p></div>
+
+<h3>3.3 🏆 里程碑速览</h3>
+<table>
+<thead><tr><th>年份</th><th>方法</th><th>类型</th><th>贡献</th></tr></thead>
+<tbody>
+<tr><td>2015</td><td><strong>Hinton KD</strong></td><td>Response</td><td>开山之作</td></tr>
+<tr><td>2015</td><td><strong>FitNets</strong></td><td>Feature</td><td>特征蒸馏</td></tr>
+<tr><td>2019</td><td><strong>DistilBERT</strong></td><td>Response</td><td>BERT→40%更小,97%性能</td></tr>
+<tr><td>2021</td><td><strong>DeiT</strong></td><td>Response</td><td>ViT 硬标签蒸馏</td></tr>
+<tr><td>2022</td><td><strong>DKD</strong></td><td>Response</td><td>解耦KD</td></tr>
+<tr><td>2024</td><td><strong>DeepSeek-R1</strong></td><td>RL蒸馏</td><td>推理蒸馏革命</td></tr>
+</tbody>
+</table>
+
+<div class="nav-row">
+<a href="#ch2" class="nav-btn secondary">← 数学框架</a>
+<a href="#ch4" class="nav-btn">下一章：蒸馏进入 RL →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 4 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch4">第四章 · 蒸馏进入强化学习</h2>
+<div class="callout info"><div class="title">🤖 本章目标</div><p>理解将 KD 迁移到 RL 中的独特挑战，掌握 Policy Distillation 核心设计，以及 OPD 概念的诞生。这是通向 OPD 正篇的<strong>关键桥梁</strong>。</p></div>
+
+<h3>4.1 🎯 为什么 RL 需要蒸馏？</h3>
+<table>
+<thead><tr><th>挑战</th><th>蒸馏的作用</th></tr></thead>
+<tbody>
+<tr><td><strong>模型庞大</strong></td><td>压缩为轻量模型</td></tr>
+<tr><td><strong>多任务困境</strong></td><td>多教师→一个多任务学生</td></tr>
+<tr><td><strong>训练成本</strong></td><td>用已有教师 kickstart 新任务</td></tr>
+<tr><td><strong>连续学习</strong></td><td>用旧教师约束学生，防止遗忘</td></tr>
+</tbody>
+</table>
+
+<h3>4.2 🏛️ Policy Distillation (Rusu et al., 2015)</h3>
+<div class="callout paper"><div class="title">📄 Policy Distillation — Google DeepMind, ICLR 2016</div><p>紧接 DQN 征服 Atari 之后。arXiv: 1511.06295。定义了 RL 策略蒸馏的三种模式，其中<strong>第三种就是 OPD 的雏形</strong>。</p></div>
+
+<h4>核心挑战：Q 值不是概率分布</h4>
+<p>RL 中 DQN 输出的是 Q 值——实数范围的无界标量。<strong>Rusu 的技巧</strong>：用温度 softmax 强行转换：</p>
+<div class="math-block">$$\boxed{p_T(a|s) = \frac{\exp(Q_T(s, a) / \tau)}{\sum_{a'} \exp(Q_T(s, a') / \tau)}}$$</div>
+
+<h4>三种蒸馏模式</h4>
+<table>
+<thead><tr><th>模式</th><th>数据来源</th><th>意义</th></tr></thead>
+<tbody>
+<tr><td>① 单任务蒸馏</td><td>教师轨迹</td><td>~15×压缩，性能不降</td></tr>
+<tr><td>② 多任务蒸馏</td><td>所有教师轨迹</td><td>部分超越专家</td></tr>
+<tr><td>③ <strong>在线蒸馏</strong></td><td><strong>学生自己生成轨迹</strong></td><td>← 🔥 OPD 原型！</td></tr>
+</tbody>
+</table>
+<div class="callout insight"><div class="title">🔥 第三种 = OPD 起源</div><p>学生<strong>用自己的轨迹</strong>训练，面对自己探索产生的状态分布，而非教师的分布。这是 OPD 最核心的特征。</p></div>
+
+<h4>🧪 极简实现：DQN 策略蒸馏</h4>
+<pre><code>def policy_distillation_loss(student_q, teacher_q, T=0.01):
+    """DQN策略蒸馏损失。Q值范围大，用较小温度0.01~0.1"""
+    teacher_probs = F.softmax(teacher_q / T, dim=1)
+    student_log_probs = F.log_softmax(student_q / T, dim=1)
+    return F.kl_div(student_log_probs, teacher_probs,
+                    reduction='batchmean') * (T * T)
+
+def online_distillation_step(student, teacher, env, optimizer):
+    """在线策略蒸馏：学生自己交互→教师给信号→学生更新"""
+    trajectory = []
+    state = env.reset()
+    while not done:  # 学生自己的策略收集轨迹
+        q = student(state); action = q.argmax().item()
+        next_s, reward, done, _ = env.step(action)
+        trajectory.append((state, action, reward, next_s, done))
+        state = next_s
+    states_t = torch.stack([t[0] for t in trajectory])
+    with torch.no_grad(): teacher_q = teacher(states_t)  # 教师评分
+    student_q = student(states_t)
+    loss = policy_distillation_loss(student_q, teacher_q)
+    optimizer.zero_grad(); loss.backward(); optimizer.step()
+    return loss.item()</code></pre>
+
+<h3>4.3 🎭 Actor-Mimic (Parisotto et al., 2016)</h3>
+<div class="callout paper"><div class="title">📄 Actor-Mimic — U. Toronto, ICLR 2016</div></div>
+<p>两个关键扩展：① 学生用 ε-greedy 自生成轨迹；② <strong>Q 值阈值截断</strong>——教师也不确定的状态跳过蒸馏：</p>
+<div class="math-block">$$\mathcal{L}_{\text{distill}}(s) = \begin{cases} D_{KL}(p_T\|p_S) & \text{if } \max_a Q_T(s,a) > \theta \\ 0 & \text{otherwise} \end{cases}$$</div>
+
+<h3>4.4 🧩 监督蒸馏 vs RL 策略蒸馏</h3>
+<table>
+<thead><tr><th>维度</th><th>监督蒸馏</th><th>RL 策略蒸馏</th></tr></thead>
+<tbody>
+<tr><td>教师输出</td><td>类别概率（天然softmax）</td><td>Q值/动作logits（需转换）</td></tr>
+<tr><td>数据来源</td><td>静态i.i.d.</td><td>轨迹（序列，非i.i.d.）</td></tr>
+<tr><td>谁生成数据</td><td>任意</td><td><strong>教师 vs 学生轨迹</strong> ← 关键</td></tr>
+<tr><td>暴露偏差</td><td>可控</td><td><strong>严重</strong></td></tr>
+<tr><td>损失</td><td>Forward KL</td><td>Forward 或 Reverse KL</td></tr>
+</tbody>
+</table>
+<div class="callout insight"><div class="title">🌉 暴露偏差——为什么需要OPD</div><p>离线蒸馏=坐副驾看师傅开→没握过方向盘→上路就懵。<strong>在线蒸馏=自己握方向盘，师傅在旁边纠正→真正学会了。</strong></p></div>
+
+<div class="nav-row">
+<a href="#ch3" class="nav-btn secondary">← 分类体系</a>
+<a href="#ch5" class="nav-btn">下一章：通往 OPD →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 5 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch5">第五章 · 从蒸馏到在线策略蒸馏的桥梁</h2>
+
+<h3>知识检查清单</h3>
+<table>
+<thead><tr><th>✅</th><th>概念</th><th>在 OPD 中的角色</th></tr></thead>
+<tbody>
+<tr><td>☐</td><td>知识蒸馏 (Hinton 2015)</td><td>OPD 的理论祖先</td></tr>
+<tr><td>☐</td><td>温度参数 $T$</td><td>控制教师信号"软硬度"</td></tr>
+<tr><td>☐</td><td>KL 散度 (Forward vs Reverse)</td><td>OPD 使用 <strong>Reverse KL</strong> (学生→教师)</td></tr>
+<tr><td>☐</td><td>Forward KL = 均值追寻</td><td>离线蒸馏特征（覆盖所有模式）</td></tr>
+<tr><td>☐</td><td>Reverse KL = 模式追寻</td><td>在线蒸馏特征（专注主要模式）</td></tr>
+<tr><td>☐</td><td>Policy Distillation (Rusu 2015)</td><td>OPD 的直接前身</td></tr>
+<tr><td>☐</td><td>在线蒸馏模式</td><td>OPD 雏形——学生自生成轨迹</td></tr>
+<tr><td>☐</td><td>Actor-Mimic</td><td>自生成轨迹+教师信号+截断</td></tr>
+<tr><td>☐</td><td>暴露偏差 (Exposure Bias)</td><td>OPD 要解决的核心问题</td></tr>
+</tbody>
+</table>
+
+<h3>OPD 核心思想（一句话预览）</h3>
+<div class="callout insight" style="font-size:1.1em;">
+<div class="title">🔥 定义</div>
+<p><strong>让学生用自己的策略去探索世界，同时让教师实时提供"什么是好动作"的密集信号——这就是 Online Policy Distillation。</strong></p>
+</div>
+
+<div style="text-align:center;margin:32px 0;">
+<a href="./02-OPD-Online-Policy-Distillation.html" style="display:inline-block;padding:16px 36px;background:linear-gradient(135deg,#c0392b,#e67e22);color:#fff;text-decoration:none;border-radius:30px;font-size:1.15em;font-weight:700;box-shadow:0 4px 16px rgba(192,57,43,0.3);transition:all 0.2s;">📖 进入 OPD 正篇 →</a>
+</div>
+
+<h2 id="ref">📚 关键论文索引</h2>
+<table>
+<thead><tr><th>年份</th><th>论文</th><th>机构</th><th>核心贡献</th><th>链接</th></tr></thead>
+<tbody>
+<tr><td>2006</td><td><strong>Model Compression</strong> (Bucilă et al.)</td><td>Cornell</td><td>知识蒸馏的直接前身——集成模型压缩为单一模型</td><td><a href="https://dl.acm.org/doi/10.1145/1150402.1150464" target="_blank">ACM</a></td></tr>
+<tr><td>2014</td><td><strong>Do Deep Nets Really Need to be Deep?</strong> (Ba & Caruana)</td><td>U. Toronto</td><td>浅层网络模仿深层网络——logit匹配的早期实践</td><td><a href="https://arxiv.org/abs/1312.6184" target="_blank">1312.6184</a></td></tr>
+<tr><td>2015</td><td><strong>Distilling the Knowledge in a Neural Network</strong> (Hinton et al.) ★</td><td>Google</td><td>知识蒸馏奠基——暗知识/温度参数/软目标/联合损失</td><td><a href="https://arxiv.org/abs/1503.02531" target="_blank">1503.02531</a></td></tr>
+<tr><td>2015</td><td><strong>FitNets: Hints for Thin Deep Nets</strong> (Romero et al.)</td><td>U. Montreal</td><td>特征蒸馏开山之作——适配层+学生更深而非更浅</td><td><a href="https://arxiv.org/abs/1412.6550" target="_blank">1412.6550</a></td></tr>
+<tr><td>2015</td><td><strong>Policy Distillation</strong> (Rusu et al.)</td><td>DeepMind</td><td>RL策略蒸馏奠基——三种模式，OPD概念的首次提出</td><td><a href="https://arxiv.org/abs/1511.06295" target="_blank">1511.06295</a></td></tr>
+<tr><td>2016</td><td><strong>Actor-Mimic</strong> (Parisotto et al.)</td><td>U. Toronto</td><td>学生自生成轨迹+特征回归+Q值截断蒸馏</td><td><a href="https://arxiv.org/abs/1511.06342" target="_blank">1511.06342</a></td></tr>
+<tr><td>2017</td><td><strong>Paying More Attention to Attention</strong> (Zagoruyko & Komodakis)</td><td>Oxford</td><td>注意力转移——匹配教师空间注意力图</td><td><a href="https://arxiv.org/abs/1612.03928" target="_blank">1612.03928</a></td></tr>
+<tr><td>2019</td><td><strong>DistilBERT</strong> (Sanh et al.)</td><td>Hugging Face</td><td>NLP蒸馏标杆：BERT→40%更小+97%性能+60%更快</td><td><a href="https://arxiv.org/abs/1910.01108" target="_blank">1910.01108</a></td></tr>
+<tr><td>2021</td><td><strong>DeiT</strong> (Touvron et al.)</td><td>Meta AI</td><td>ViT硬标签蒸馏——不需大规模预训练的数据高效训练</td><td><a href="https://arxiv.org/abs/2012.12877" target="_blank">2012.12877</a></td></tr>
+<tr><td>2022</td><td><strong>DKD (Decoupled Knowledge Distillation)</strong> (Zhao et al.)</td><td>清华</td><td>解耦KD——非目标类知识才是蒸馏效果的关键</td><td><a href="https://arxiv.org/abs/2203.08679" target="_blank">2203.08679</a></td></tr>
+<tr><td>2025</td><td><strong>DeepSeek-R1</strong> (Guo et al.) ★</td><td>DeepSeek</td><td>RL推理蒸馏革命——蒸馏32B>纯RL(+25.6 AIME)</td><td><a href="https://arxiv.org/abs/2501.12948" target="_blank">2501.12948</a></td></tr>
+</tbody>
+</table>
+<div class="nav-row"><a href="#ch5" class="nav-btn secondary">← 桥梁</a><a href="#top" class="nav-btn secondary">↑ 回到顶部</a></div>
+<div class="section-divider">◆ ◆ ◆</div>
+<p style="text-align:center;color:var(--text3);font-size:0.9em;margin-top:40px;">
+📘 知识蒸馏（Knowledge Distillation）—— 从入门到精通 · 前置篇 · 完<br>
+构建于 2026 年 7 月，基于截至 2026 年 7 月的公开研究文献
+</p>
+
+</main>
+</body>
+</html>

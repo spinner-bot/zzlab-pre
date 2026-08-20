@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌐 多模态模型深度补充 —— 架构·训练·基准·前沿</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+:root {
+  --bg: #faf8f5; --surface: #ffffff; --surface2: #f5f2ed; --text: #2c2416; --text2: #5c5042; --text3: #8a7b6b;
+  --red: #c0392b; --red-bg: #fdf0ed; --blue: #1a6daa; --blue-bg: #edf4fa;
+  --green: #1e7a4a; --green-bg: #edf7f1; --gold: #b8860b; --gold-bg: #fdf8ed;
+  --purple: #7b3fa3; --purple-bg: #f6f0fa; --code-bg: #282c34; --code-text: #abb2bf;
+  --sidebar-w: 260px; --max-w: 940px; --radius: 8px; --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI','PingFang SC','Microsoft YaHei','Noto Sans SC',system-ui,sans-serif; background: var(--bg); color: var(--text); line-height: 1.82; font-size: 16px; display: flex; }
+nav#sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: #c8d6e5; overflow-y: auto; padding: 28px 20px; z-index: 100; font-size: 13px; box-shadow: 2px 0 20px rgba(0,0,0,0.15); }
+nav#sidebar h2 { color: #fff; font-size: 16px; margin-bottom: 6px; font-weight: 700; }
+nav#sidebar .subtitle { font-size: 11px; color: #7f8fa6; margin-bottom: 18px; }
+nav#sidebar a { display: block; color: #a4b0be; text-decoration: none; padding: 4px 8px; border-radius: 5px; margin: 1px 0; transition: all 0.15s; border-left: 2px solid transparent; }
+nav#sidebar a:hover, nav#sidebar a.active { color: #fff; background: rgba(255,255,255,0.06); border-left-color: #00b894; }
+nav#sidebar a.chapter { font-weight: 600; color: #dfe6e9; margin-top: 7px; font-size: 11.5px; text-transform: uppercase; letter-spacing: 1px; }
+nav#sidebar a.sub { padding-left: 16px; font-size: 12px; }
+main { margin-left: var(--sidebar-w); max-width: var(--max-w); width: 100%; padding: 48px 56px 80px; }
+h1 { font-size: 2.1em; font-weight: 800; background: linear-gradient(135deg, #00b894, #55efc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; line-height: 1.3; }
+h2 { font-size: 1.45em; font-weight: 700; color: #1a1a2e; margin-top: 40px; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 3px solid #00b894; display: inline-block; }
+h3 { font-size: 1.18em; font-weight: 700; color: #2d3436; margin-top: 28px; margin-bottom: 8px; }
+h4 { font-size: 1.05em; font-weight: 700; margin-top: 18px; color: #00b894; }
+p { margin: 12px 0; }
+a { color: var(--blue); }
+.callout { margin: 18px 0; padding: 16px 20px; border-radius: var(--radius); border-left: 5px solid; box-shadow: var(--shadow); }
+.callout.insight { background: var(--blue-bg); border-color: var(--blue); }
+.callout.warning { background: var(--red-bg); border-color: var(--red); }
+.callout.success { background: var(--green-bg); border-color: var(--green); }
+.callout.info { background: var(--purple-bg); border-color: var(--purple); }
+.callout.paper { background: #fffdf5; border-color: #f9ca24; }
+.callout .title { font-weight: 700; font-size: 1.02em; margin-bottom: 5px; }
+.callout.insight .title { color: var(--blue); }
+.callout.warning .title { color: var(--red); }
+.callout.success .title { color: var(--green); }
+.callout.info .title { color: var(--purple); }
+.callout.paper .title { color: #b8860b; }
+pre { background: var(--code-bg); color: var(--code-text); padding: 18px 22px; border-radius: var(--radius); overflow-x: auto; font-family: 'Cascadia Code','Fira Code','Consolas',monospace; font-size: 13px; line-height: 1.6; margin: 14px 0; box-shadow: var(--shadow); }
+:not(pre)>code { background: #f0ece6; color: #c0392b; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; box-shadow: var(--shadow); border-radius: var(--radius); overflow: hidden; font-size: 0.87em; }
+thead { background: linear-gradient(135deg, #2c3e50, #34495e); color: #fff; }
+th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.85em; }
+td { padding: 9px 14px; border-bottom: 1px solid #e8e3db; }
+tbody tr:nth-child(even) { background: #faf8f5; }
+tbody tr:hover { background: #f0ebe0; }
+.section-divider { text-align: center; margin: 36px 0; color: var(--text3); font-size: 1.1em; letter-spacing: 4px; }
+.nav-row { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 18px; border-top: 1px solid #ddd; }
+.nav-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: #00b894; color: #fff; text-decoration: none; border-radius: 20px; font-weight: 600; font-size: 0.88em; transition: all 0.2s; }
+.nav-btn:hover { background: #00a381; text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,184,148,0.3); }
+.nav-btn.secondary { background: #636e72; }
+.nav-btn.secondary:hover { background: #4a5458; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 700; margin-right: 4px; }
+.tag-arch { background: #00b894; color: #fff; }
+.tag-train { background: #fdcb6e; color: #3d1a00; }
+.tag-bench { background: #6c5ce7; color: #fff; }
+.tag-vis { background: #2ecc71; color: #0a3d1a; }
+.tag-vid { background: #e17055; color: #fff; }
+.tag-aud { background: #9b59b6; color: #fff; }
+.tag-3d { background: #e74c3c; color: #fff; }
+.tag-gen { background: #f39c12; color: #3d1a00; }
+.tag-agent { background: #1a6daa; color: #fff; }
+.tag-safe { background: #c0392b; color: #fff; }
+.tag-scale { background: #636e72; color: #fff; }
+
+@media (max-width: 860px) { nav#sidebar { display: none; } main { margin-left: 0; padding: 24px 20px; } }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h2>🌐 多模态深度补充</h2>
+  <div class="subtitle">Architecture · Training ·<br>Benchmarks · Frontiers<br>2020 → 2026</div>
+  <a href="#intro" class="chapter">阅读须知</a>
+  <a href="#ch1" class="chapter">一、CLIP 生态全景</a>
+  <a href="#ch2" class="chapter">二、视觉编码器演进</a>
+  <a href="#ch3" class="chapter">三、VLM 架构深度解析</a>
+  <a href="#ch4" class="chapter">四、训练策略与 Pipeline</a>
+  <a href="#ch5" class="chapter">五、基准全景</a>
+  <a href="#ch6" class="chapter">六、视频理解</a>
+  <a href="#ch7" class="chapter">七、音频/语音多模态</a>
+  <a href="#ch8" class="chapter">八、3D/点云多模态</a>
+  <a href="#ch9" class="chapter">九、统一理解与生成</a>
+  <a href="#ch10" class="chapter">十、多模态 Agent</a>
+  <a href="#ch11" class="chapter">十一、VLM 缩放定律</a>
+  <a href="#ch12" class="chapter">十二、安全与幻觉</a>
+  <a href="#trends" class="chapter">趋势与展望</a>
+  <a href="#index" class="chapter">论文索引</a>
+</nav>
+
+<main>
+
+<h1>🌐 多模态模型深度补充<br>架构·训练·基准·前沿</h1>
+<p style="font-size:1.05em;color:var(--text2);">"Deepening the picture — from CLIP's contrastive roots to the Any-to-Any frontier." — 本文为 <a href="./03-Multimodal-Models.html">03-多模态模型</a> 的深度补充</p>
+
+<div class="callout info">
+<div class="title">📖 阅读须知</div>
+<p><strong>本文定位：</strong>笔记 03（多模态模型发展全历程）的<strong>深度补充篇</strong>。03 提供了按时间顺序的叙事全景（"发生了什么"），本文提供按主题组织的技术深潜（"怎么做的"和"为什么这样设计"）。<strong>强烈建议先阅读 03 再看本文。</strong></p>
+<p><strong>覆盖主题：</strong>CLIP 生态 → 视觉编码器演化 → VLM 架构对比 → 训练策略 → 基准全景 → 视频/音频/3D/生成/Agent 各模态深度 → 缩放定律 → 安全与幻觉。预计阅读时间：<strong>90–120 分钟</strong>。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 1 ═══════════ -->
+<h2 id="ch1">一、CLIP 生态全景：从单模型到完整技术栈</h2>
+
+<p>笔记 03 介绍了 CLIP 的基本原理（双塔对比学习）。但 CLIP 远不止一个模型——<strong>围绕 CLIP 发展出了一整套生态</strong>：数据筛选（DataComp/MetaCLIP）、训练改进（SigLIP/EVA-CLIP）、缩放定律、以及作为 VLM 标准视觉编码器的"第二条生命"。</p>
+
+<h3>1.1 数据工程：CLIP 成功的真正秘密</h3>
+
+<p>CLIP 原始论文用了 4 亿图文对——但这 4 亿数据<strong>从未公开</strong>。开源社区花了整整三年才系统地搞清楚"什么样的数据能训练出好 CLIP"。</p>
+
+<div class="callout paper">
+<div class="title">📄 DataComp (2023) — 数据筛选的标准化竞赛</div>
+<p><strong>核心洞察：</strong>DataComp 设计了一个巧妙实验——固定模型架构和超参数，<strong>只改变训练数据</strong>。参赛者从 12.8B 候选图文对中筛选出最优子集。结果显示：<strong>数据筛选策略的差异可以导致 ImageNet 零样本准确率从 3% 到 79% 的巨大差距——数据质量比模型大小更重要。</strong></p>
+<p>DataComp 后续演化为 DataComp-1B，成为 CLIP 数据研究的<strong>标准测试平台</strong>。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 MetaCLIP (2023) — 揭秘 OpenAI 的数据管线</div>
+<p><strong>核心方法：</strong>MetaCLIP 逆向工程了 OpenAI 未公开的数据管线。它使用<strong>元数据驱动的策展</strong>——从 Wikidata/WordNet 获取概念词条，按概念平衡采样，而非简单的网络爬取。结果：在相同数据量下超越原始 CLIP。</p>
+<p><strong>关键发现：</strong>CLIP 数据需满足三个条件——① 概念覆盖广泛（不能偏向高频概念），② 图文匹配度高，③ 避免数据泄漏（测试集图片不能出现在训练集中）。</p>
+</div>
+
+<h3>1.2 SigLIP：CLIP 的高效替代</h3>
+
+<div class="callout insight">
+<div class="title">💡 SigLIP vs CLIP：从 Softmax 到 Sigmoid</div>
+<p>原始 CLIP 使用 Softmax 对比损失，需要在大 batch 内做全局归一化——batch size 越大越好（OpenAI 用了 32,768）。</p>
+<p>SigLIP 做了一个简单的替换：<strong>将 Softmax 改为逐对 Sigmoid 损失</strong>。每对图文独立判断是否匹配，不再依赖 batch 内的其他样本。这使得训练<strong>不再需要巨大 batch size</strong>，在更小的计算预算下达到同等甚至更好的性能。</p>
+<div class="math-block">$$\mathcal{L}_{\text{SigLIP}} = -\frac{1}{|B|}\sum_{i=1}^{|B|}\sum_{j=1}^{|B|}\left[y_{ij}\log\sigma(\mathbf{v}_i\cdot\mathbf{t}_j/\tau)+(1-y_{ij})\log(1-\sigma(\mathbf{v}_i\cdot\mathbf{t}_j/\tau))\right]$$</div>
+<p>其中 $y_{ij}=1$ 仅当 $i=j$（对角线匹配对）。这本质上是将对比学习<strong>解耦为 $B^2$ 个独立的二分类问题</strong>。</p>
+</div>
+
+<div class="callout success">
+<div class="title">✅ SigLIP 的行业地位（2025-2026）</div>
+<p><strong>SigLIP-SO400M</strong> 已成为 VLM 领域<strong>最广泛采用的视觉编码器</strong>——LLaVA-OneVision、PaliGemma、Qwen2-VL 等主流 VLM 均采用 SigLIP 而非原始 CLIP。Jina AI 2025 年大规模调查确认：<strong>SigLIP 2 (400M 参数) 在大多数 VLM 基准上超过 InternViT-6B (5.9B 参数)——训练方法远大于编码器大小。</strong></p>
+</div>
+
+<h3>1.3 EVA-CLIP 与缩放定律</h3>
+
+<table>
+<thead><tr><th>模型</th><th>参数量</th><th>核心创新</th><th>ImageNet 零样本</th></tr></thead>
+<tbody>
+<tr><td>OpenAI CLIP ViT-L/14</td><td>428M</td><td>原始 CLIP，4 亿私有数据</td><td>75.5%</td></tr>
+<tr><td>EVA-CLIP (EVA-01)</td><td>1.0B</td><td>用 MIM (Masked Image Modeling) 预训练初始化 ViT，再做 CLIP 微调</td><td>78.5%</td></tr>
+<tr><td>EVA-CLIP (EVA-02)</td><td>5.0B</td><td>更大规模，CL 训练 + MIM 初始化</td><td>82.0%</td></tr>
+<tr><td>DFN CLIP (Data Filtering Network)</td><td>2B</td><td>用已训练好的 CLIP 自身做数据质量过滤</td><td>83.0%</td></tr>
+</tbody>
+</table>
+
+<div class="callout insight">
+<div class="title">💡 EVA-CLIP 的核心洞察</div>
+<p>EVA 系列证明了一个重要原则：<strong>预训练初始化质量比 CLIP 训练本身更重要</strong>。EVA-01 先用 MIM（掩码图像建模，类似 MAE/BEiT）在纯图像数据上预训练 ViT，获得强大的视觉先验，再去做 CLIP 对比学习——这比从随机初始化直接 CLIP 训练效果好得多。EVA-02 将这一范式扩展到 5B 参数。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 2 ═══════════ -->
+<h2 id="ch2">二、视觉编码器演进：从 ViT 到多尺度巨人</h2>
+
+<p>笔记 03 提到了 ViT 和 CLIP ViT。但 VLM 的视觉编码器在过去两年经历了<strong>远比架构更剧烈</strong>的演化——分辨率、多尺度、训练方法的改进使得相同参数的编码器性能翻倍。</p>
+
+<h3>2.1 三条演化路径</h3>
+
+<table>
+<thead><tr><th>路径</th><th>代表</th><th>核心理念</th><th>典型参数</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>对比学习 ViT</strong></td>
+  <td>CLIP → SigLIP → DFN</td>
+  <td>图文对比 + 大规模弱监督数据</td>
+  <td>300M–2B</td>
+</tr>
+<tr>
+  <td><strong>自监督 ViT</strong></td>
+  <td>DINOv2, MAE, AIM</td>
+  <td>纯图像自监督预训练（无需文本）</td>
+  <td>300M–1B</td>
+</tr>
+<tr>
+  <td><strong>多尺度/混合编码器</strong></td>
+  <td>InternViT, ConvNeXt-XXL</td>
+  <td>多分辨率训练 + 动态分块 + CNN-ViT 混合</td>
+  <td>300M–6B</td>
+</tr>
+</tbody>
+</table>
+
+<h3>2.2 DINOv2：纯视觉自监督的巅峰</h3>
+
+<div class="callout paper">
+<div class="title">📄 DINOv2: Learning Robust Visual Features without Supervision — Meta, 2023</div>
+<p>DINOv2 证明了<strong>纯视觉自监督学习可以产生与弱监督（CLIP）相媲美甚至更优的视觉特征</strong>。不需要任何文本数据，仅通过图像级别的自蒸馏（teacher-student + centering），在 142M 张精选图像上训练。</p>
+<p><strong>关键特性：</strong>DINOv2 特征具有<strong>涌现的语义分割和深度估计能力</strong>——仅用简单的线性探针就能在语义分割、深度估计等密集预测任务上达到接近监督方法的水平。</p>
+</div>
+
+<h3>2.3 分辨率之战：如何"看"得更清楚</h3>
+
+<p>VLM 面临一个根本矛盾：<strong>高分辨率 = 更多 visual tokens = 二次增长的注意力成本和 KV 缓存压力。</strong>以下是工业界为解决这个矛盾发展出的核心策略：</p>
+
+<table>
+<thead><tr><th>策略</th><th>原理</th><th>效果</th><th>代表</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>AnyRes 动态分块</strong></td>
+  <td>高分辨率图像切分为多个 336×336 块，每块独立编码</td>
+  <td>1MP 图像 → 5,184 tokens</td>
+  <td>LLaVA-NeXT</td>
+</tr>
+<tr>
+  <td><strong>Pixel Shuffle (空间到深度)</strong></td>
+  <td>将 2×2 块通道拼接，减少 token 数 4×</td>
+  <td>5,184 → 1,296 tokens</td>
+  <td>InternVL 2.0</td>
+</tr>
+<tr>
+  <td><strong>原生动态分辨率</strong></td>
+  <td>ViT 直接处理任意分辨率（无需分块）</td>
+  <td>根据图像自适应</td>
+  <td>Qwen2.5-VL</td>
+</tr>
+<tr>
+  <td><strong>混合 CNN-ViT</strong></td>
+  <td>CNN 快速编码→保留空间结构→ViT 精炼</td>
+  <td>1,620 tokens</td>
+  <td>FastVLM (Apple)</td>
+</tr>
+<tr>
+  <td><strong>自适应池化</strong></td>
+  <td>在 ViT 输出上做可学习的空间池化</td>
+  <td>可变压缩比</td>
+  <td>PLLaVA</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout insight">
+<div class="title">💡 Qwen2.5-VL 的原生分辨率——范式突破</div>
+<p>传统 VLM 将图像缩放到固定尺寸（如 336×336），这导致信息丢失（文档文字模糊、远距离物体不可见）。AnyRes 通过分块缓解了这个问题，但引入了"块间不连续"的新问题。</p>
+<p>Qwen2.5-VL 通过 <strong>M-RoPE（多维度旋转位置编码）</strong>实现了原生动态分辨率——ViT 可以直接处理任意宽高比的图像，位置编码自动适应实际的 2D 空间布局。这消除了分块-拼接的开销和不连续性。</p>
+</div>
+
+<h3>2.4 视觉编码器选择决策树（2026）</h3>
+
+<table>
+<thead><tr><th>场景</th><th>推荐编码器</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>通用 VLM（中小规模）</td><td>SigLIP-SO400M</td><td>训练成本低，大多数基准 SOTA，社区最广泛</td></tr>
+<tr><td>通用 VLM（大规模）</td><td>InternViT-6B</td><td>多尺度训练，OCR/文档理解强</td></tr>
+<tr><td>细粒度/密集预测</td><td>DINOv2 + CLIP 双编码器</td><td>DINOv2 提供定位能力，CLIP 提供语义</td></tr>
+<tr><td>移动端/低延迟</td><td>FastViTHD / MobileCLIP</td><td>3.2× TTFT 加速</td></tr>
+</tbody>
+</table>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 3 ═══════════ -->
+<h2 id="ch3">三、VLM 架构深度解析</h2>
+
+<p>笔记 03 提到了 VLM 的 bolt-on 架构（视觉编码器+连接器+LLM）。本章深入剖析<strong>连接器的设计空间、训练策略的演化、以及最新的架构创新</strong>。</p>
+
+<h3>3.1 三大连接器家族的全面对比</h3>
+
+<table>
+<thead><tr><th>特性</th><th>MLP 投影 (LLaVA 系)</th><th>Q-Former (BLIP-2 系)</th><th>交叉注意力 (Flamingo 系)</th></tr></thead>
+<tbody>
+<tr><td><strong>token 压缩</strong></td><td>无压缩（576→576）</td><td>18:1（576→32）</td><td>无 token 注入</td></tr>
+<tr><td><strong>LLM 状态</strong></td><td>可训练/可冻结</td><td>冻结</td><td>冻结</td></tr>
+<tr><td><strong>空间保持</strong></td><td>✅ 优秀（1D 展平）</td><td>❌ 差（交叉注意力打乱）</td><td>⚠️ 中等</td></tr>
+<tr><td><strong>训练效率</strong></td><td>✅ 最快（简单前向）</td><td>❌ 两阶段训练</td><td>⚠️ 中等</td></tr>
+<tr><td><strong>数据效率</strong></td><td>⚠️ 需要大量数据</td><td>✅ 少量数据即可</td><td>✅ 少量数据即可</td></tr>
+<tr><td><strong>2024–2026 采用率</strong></td><td>🏆 主导（>80%）</td><td>📉 下降（视频 niche）</td><td>📉 下降（学术 niche）</td></tr>
+</tbody>
+</table>
+
+<h3>3.2 LLaVA 家族的完整演化树</h3>
+
+<div class="callout paper">
+<div class="title">🦙 LLaVA 演化树（2023.04 → 2024.12）</div>
+<p><strong>LLaVA (2023.04):</strong> 单线性层投影 + CLIP ViT-L + Vicuna。证明"视觉指令微调"可行。<br>
+<strong>LLaVA-1.5 (2023.10):</strong> 升级为 2 层 MLP + 336px 输入 + 学术基准优化。成为<strong>最广泛使用的开源 VLM 基线</strong>。<br>
+<strong>LLaVA-NeXT (2024.01):</strong> 引入 <strong>AnyRes 动态分块</strong>——高分辨率图像切分为多块。文档/OCR 能力飞跃。<br>
+<strong>LLaVA-OneVision (2024.08):</strong> 编码器从 CLIP 切换到 <strong>SigLIP-SO400M</strong>，<strong>统一单图/多图/视频</strong>任务。训练数据扩大到百万级。<br>
+<strong>LLaVA-Video (2024.10):</strong> OneVision 的视频特化版，帧间 token 合并策略。</p>
+</div>
+
+<h3>3.3 2025 年的架构创新</h3>
+
+<h4>3.3.1 Cambrian-1：多编码器融合（SVA）</h4>
+<p>Cambrian-1（NYU, 2024）提出了<strong>空间视觉聚合器（Spatial Vision Aggregator）</strong>——同时使用多个互补的视觉编码器（如 CLIP + DINOv2 + ConvNeXt + SigLIP），通过可学习的交叉注意力将它们的输出聚合为统一的视觉表示。证明了<strong>不同编码器确实捕获互补信息</strong>——CLIP 提供语义、DINOv2 提供定位、ConvNeXt 提供纹理。</p>
+
+<h4>3.3.2 NVLM：动态高分辨率 + 分块式处理</h4>
+<p>NVIDIA NVLM-72B（2024）实现了输入端的<strong>动态高分辨率分块</strong>（tiling）——根据原始图像宽高比自适应决定切块方式，每块经 ViT 编码后 tile tag 区分位置，支持最大 6×6=36 块的超大分辨率。</p>
+
+<h4>3.3.3 Aria：MoE 视觉编码</h4>
+<p>Aria（Rhymes AI, 2024）将 <strong>Mixture-of-Experts</strong> 引入视觉编码——每个 visual token 只激活一小部分专家参数，使得大视觉编码器的推理成本可控。</p>
+
+<h3>3.4 连接器选择的决策框架</h3>
+
+<table>
+<thead><tr><th>约束条件</th><th>推荐连接器</th><th>原因</th></tr></thead>
+<tbody>
+<tr><td>大数据 + 大算力</td><td>MLP (2-layer)</td><td>简单、速度快、效果最佳（Apple MM1 消融验证）</td></tr>
+<tr><td>有限数据 (&#60;10M)</td><td>Q-Former</td><td>压缩减少过拟合风险，冻结 LLM 保持文本能力</td></tr>
+<tr><td>必须保持文本性能</td><td>交叉注意力 (Flamingo)</td><td>LLM 权重完全不变</td></tr>
+<tr><td>空间推理需求高</td><td>MLP + 2D-RoPE</td><td>保持空间结构 + 位置编码感知</td></tr>
+</tbody>
+</table>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 4 ═══════════ -->
+<h2 id="ch4">四、训练策略与 Pipeline 深度</h2>
+
+<p>笔记 03 几乎没有涉及 VLM 的训练策略。实际上，<strong>VLM 的训练 pipeline 已经从 2023 年的两阶段（预训练→SFT）演化为 2025–2026 年的 5–6 阶段复杂流程</strong>，每一步都有明确的设计意图。</p>
+
+<h3>4.1 LLaVA 两阶段 vs 现代多阶段</h3>
+
+<div class="callout insight">
+<div class="title">📐 训练阶段演化对比</div>
+<table>
+<thead><tr><th>阶段</th><th>LLaVA (2023)</th><th>Kwai Keye-VL 1.5 (2025)</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>—</td><td><strong>编码器对比学习</strong>（SigLIP 风格）</td></tr>
+<tr><td>1</td><td><strong>对齐预训练</strong>（仅训 MLP）</td><td><strong>跨模态对齐</strong>（仅训 MLP）</td></tr>
+<tr><td>2</td><td><strong>指令微调</strong>（全参数）</td><td><strong>多任务预训练</strong>（全参数，多类型数据）</td></tr>
+<tr><td>3</td><td>—</td><td><strong>退火</strong>（高质量数据精调）</td></tr>
+<tr><td>4-pretrain</td><td>—</td><td><strong>SFT → MPO</strong>（混合偏好优化）</td></tr>
+<tr><td>5-postrain</td><td>—</td><td><strong>LongCoT → GRPO → Alignment RL</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>4.2 Apple MM1 的关键消融发现</h3>
+
+<div class="callout paper">
+<div class="title">📄 MM1: Methods, Analysis & Insights from Multimodal LLM Pre-training — Apple, Mar 2024</div>
+<p>Apple 团队做了 VLM 领域<strong>最系统性的消融实验</strong>，核心发现（按重要性排序）：</p>
+<ol>
+  <li><strong>图像分辨率最重要</strong>：增大分辨率带来的增益远超增大编码器或 LLM</li>
+  <li><strong>视觉 token 数量与分辨率同等重要</strong>——不能靠压缩 token 来节约成本</li>
+  <li><strong>视觉编码器的预训练损失比参数量更重要</strong></li>
+  <li><strong>连接器设计影响不大</strong>（MLP ≈ Q-Former ≈ 交叉注意力——数据量够大时差异消失）</li>
+  <li><strong>预训练数据混合策略非常关键</strong>：合成 caption + 交错的图文文档 + 纯文本数据按 5:3:2 混合最优</li>
+</ol>
+<p>这些发现从根本上塑造了 2024 下半年之后的 VLM 设计方向。</p>
+</div>
+
+<h3>4.3 数据混合与配比</h3>
+
+<table>
+<thead><tr><th>数据类型</th><th>作用</th><th>典型配比</th><th>代表来源</th></tr></thead>
+<tbody>
+<tr><td><strong>合成 Caption</strong></td><td>教模型"看图说话"</td><td>45–50%</td><td>VeCap, ShareGPT4V</td></tr>
+<tr><td><strong>交错图文文档</strong></td><td>教模型在多张图和文字间推理</td><td>25–30%</td><td>MMC4, OBELICS</td></tr>
+<tr><td><strong>纯文本数据</strong></td><td>保持 LLM 的文本推理能力（防遗忘）</td><td>15–20%</td><td>LLM 原有训练数据</td></tr>
+<tr><td><strong>定位数据（Grounding）</strong></td><td>教模型"指哪看哪"</td><td>5–10%</td><td>RefCOCO, GRIT</td></tr>
+<tr><td><strong>OCR 数据</strong></td><td>教模型读文字</td><td>3–5%</td><td>OCR-VQA, TextOCR</td></tr>
+</tbody>
+</table>
+
+<h3>4.4 多阶段 SFT + RLHF/DPO</h3>
+
+<div class="callout insight">
+<div class="title">💡 2025–2026 的后训练共识</div>
+<p><strong>1.</strong> SFT 不再是一阶段完成——现代 pipeline 在多个高质量子集上<strong>渐进式 SFT</strong>（先通用 VQA，再 OCR，再 grounding，最后推理/Agent）。<br>
+<strong>2.</strong> RL Post-Training 已成为必备环节：从 DPO（偏好对齐）到 GRPO（推理增强），从 MPO（混合偏好优化）到多轮 RL。<br>
+<strong>3.</strong> 参考 GLM-4.5V 和 Kwai Keye-VL 1.5 的实践：<strong>LongCoT 冷启动</strong>（用长推理链数据做 SFT）→ <strong>GRPO 迭代</strong>（多轮在线 RL）→ <strong>最终对齐</strong>。</p>
+</div>
+
+<h3>4.5 蒸馏训练：从大模型到小模型</h3>
+
+<table>
+<thead><tr><th>方法</th><th>教师</th><th>学生</th><th>代表</th></tr></thead>
+<tbody>
+<tr><td><strong>Logit 蒸馏</strong></td><td>GPT-4V / Gemini Pro</td><td>LLaVA / MiniGPT-4</td><td>LLaVA (原始论文)</td></tr>
+<tr><td><strong>数据蒸馏</strong></td><td>GPT-4o 生成详细描述</td><td>小 VLM 做 SFT</td><td>ShareGPT4V, ALLaVA</td></tr>
+<tr><td><strong>On-Policy 蒸馏</strong></td><td>文本 LLM / 特权 VLM</td><td>VLM 学生</td><td>VOLD, PRISM（见笔记 05）</td></tr>
+</tbody>
+</table>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 5 ═══════════ -->
+<h2 id="ch5">五、基准全景：VLM 评估的完整地图</h2>
+
+<p>笔记 03 几乎没有涉及评测。本章提供<strong>2024–2026 年 VLM 基准的完整分类和代表性分数</strong>。</p>
+
+<h3>5.1 基准家族全景</h3>
+
+<table>
+<thead><tr><th>能力维度</th><th>核心基准</th><th>测试什么</th><th>代表性 SOTA (7B–8B 级)</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>通用 VQA</strong></td>
+  <td>MMBench, MME, MMStar</td>
+  <td>20+ 感知/推理子维度</td>
+  <td>MMBench 83–88 / MMStar 55–65</td>
+</tr>
+<tr>
+  <td><strong>跨学科知识</strong></td>
+  <td>MMMU (30 学科)</td>
+  <td>大学水平多学科理解</td>
+  <td>MMMU 50–60 (7B), 68–76 (70B+)</td>
+</tr>
+<tr>
+  <td><strong>OCR/文档</strong></td>
+  <td>OCRBench, InfoVQA, DocVQA</td>
+  <td>场景/文档/手写文字识别</td>
+  <td>OCRBench 78–87</td>
+</tr>
+<tr>
+  <td><strong>视觉数学推理</strong></td>
+  <td>MathVista, MathVision</td>
+  <td>图表/公式/几何推理</td>
+  <td>MathVista 65–75, MathVision 35–50</td>
+</tr>
+<tr>
+  <td><strong>幻觉检测</strong></td>
+  <td>HallusionBench, POPE, AMBER</td>
+  <td>模型是否"编造"视觉内容</td>
+  <td>HallusionBench 50–60</td>
+</tr>
+<tr>
+  <td><strong>图表理解</strong></td>
+  <td>ChartQA, AI2D</td>
+  <td>科学图表推理</td>
+  <td>ChartQA 80–88, AI2D 85–92</td>
+</tr>
+<tr>
+  <td><strong>空间推理</strong></td>
+  <td>MME-RealWorld, SpatialBench</td>
+  <td>真实世界空间理解</td>
+  <td>MME-RW 60–70</td>
+</tr>
+</tbody>
+</table>
+
+<h3>5.2 代表性模型排行榜（2025–2026）</h3>
+
+<table>
+<thead><tr><th>模型</th><th>MMBench</th><th>MMStar</th><th>MMMU</th><th>MathVista</th><th>OCRBench</th></tr></thead>
+<tbody>
+<tr><td><strong>InternVL3.5-241B</strong></td><td>91.3</td><td>78.8</td><td>76.4</td><td>81.8</td><td>91.2</td></tr>
+<tr><td><strong>GLM-4.6V</strong></td><td>88.8</td><td>75.9</td><td>76.0</td><td>85.2</td><td>86.5</td></tr>
+<tr><td><strong>Qwen2.5-VL-72B</strong></td><td>87.8</td><td>71.1</td><td>67.9</td><td>75.2</td><td>88.1</td></tr>
+<tr><td><strong>Doubao-1.5-pro</strong></td><td>—</td><td>—</td><td>—</td><td>78.6</td><td>—</td></tr>
+<tr><td><strong>GPT-5</strong></td><td>—</td><td>—</td><td>~75*</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+<p style="font-size:0.82em;color:var(--text3);">* 估计值。闭源模型通常不在开放基准排行榜上公布完整分数。MMMU / MathVista 为 2025 年底–2026 年初数据。</p>
+
+<h3>5.3 2025–2026 新基准趋势</h3>
+
+<div class="callout insight">
+<div class="title">🆕 新兴基准类别</div>
+<p><strong>1. 成本感知评估：</strong>VL-RouterBench（2025.12）引入 cost-quality Pareto 前沿——不只是看准不准，还要看花费多少 token/时间。<br>
+<strong>2. 推理深度评估：</strong>MathVision, DynaMath, LogicVista——不仅看"答对没"，还看"推理过程对不对"。<br>
+<strong>3. 视频基准爆发：</strong>Video-MME, MLVU, LongVideoBench, EgoSchema——视频理解正在建立独立的评测体系。<br>
+<strong>4. Agent 基准：</strong>ScreenSpot-Pro, WebVoyager, AndroidWorld——针对 GUI 操作和自主 Agent 的新基准。<br>
+<strong>5. 幻觉细粒度检测：</strong>HallusionBench 的升级版本区分"物体幻觉""属性幻觉""关系幻觉""文本幻觉"。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 6 ═══════════ -->
+<h2 id="ch6">六、视频理解：VLM 在时间维度上的延伸</h2>
+
+<p>笔记 03 在视频方面只提到了 Sora（视频生成）。本章补充<strong>视频理解 VLM</strong>——如何让模型理解动态视觉信息。</p>
+
+<h3>6.1 核心挑战</h3>
+
+<p>视频 = 图像 × 时间。一秒钟 30 帧意味着<strong>一分钟视频产生 1800 帧</strong>——如果每帧 576 tokens，总计 <strong>1,036,800 tokens</strong>，远超所有 LLM 的上下文窗口。因此视频 VLM 的核心问题都是围绕<strong>如何高效处理时间维度</strong>。</p>
+
+<h3>6.2 主流模型与架构</h3>
+
+<table>
+<thead><tr><th>模型</th><th>时间建模方式</th><th>帧压缩策略</th><th>Video-MME (7B)</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>LLaVA-Video</strong></td>
+  <td>SigLIP-SO400M + 帧间 token 合并</td>
+  <td>相邻帧合并池化</td>
+  <td>63.3%</td>
+</tr>
+<tr>
+  <td><strong>LLaVA-Video-TPO</strong></td>
+  <td>同上 + 时序偏好优化</td>
+  <td>同上</td>
+  <td><strong>71.5%</strong> (7B SOTA)</td>
+</tr>
+<tr>
+  <td><strong>VideoLLaMA2</strong></td>
+  <td>3D 卷积时空聚合 + Q-Former</td>
+  <td>Q-Former 压缩 (18:1)</td>
+  <td>58.0%</td>
+</tr>
+<tr>
+  <td><strong>STORM</strong></td>
+  <td>Mamba SSM 时序编码器</td>
+  <td>Mamba 内置选择机制</td>
+  <td>8× 计算降低</td>
+</tr>
+<tr>
+  <td><strong>VideoLLaMB</strong></td>
+  <td>循环记忆桥 + SceneTilling</td>
+  <td>记忆 token 延续语义</td>
+  <td>+4.2pt 提升</td>
+</tr>
+<tr>
+  <td><strong>NVILA</strong></td>
+  <td>原生长上下文</td>
+  <td>长度外推 (YaRN)</td>
+  <td>70.0%</td>
+</tr>
+</tbody>
+</table>
+
+<h3>6.3 时序建模的四大路线</h3>
+
+<div class="callout insight">
+<div class="title">🎬 时间维度处理的四大范式</div>
+<p><strong>A. 位置编码增强：</strong>M-RoPE（Qwen2-VL）将位置编码分解为时间/高度/宽度三个独立维度；V2PE 为视觉 token 分配更小的位置增量。<br>
+<strong>B. 专用时序编码器：</strong>STORM（Mamba）、VideoLLaMA2（3D Conv）在 ViT 之后插入时序处理模块。<br>
+<strong>C. 循环/记忆机制：</strong>VideoLLaMB 用循环记忆跨段传递语义，支持流式处理。<br>
+<strong>D. Token 筛选/压缩：</strong>FlexSelect（NeurIPS 2025）通过跨模态注意力自动选择关键帧，9× 加速。</p>
+</div>
+
+<h3>6.4 时序偏好优化（TPO, 2025.01）</h3>
+
+<div class="callout paper">
+<div class="title">📄 Temporal Preference Optimization for Long-Form Video Understanding</div>
+<p><strong>核心创新：</strong>不依赖人工标注，通过<strong>操纵视频输入</strong>生成偏好对——给模型看 (a) 不相关帧和 (b) 不完整帧作为"负样本"，完整视频作为"正样本"，用 DPO 训练。这使得 LLaVA-Video-TPO 在 Video-MME 上从 63.3% 跃升至 <strong>71.5%</strong>，成为 7B 视频 VLM 的 SOTA。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 7 ═══════════ -->
+<h2 id="ch7">七、音频/语音多模态：让模型"听见"</h2>
+
+<p>笔记 03 几乎未涉及音频。本章补充<strong>音频-语言模型（ALM）和语音 LLM 的发展全景</strong>。</p>
+
+<h3>7.1 核心模型谱系</h3>
+
+<table>
+<thead><tr><th>模型</th><th>机构</th><th>模态</th><th>关键创新</th><th>时间</th></tr></thead>
+<tbody>
+<tr><td><strong>SALMONN</strong></td><td>清华/字节</td><td>语音+音乐+环境音</td><td>Whisper+BEATs 双编码器 + Q-Former</td><td>ICLR 2024</td></tr>
+<tr><td><strong>Qwen2-Audio</strong></td><td>Alibaba</td><td>语音+音频</td><td>多任务统一音频编码器</td><td>2024</td></tr>
+<tr><td><strong>SpeechGPT</strong></td><td>复旦</td><td>语音对话</td><td>首个端到端语音→意图→LLM→语音</td><td>2023</td></tr>
+<tr><td><strong>video-SALMONN-o1</strong></td><td>清华/字节</td><td>音频+视觉</td><td>推理增强的视听 LLM</td><td>ICML 2025</td></tr>
+<tr><td><strong>SALMONN-omni</strong></td><td>清华/字节</td><td>语音理解+生成</td><td>首个无 codec 的全双工语音 LLM</td><td>2024.11</td></tr>
+<tr><td><strong>ELLSA</strong></td><td>清华/字节</td><td>视听+语音+动作</td><td>首个端到端流式全双工多模态</td><td>ICLR 2026</td></tr>
+<tr><td><strong>Moshi</strong></td><td>Meta</td><td>实时语音</td><td>轻量神经 codec + 增量 LLM</td><td>2024</td></tr>
+<tr><td><strong>Nemotron Audex</strong></td><td>NVIDIA</td><td>统一音频智能</td><td>30B-A3B MoE + 多域 OPD</td><td>2026.07</td></tr>
+</tbody>
+</table>
+
+<h3>7.2 关键技术趋势</h3>
+
+<div class="callout insight">
+<div class="title">🔊 从离散 Token 到连续嵌入 —— 音频 LLM 的范式转变</div>
+<p>早期语音 LLM（SpeechGPT、Moshi）使用<strong>离散语音 token</strong>（通过 VQ-VAE 将音频波形量化为离散码本），让 LLM 像生成文本一样生成语音。</p>
+<p>2025–2026 年的趋势是<strong>抛弃离散 token</strong>，直接使用连续嵌入。SALMONN-omni 首次实现了无 codec 的全双工语音理解和生成。优势：① 避免量化信息损失，② 消除了 codec 训练和码本维护的开销，③ 更自然的语音质量。</p>
+</div>
+
+<h3>7.3 全双工：语音交互的"圣杯"</h3>
+
+<p>传统语音助手是<strong>半双工</strong>的——你说完，它听完，它回答，你再说话。这与人际对话完全不同（我们可以在对方说话时打断、补充、用语气表达态度）。</p>
+
+<p><strong>全双工模型</strong>（ELLSA、SALMONN-omni、MiniCPM-duplex）实现了：① 同时听和说，② 识别和处理打断（barge-in），③ 用语气和停顿传递信息。</p>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 8 ═══════════ -->
+<h2 id="ch8">八、3D/点云多模态：让模型理解空间</h2>
+
+<p>笔记 03 完全未涉及 3D。本章补充<strong>3D 视觉-语言模型</strong>的发展。</p>
+
+<h3>8.1 从 Point-BERT 到 3D-LLM</h3>
+
+<div class="callout paper">
+<div class="title">📄 Point-BERT (CVPR 2022) — 3D Transformer 的预训练基石</div>
+<p>借鉴 BERT 的掩码建模思想，Point-BERT 对点云做 <strong>Masked Point Modeling (MPM)</strong>——随机遮挡部分点，训练模型预测被遮挡点的坐标。这是 3D 域中的"BERT moment"。</p>
+<p><strong>后续影响：</strong>几乎所有 2024–2025 年的 3D-LLM（GPT4Point、Uni3D-LLM、PointLLM）都以 Point-BERT 作为 3D 编码骨干。</p>
+</div>
+
+<h3>8.2 3D-LLM 的三条路线</h3>
+
+<table>
+<thead><tr><th>路线</th><th>代表模型</th><th>方法</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>直接对齐</strong></td>
+  <td>PointLLM, Chat-Scene</td>
+  <td>点云特征 → MLP 投影 → LLM token 空间</td>
+</tr>
+<tr>
+  <td><strong>逐步对齐</strong></td>
+  <td>GPT4Point (CVPR 2024), MiniGPT-3D</td>
+  <td>点云 → Point-QFormer → 文本空间 → LLM（多阶段训练）</td>
+</tr>
+<tr>
+  <td><strong>多模态绑定</strong></td>
+  <td>Point-Bind, Uni3D-LLM</td>
+  <td>点云+图像+音频+文本 → 联合嵌入空间</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout paper">
+<div class="title">📄 GPT4Point (CVPR 2024 Highlight) — 首个点云多模态 LLM</div>
+<p>GPT4Point 包含两个核心组件：① <strong>Point-QFormer</strong>（BERT 风格的跨模态桥，将 3D 点云特征压缩为 LLM 可理解的 token），② <strong>Pyramid-XL</strong>（自动化分层标注引擎，生成 100 万+ 3D-文本对）。</p>
+<p><strong>关键发现：</strong>2D VLM（如 LLaVA）在 3D 任务上表现很差——因为 2D 渲染图丢失了多视角信息（如"四面体"在 2D 中只能看到一个三角面）。</p>
+</div>
+
+<h3>8.3 3D 多模态的前沿趋势</h3>
+
+<ol>
+  <li><strong>统一理解与生成：</strong>UniUGG 实现端到端的 3D 理解和生成</li>
+  <li><strong>具身 AI 集成：</strong>LEO, 3DLLM-Mem 将 3D-LLM 与机器人物理交互结合</li>
+  <li><strong>动态场景理解：</strong>Video-3D LLM 引入时序信息</li>
+  <li><strong>参数高效微调：</strong>Point-PEFT 仅增加 0.6M 参数即可在冻结预训练模型上达到 SOTA</li>
+</ol>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 9 ═══════════ -->
+<h2 id="ch9">九、统一理解与生成：Any-to-Any 的架构之路</h2>
+
+<p>笔记 03 提到了 Janus-Pro 的解耦设计。本章深入剖析<strong>统一多模态理解与生成</strong>的完整技术路线。</p>
+
+<h3>9.1 五大技术路线</h3>
+
+<table>
+<thead><tr><th>路线</th><th>原理</th><th>代表模型</th><th>优点</th><th>缺点</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>纯自回归 (AR)</strong></td>
+  <td>图像离散化为 token，GPT 式逐 token 生成</td>
+  <td>Chameleon, EMU3</td>
+  <td>架构统一，实现简单</td>
+  <td>视觉理解弱（VQGAN 语义差）</td>
+</tr>
+<tr>
+  <td><strong>解耦 AR</strong></td>
+  <td>理解用 SigLIP，生成用 VQ-VAE，两个编码器</td>
+  <td>Janus, Janus-Pro</td>
+  <td>两件事都做到最优</td>
+  <td>无法处理交错图文，两个编码器</td>
+</tr>
+<tr>
+  <td><strong>AR + 扩散 (串行)</strong></td>
+  <td>AR 模型输出条件嵌入 → DiT 解码生成图像</td>
+  <td>Qwen-Image, OmniGen2</td>
+  <td>理解强，生成质量高</td>
+  <td>两阶段推理，额外 DiT</td>
+</tr>
+<tr>
+  <td><strong>AR + 扩散 (并行/MoT)</strong></td>
+  <td>共享注意力 + 模态特定前馈网络</td>
+  <td>Bagel, LlamaFusion</td>
+  <td>大规模混合预训练</td>
+  <td>工程复杂</td>
+</tr>
+<tr>
+  <td><strong>双目标单模型</strong></td>
+  <td>同模型内 CE 损失（文本）+ 扩散损失（图像）</td>
+  <td>Transfusion, Show-O</td>
+  <td>单一参数集</td>
+  <td>训练不稳定，难度大</td>
+</tr>
+</tbody>
+</table>
+
+<h3>9.2 Janus-Pro 解耦设计的深层逻辑</h3>
+
+<div class="callout insight">
+<div class="title">💡 为什么"理解"和"生成"需要不同的视觉编码器？</div>
+<p><strong>理解的本质是语义压缩</strong>——从图像中提取"这是什么"的高层语义，扔掉无关细节。需要语义对齐的编码器（如 SigLIP）。</p>
+<p><strong>生成的本质是像素重建</strong>——从文本恢复"这长什么样子"的每个像素细节。需要重建保真度高的编码器（如 VQ-VAE）。</p>
+<p>这两类编码器<strong>目的相反</strong>——一个追求丢弃信息（抽象），一个追求保留信息（还原）。Janus 的"解耦"实际上是对这个根本矛盾的诚实回应。</p>
+</div>
+
+<h3>9.3 Bagel (ByteDance, 2025) — MoT 范式的开创者</h3>
+
+<div class="callout paper">
+<div class="title">📄 BAGEL: Bootstrapping All GEnerative Latents — ByteDance, May 2025</div>
+<p>Bagel 提出 <strong>Mixture-of-Transformer-Experts (MoT)</strong>——共享 Transformer 的注意力层，但为不同模态分配独立的 FFN 专家。理解路径使用 SigLIP 编码器，生成路径使用 VAE 编码器，两者共享注意力的"通用推理"部分。</p>
+<p><strong>意义：</strong>Bagel 是最早进行<strong>超大规模混合模态预训练</strong>的模型之一——从零开始同时训练文本、图像理解和图像生成。</p>
+</div>
+
+<div class="callout warning">
+<div class="title">🔮 核心未解问题（截至 2026.07）</div>
+<p>"理解+生成统一"是否真的带来 1+1>2 的协同效应？初步证据（Bagel 的大规模混合预训练、Qwen-Image 的生成质量提升）表明<strong>更好的文本编码确实能改善图像生成</strong>——但在理解任务上，统一模型是否优于专用模型？这个问题仍在验证中。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 10 ═══════════ -->
+<h2 id="ch10">十、多模态 Agent：从"看懂"到"会用"</h2>
+
+<p>笔记 03 完全没有涉及 Agent。本章补充<strong>VLM 驱动的 GUI Agent 和自主操作</strong>这一 2025–2026 年最热门的应用方向。</p>
+
+<h3>10.1 核心范式：纯视觉 GUI 控制</h3>
+
+<p>传统 GUI Agent 依赖于 <strong>HTML DOM / Accessibility Tree</strong>——解析网页结构来定位元素。2025–2026 年的范式转变是<strong>纯视觉驱动的 GUI Agent</strong>——模型只看屏幕截图，不接触底层 DOM。</p>
+
+<div class="callout insight">
+<div class="title">💡 为什么纯视觉？</div>
+<p>① <strong>通用性</strong>：桌面应用、移动 APP、游戏等没有 DOM；② <strong>隐私</strong>：截图不暴露底层数据；③ <strong>鲁棒性</strong>：网页改版不影响模型（因为 DOM 变了但视觉没变）；④ <strong>简单性</strong>：单一输入模态 → 更紧凑的 pipeline。</p>
+</div>
+
+<h3>10.2 代表性模型与性能</h3>
+
+<table>
+<thead><tr><th>模型</th><th>参数</th><th>ScreenSpot-Pro</th><th>WebVoyager</th><th>AndroidWorld</th><th>特征</th></tr></thead>
+<tbody>
+<tr><td><strong>UI-Venus-Navi-72B</strong></td><td>72B</td><td><strong>61.9%</strong></td><td>—</td><td><strong>65.9%</strong></td><td>强化微调 (RFT)</td></tr>
+<tr><td><strong>RegionFocus+Qwen2.5-VL-72B</strong></td><td>72B</td><td>61.6%</td><td>—</td><td>—</td><td>测试时视觉缩放</td></tr>
+<tr><td><strong>MolmoWeb-8B</strong></td><td>8B</td><td>—</td><td><strong>78.2%</strong></td><td>—</td><td>完全开源</td></tr>
+<tr><td><strong>Aria-UI</strong></td><td>3.9B (MoE)</td><td>82.4% (v1)</td><td>—</td><td>—</td><td>纯视觉定位</td></tr>
+<tr><td><strong>UI-Venus-Navi-7B</strong></td><td>7B</td><td>50.8%</td><td>—</td><td>49.1%</td><td>小模型强基线</td></tr>
+</tbody>
+</table>
+
+<h3>10.3 关键技术</h3>
+
+<ol>
+  <li><strong>测试时视觉缩放（RegionFocus）：</strong>动态放大疑似目标区域——+28% on ScreenSpot-Pro</li>
+  <li><strong>强化学习后训练（RFT）：</strong>从模仿学习的 SFT 升级到在线 RL，UI-Venus 标志性方法</li>
+  <li><strong>动作历史上下文：</strong>Aria-UI 将之前的动作和截图交错输入——多步定位准确率显著提升</li>
+  <li><strong>Agentic-Q 估计：</strong>学习评估每个动作的长期价值——解耦策略更新与环境交互</li>
+</ol>
+
+<h3>10.4 开源生态</h3>
+
+<table>
+<thead><tr><th>项目</th><th>内容</th><th>许可</th></tr></thead>
+<tbody>
+<tr><td><strong>ShowUI</strong> (CVPR 2025/2026)</td><td>端到端 VLA GUI 模型 + 演示数据</td><td>开源</td></tr>
+<tr><td><strong>MolmoWeb</strong> (Ai2)</td><td>36K 人类演示 + 623K+ 子任务 + 2.2M+ 截图 QA</td><td>完全开源</td></tr>
+<tr><td><strong>TongUI</strong> (AAAI 2026)</td><td>143K 轨迹（5 OS, 200+ APP）</td><td>开源</td></tr>
+</tbody>
+</table>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 11 ═══════════ -->
+<h2 id="ch11">十一、VLM 缩放定律</h2>
+
+<p>笔记 03 虽提到了"训练方法 > 编码器大小"，但没有系统性地讨论缩放定律。本章深度展开。</p>
+
+<h3>11.1 三大缩放定律发现</h3>
+
+<div class="callout paper">
+<div class="title">📄 Inference Optimal VLMs Need Fewer Visual Tokens and More Parameters — ICLR 2025</div>
+<p><strong>反直觉发现：</strong>在固定推理预算下，最优配置是<strong>最大化 LLM 参数量 + 最小化 visual token 数量</strong>——极端情况下只需 <strong>1 个 visual token</strong>。这意味着之前所有 VLM 都在"浪费"计算在过多的 visual token 上。<br>
+<strong>推论：</strong>token 压缩比（compression ratio）是 VLM 效率的关键杠杆——比增加 LLM 或视觉编码器大小的回报更高。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 Inference Compute-Optimal Video VLMs — ACL 2025</div>
+<p><strong>发现：</strong>视频 VLM 的最优配置是 (LLM 大小, 帧数, token/帧) 的<strong>三维联合优化</strong>，且最优分配强烈依赖于微调数据的大小。<br>
+<strong>实用指导：</strong>数据多时可以多分配帧数；数据少时优先增大 LLM 并减少帧数。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 FastVLM: Efficient Vision Encoding — Apple, CVPR 2025</div>
+<p><strong>发现：</strong>通过混合 CNN-ViT 编码器（FastViTHD），在 1152×1152 分辨率下实现 <strong>85× TTFT 加速</strong>（vs LLaVA-OneVision）。关键在于：<strong>视觉编码器架构设计是缩放的关键因子</strong>——只优化 LLM 或 token 数量不够，编码器本身的延迟-精度 Pareto 前沿也需要 push。</p>
+</div>
+
+<h3>11.2 缩放定律的实践指导</h3>
+
+<table>
+<thead><tr><th>约束</th><th>优先投入方向</th><th>原因</th></tr></thead>
+<tbody>
+<tr><td>推理延迟敏感</td><td>视觉 token 压缩 → 编码器效率</td><td>Token 数量二次影响注意力计算</td></tr>
+<tr><td>训练数据有限</td><td>增大 LLM → 数据增强</td><td>大 LLM 更需要数据，但有更好的 zero-shot</td></tr>
+<tr><td>推理预算充足</td><td>增大图像分辨率</td><td>分辨率是准确率的最强杠杆（MM1 结论）</td></tr>
+<tr><td>追求全能</td><td>分辨率 + 多编码器</td><td>不同任务需要不同的视觉特征</td></tr>
+</tbody>
+</table>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ CHAPTER 12 ═══════════ -->
+<h2 id="ch12">十二、安全与幻觉：多模态模型的暗面</h2>
+
+<p>笔记 03 未涉及安全。本章补充<strong>VLM 的幻觉、越狱和安全性</strong>研究。</p>
+
+<h3>12.1 幻觉：VLM 的"睁眼说瞎话"</h3>
+
+<div class="callout warning">
+<div class="title">⚠️ 多模态幻觉的独特挑战</div>
+<p>VLM 的幻觉比纯文本 LLM 更复杂：纯文本幻觉是"编造事实"；VLM 幻觉包括：<br>
+<strong>① 物体幻觉</strong>：说"图中有狗"但图中没有狗<br>
+<strong>② 属性幻觉</strong>：说"红车"但车是蓝色的<br>
+<strong>③ 关系幻觉</strong>：说"A 在 B 上面"但 A 在 B 下面<br>
+<strong>④ 文本幻觉</strong>：编造图中不存在的文字<br>
+<strong>⑤ 上下文幻觉</strong>：忽略图像，完全基于文本先验回答（回答了"一般情况"而非"图中情况"）</p>
+</div>
+
+<h3>12.2 多模态越狱</h3>
+
+<div class="callout paper">
+<div class="title">📄 Jailbreaking LLMs & VLMs: Mechanisms, Evaluation, and Unified Defense (Jan 2026)</div>
+<p><strong>核心发现：</strong>VLM 的越狱比纯文本 LLM 更加复杂——攻击者可以在<strong>图像中嵌入恶意指令</strong>（如将文字嵌入图片），或利用<strong>跨模态不一致</strong>（文本安全但图像不安全）。</p>
+<p><strong>攻击分类：</strong>模板/编码攻击、上下文操纵攻击、对抗学习攻击、LLM 辅助攻击、图像扰动攻击、跨模态传递攻击。</p>
+<p><strong>防御框架：</strong>感知层（输入检测）+ 生成层（安全解码）+ 参数层（偏好对齐）三层防御。</p>
+</div>
+
+<h3>12.3 红队测试与防御</h3>
+
+<table>
+<thead><tr><th>工作</th><th>类型</th><th>关键贡献</th></tr></thead>
+<tbody>
+<tr><td><strong>RTVLM</strong> (ACL 2024)</td><td>红队数据集</td><td>首个 VLM 红队测试集，12 子任务，4 维度（忠实度/隐私/安全/公平）</td></tr>
+<tr><td><strong>OmniSafeBench-MM</strong> (2025)</td><td>统一基准</td><td>13 攻击方法 + 15 防御策略 + 9 风险域/50 细粒度类别</td></tr>
+<tr><td><strong>SafeVLM</strong></td><td>防御方法</td><td>安全投影器 + 安全 tokens + 安全头 + 两阶段训练</td></tr>
+<tr><td><strong>MIRAGE</strong> (2025)</td><td>攻击方法</td><td>叙事驱动 + 角色沉浸绕过安全对齐，ASR 提升 17.5%</td></tr>
+</tbody>
+</table>
+
+<div class="callout success">
+<div class="title">🛡️ 防御最佳实践</div>
+<p><strong>1.</strong> 输入过滤：在视觉编码后、LLM 前插入安全检测模块<br>
+<strong>2.</strong> 安全对齐 SFT：用 RTVLM 等红队数据做安全微调——提升 10-13% 安全性<br>
+<strong>3.</strong> 多模态一致性检查：确保模型的文本推理与视觉证据一致（将防幻觉与防越狱结合）<br>
+<strong>4.</strong> 自动化红队：持续生成新的攻击样本来迭代防御</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ TRENDS ═══════════ -->
+<h2 id="trends">🔭 大趋势与展望</h2>
+
+<h3>13.1 2024–2026 关键趋势回顾</h3>
+
+<table>
+<thead><tr><th>趋势</th><th>2023</th><th>2024</th><th>2025–2026</th></tr></thead>
+<tbody>
+<tr><td><strong>架构</strong></td><td>Bolt-on VLM</td><td>原生多模态出现</td><td>Early Fusion + MoE 成为主流</td></tr>
+<tr><td><strong>视觉编码器</strong></td><td>CLIP ViT-L</td><td>SigLIP 接管</td><td>多编码器融合 (SVA)</td></tr>
+<tr><td><strong>训练</strong></td><td>预训练+SFT</td><td>多阶段+高分辨率</td><td>SFT→GRPO→Alignment RL 全流程</td></tr>
+<tr><td><strong>分辨率</strong></td><td>224-336px</td><td>AnyRes 分块</td><td>原生动态分辨率 (M-RoPE)</td></tr>
+<tr><td><strong>后训练</strong></td><td>SFT only</td><td>DPO/RLHF 出现</td><td>GRPO 成为标配</td></tr>
+<tr><td><strong>模态覆盖</strong></td><td>图文</td><td>图文+视频</td><td>图文+视频+音频+3D+Agent</td></tr>
+<tr><td><strong>部署</strong></td><td>单 GPU 7B</td><td>量化 4B</td><td>1-3B 移动端 SOTA</td></tr>
+</tbody>
+</table>
+
+<h3>13.2 未来方向预测</h3>
+
+<div class="callout insight">
+<div class="title">🔮 2026–2027 展望</div>
+<p><strong>短期（6 个月）：</strong>原生动态分辨率成为标准（消除 AnyRes 的块间不连续性）；GRPO 后训练在所有主力 VLM 中普及；端到端全双工语音-视觉模型出现。</p>
+<p><strong>中期（12 个月）：</strong>理解+生成统一模型首次在不牺牲单任务性能的前提下展现协同效应；Agent VLM 成为独立产品类别（非大模型附属功能）；VLM 安全的标准化评估框架建立。</p>
+<p><strong>长期（18–24 个月）：</strong>"视觉原生 LLM"——从预训练阶段就将视觉和文本 token 混合训练，而非后期 bolt-on——成为默认范式。世界模型与 VLM 的边界开始模糊。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ═══════════ INDEX ═══════════ -->
+<h2 id="index">📚 论文索引</h2>
+
+<table>
+<thead><tr><th>论文</th><th>年份</th><th>机构</th><th>核心贡献</th><th>arXiv / 会议</th></tr></thead>
+<tbody>
+<tr><td>ViT</td><td>2020</td><td>Google</td><td>Transformer 图像处理</td><td>ICLR 2021</td></tr>
+<tr><td>CLIP</td><td>2021</td><td>OpenAI</td><td>4 亿图文对对比学习</td><td><a href="https://arxiv.org/abs/2103.00020" target="_blank">2103.00020</a></td></tr>
+<tr><td>Stable Diffusion</td><td>2022</td><td>LMU/Stability</td><td>潜空间扩散模型</td><td><a href="https://arxiv.org/abs/2112.10752" target="_blank">2112.10752</a></td></tr>
+<tr><td>BLIP-2</td><td>2023</td><td>Salesforce</td><td>Q-Former 桥接</td><td><a href="https://arxiv.org/abs/2301.12597" target="_blank">2301.12597</a></td></tr>
+<tr><td>LLaVA</td><td>2023</td><td>UW-Madison/MS</td><td>视觉指令微调</td><td>NeurIPS 2023</td></tr>
+<tr><td>DINOv2</td><td>2023</td><td>Meta</td><td>纯视觉自监督 SOTA</td><td><a href="https://arxiv.org/abs/2304.07193" target="_blank">2304.07193</a></td></tr>
+<tr><td>SigLIP</td><td>2023</td><td>Google</td><td>Sigmoid 对比损失</td><td><a href="https://arxiv.org/abs/2303.15343" target="_blank">2303.15343</a></td></tr>
+<tr><td>MetaCLIP</td><td>2023</td><td>Meta/UT Austin</td><td>元数据驱动数据策展</td><td><a href="https://arxiv.org/abs/2309.16671" target="_blank">2309.16671</a></td></tr>
+<tr><td>DataComp</td><td>2023</td><td>多机构</td><td>数据筛选标准化基准</td><td>NeurIPS 2023</td></tr>
+<tr><td>EVA-CLIP (EVA-02)</td><td>2023</td><td>BAAI</td><td>MIM 初始化 + CLIP 微调</td><td><a href="https://arxiv.org/abs/2303.15389" target="_blank">2303.15389</a></td></tr>
+<tr><td>MM1</td><td>2024</td><td>Apple</td><td>VLM 系统性消融</td><td><a href="https://arxiv.org/abs/2403.09611" target="_blank">2403.09611</a></td></tr>
+<tr><td>Cambrian-1</td><td>2024</td><td>NYU</td><td>多编码器 SVA</td><td><a href="https://arxiv.org/abs/2406.16860" target="_blank">2406.16860</a></td></tr>
+<tr><td>InternVL 2.0</td><td>2024</td><td>上海 AI Lab</td><td>多尺度+Pixel Shuffle</td><td><a href="https://arxiv.org/abs/2407.06284" target="_blank">2407.06284</a></td></tr>
+<tr><td>LLaVA-OneVision</td><td>2024</td><td>ByteDance</td><td>统一图文视频</td><td><a href="https://arxiv.org/abs/2408.03326" target="_blank">2408.03326</a></td></tr>
+<tr><td>SALMONN</td><td>2024</td><td>清华/字节</td><td>通用听觉 LLM</td><td>ICLR 2024</td></tr>
+<tr><td>GPT4Point</td><td>2024</td><td>上海 AI Lab</td><td>首个点云 MLLM</td><td>CVPR 2024</td></tr>
+<tr><td>RTVLM</td><td>2024</td><td>浙大等</td><td>VLM 红队测试</td><td>ACL 2024</td></tr>
+<tr><td>VideoLLaMA2</td><td>2024</td><td>DAMO Academy</td><td>3D Conv 时空聚合</td><td><a href="https://arxiv.org/abs/2403.07498" target="_blank">2403.07498</a></td></tr>
+<tr><td>LLaVA-Video-TPO</td><td>2025</td><td>—</td><td>时序偏好优化 71.5% V-MME</td><td><a href="https://arxiv.org/abs/2501.13919" target="_blank">2501.13919</a></td></tr>
+<tr><td>Bagel</td><td>2025</td><td>ByteDance</td><td>MoT 统一多模态</td><td><a href="https://arxiv.org/abs/2505.18816" target="_blank">2505.18816</a></td></tr>
+<tr><td>Qwen2.5-VL</td><td>2025</td><td>Alibaba</td><td>M-RoPE 原生分辨率</td><td><a href="https://arxiv.org/abs/2502.13923" target="_blank">2502.13923</a></td></tr>
+<tr><td>Inference Optimal VLMs</td><td>2025</td><td>CMU</td><td>Token 最小化+参数最大化</td><td>ICLR 2025</td></tr>
+<tr><td>FastVLM</td><td>2025</td><td>Apple</td><td>混合编码器 85× TTFT</td><td>CVPR 2025</td></tr>
+<tr><td>MolmoWeb</td><td>2025</td><td>Ai2</td><td>开源 Web Agent</td><td>Blog/开源</td></tr>
+<tr><td>ShowUI</td><td>2025</td><td>ShowLab</td><td>GUI VLA 模型</td><td>CVPR 2025</td></tr>
+<tr><td>OmniSafeBench-MM</td><td>2025</td><td>—</td><td>VLM 安全统一基准</td><td>—</td></tr>
+<tr><td>STORM</td><td>2025</td><td>—</td><td>Mamba 视频编码器 8×</td><td>ICCV 2025</td></tr>
+<tr><td>FlexSelect</td><td>2025</td><td>—</td><td>视频 token 选择 9×</td><td>NeurIPS 2025</td></tr>
+<tr><td>InternVL3.5</td><td>2025</td><td>上海 AI Lab</td><td>Cascade RL + DvD</td><td>开源</td></tr>
+<tr><td>ELLSA</td><td>2026</td><td>清华/字节</td><td>流式全双工视听</td><td>ICLR 2026</td></tr>
+<tr><td>Nemotron Audex</td><td>2026</td><td>NVIDIA</td><td>30B MoE 统一音频 OPD</td><td><a href="https://arxiv.org/abs/2607.05196" target="_blank">2607.05196</a></td></tr>
+<tr><td>SightSound-R1</td><td>2025</td><td>—</td><td>视觉→音频 CoT 蒸馏</td><td>ICASSP 2026</td></tr>
+<tr><td>UniTok</td><td>2025</td><td>—</td><td>统一视觉 tokenizer</td><td>NeurIPS 2025</td></tr>
+</tbody>
+</table>
+
+<p style="text-align:center;color:var(--text3);margin-top:8px;"><strong>共 34 篇核心论文</strong>，覆盖 CLIP 生态 / 视觉编码器 / VLM 架构 / 训练 / 基准 / 视频 / 音频 / 3D / 生成 / Agent / 缩放定律 / 安全共 12 大主题</p>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<div class="nav-row">
+  <a href="./03-Multimodal-Models.html" class="nav-btn secondary">← 笔记 03：多模态发展全历程</a>
+  <a href="./05-Multimodal-OPD.html" class="nav-btn">笔记 05：多模态 OPD →</a>
+</div>
+
+<p style="text-align:center;color:var(--text3);margin-top:32px;font-size:0.85em;">
+  构建于 2026 年 7 月 · 基于截至 2026 年 7 月的公开学术来源<br>
+  本文是 <a href="./03-Multimodal-Models.html">笔记 03-多模态模型发展全历程</a> 的深度补充<br>
+  <em>OPD 系列笔记 · HHU × USTC · multimodel-OPD-research</em>
+</p>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 多模态在线策略蒸馏（Multimodal OPD）—— 研究全景</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+:root {
+  --bg: #faf8f5; --surface: #ffffff; --surface2: #f5f2ed; --text: #2c2416; --text2: #5c5042; --text3: #8a7b6b;
+  --red: #c0392b; --red-bg: #fdf0ed; --blue: #1a6daa; --blue-bg: #edf4fa;
+  --green: #1e7a4a; --green-bg: #edf7f1; --gold: #b8860b; --gold-bg: #fdf8ed;
+  --purple: #7b3fa3; --purple-bg: #f6f0fa; --code-bg: #282c34; --code-text: #abb2bf;
+  --sidebar-w: 260px; --max-w: 940px; --radius: 8px; --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI','PingFang SC','Microsoft YaHei','Noto Sans SC',system-ui,sans-serif; background: var(--bg); color: var(--text); line-height: 1.82; font-size: 16px; display: flex; }
+nav#sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: #c8d6e5; overflow-y: auto; padding: 28px 20px; z-index: 100; font-size: 13.5px; box-shadow: 2px 0 20px rgba(0,0,0,0.15); }
+nav#sidebar h2 { color: #fff; font-size: 17px; margin-bottom: 6px; font-weight: 700; }
+nav#sidebar .subtitle { font-size: 11.5px; color: #7f8fa6; margin-bottom: 20px; }
+nav#sidebar a { display: block; color: #a4b0be; text-decoration: none; padding: 5px 10px; border-radius: 5px; margin: 1px 0; transition: all 0.15s; border-left: 2px solid transparent; }
+nav#sidebar a:hover, nav#sidebar a.active { color: #fff; background: rgba(255,255,255,0.06); border-left-color: #f9ca24; }
+nav#sidebar a.chapter { font-weight: 600; color: #dfe6e9; margin-top: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+nav#sidebar a.sub { padding-left: 18px; font-size: 12.5px; }
+main { margin-left: var(--sidebar-w); max-width: var(--max-w); width: 100%; padding: 48px 56px 80px; }
+h1 { font-size: 2.1em; font-weight: 800; background: linear-gradient(135deg, #e17055, #fdcb6e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; line-height: 1.3; }
+h2 { font-size: 1.45em; font-weight: 700; color: #1a1a2e; margin-top: 40px; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 3px solid #e17055; display: inline-block; }
+h3 { font-size: 1.18em; font-weight: 700; color: #2d3436; margin-top: 28px; margin-bottom: 8px; }
+h4 { font-size: 1.05em; font-weight: 700; margin-top: 18px; color: #e17055; }
+p { margin: 12px 0; }
+a { color: var(--blue); }
+.callout { margin: 18px 0; padding: 16px 20px; border-radius: var(--radius); border-left: 5px solid; box-shadow: var(--shadow); }
+.callout.insight { background: var(--blue-bg); border-color: var(--blue); }
+.callout.warning { background: var(--red-bg); border-color: var(--red); }
+.callout.success { background: var(--green-bg); border-color: var(--green); }
+.callout.info { background: var(--purple-bg); border-color: var(--purple); }
+.callout.paper { background: #fffdf5; border-color: #f9ca24; }
+.callout .title { font-weight: 700; font-size: 1.02em; margin-bottom: 5px; }
+.callout.insight .title { color: var(--blue); }
+.callout.warning .title { color: var(--red); }
+.callout.success .title { color: var(--green); }
+.callout.info .title { color: var(--purple); }
+.callout.paper .title { color: #b8860b; }
+pre { background: var(--code-bg); color: var(--code-text); padding: 18px 22px; border-radius: var(--radius); overflow-x: auto; font-family: 'Cascadia Code','Fira Code','Consolas',monospace; font-size: 13px; line-height: 1.6; margin: 14px 0; box-shadow: var(--shadow); }
+:not(pre)>code { background: #f0ece6; color: #c0392b; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; box-shadow: var(--shadow); border-radius: var(--radius); overflow: hidden; font-size: 0.88em; }
+thead { background: linear-gradient(135deg, #2c3e50, #34495e); color: #fff; }
+th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.85em; }
+td { padding: 9px 14px; border-bottom: 1px solid #e8e3db; }
+tbody tr:nth-child(even) { background: #faf8f5; }
+tbody tr:hover { background: #f0ebe0; }
+.math-block { text-align: center; margin: 18px 0; padding: 14px; background: var(--surface2); border-radius: var(--radius); overflow-x: auto; }
+.section-divider { text-align: center; margin: 36px 0; color: var(--text3); font-size: 1.1em; letter-spacing: 4px; }
+.nav-row { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 18px; border-top: 1px solid #ddd; }
+.nav-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: #e17055; color: #fff; text-decoration: none; border-radius: 20px; font-weight: 600; font-size: 0.88em; transition: all 0.2s; }
+.nav-btn:hover { background: #d35400; text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(225,112,85,0.3); }
+.nav-btn.secondary { background: #636e72; }
+.nav-btn.secondary:hover { background: #4a5458; }
+.timeline { position: relative; padding-left: 30px; margin: 18px 0; }
+.timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #e17055, #fdcb6e, #6c5ce7); border-radius: 2px; }
+.timeline-item { position: relative; margin-bottom: 20px; padding: 13px 16px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
+.timeline-item::before { content: ''; position: absolute; left: -25px; top: 16px; width: 11px; height: 11px; background: #e17055; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #e17055; }
+.timeline-item .year { font-weight: 800; color: #e17055; font-size: 0.82em; letter-spacing: 1px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 700; margin-right: 4px; }
+.tag-vis { background: #2ecc71; color: #0a3d1a; }
+.tag-vid { background: #e17055; color: #fff; }
+.tag-aud { background: #9b59b6; color: #fff; }
+.tag-rob { background: #1a6daa; color: #fff; }
+.tag-gen { background: #f39c12; color: #3d1a00; }
+.tag-hyb { background: #e74c3c; color: #fff; }
+.tag-sur { background: #636e72; color: #fff; }
+@media (max-width: 860px) { nav#sidebar { display: none; } main { margin-left: 0; padding: 24px 20px; } }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h2>🎯 多模态 OPD 全景</h2>
+  <div class="subtitle">Multimodal Online Policy<br>Distillation Research<br>2024 → 2026</div>
+  <a href="#intro" class="chapter">核心问题与研究动机</a>
+  <a href="#paradigm" class="chapter">一、多模态 OPD 范式</a>
+  <a href="#ch2" class="chapter">二、视觉域：VLM OPD</a>
+  <a href="#ch3" class="chapter">三、视频域：时序 OPD</a>
+  <a href="#ch4" class="chapter">四、音频/语音：跨模态 OPD</a>
+  <a href="#ch5" class="chapter">五、Agent 与具身 OPD</a>
+  <a href="#ch6" class="chapter">六、RL + OPD 混合系统</a>
+  <a href="#ch7" class="chapter">七、扩散与生成 OPD</a>
+  <a href="#ch8" class="chapter">八、新兴方向</a>
+  <a href="#ch9" class="chapter">九、工业落地与基准</a>
+  <a href="#ch10" class="chapter">十、开放问题与未来方向</a>
+  <a href="#index" class="chapter">论文索引</a>
+</nav>
+
+<main>
+
+<h1>🎯 多模态在线策略蒸馏（Multimodal OPD）<br>研究全景</h1>
+<p style="font-size:1.05em;color:var(--text2);">"Let the student see the world through its own eyes — while the teacher whispers what each sight should mean." — 2024–2026</p>
+
+<div class="callout info">
+<div class="title">📖 阅读指南</div>
+<p>本文是 OPD 系列笔记的<strong>第五篇</strong>，系统梳理在线策略蒸馏（OPD）在多模态领域的研究现状。区别于笔记 02（OPD 通史）和笔记 04（论文索引），本文聚焦<strong>多模态交叉地带</strong>：当 OPD 遇上视觉、视频、音频、机器人、扩散模型时，范式如何演变、理论如何深化、工程如何落地。预计阅读时间：<strong>60–80 分钟</strong>。本文与 <a href="./03-Multimodal-Models.html">03-多模态模型</a> 和 <a href="./02-OPD-Online-Policy-Distillation.html">02-OPD 正篇</a> 互补阅读效果最佳。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 核心问题 ====== -->
+<h2 id="intro">核心问题与研究动机</h2>
+
+<p>2025–2026 年间，多模态大模型（MLLM / LVLM / LALM）进入 RL 后训练时代。GRPO、DAPO、PPO 等方法在纯文本 LLM 上取得了显著推理能力提升（DeepSeek-R1、Qwen3），但当这些范式迁移到多模态模型时，遇到了<strong>三个根本性瓶颈</strong>：</p>
+
+<div class="callout warning">
+<div class="title">⚠️ 多模态 RL 后训练的三大瓶颈</div>
+<p><strong>1. 稀疏奖励问题（Sparse Reward）：</strong>可验证奖励（verifiable reward）仅对最终答案打分，失败 rollout 中每个 token 获得相同的惩罚信号，导致<strong>信用分配（credit assignment）失效</strong>——模型无法知道是「看错了」还是「推错了」。</p>
+<p><strong>2. 感知-推理耦合退化（Perception-Reasoning Entanglement）：</strong>RL 优化可能牺牲视觉感知来换取文本推理的奖励提升，导致模型学会「蒙答案」而非「读图」——这正是笔记 03 中讨论的 shortcut learning 问题。</p>
+<p><strong>3. 分布漂移（Distribution Drift）：</strong>SFT → RLVR 的 pipeline 中，SFT 阶段基于静态数据，RL 阶段基于自采样轨迹，两个分布之间的 gap 导致训练不稳定甚至灾难性遗忘。</p>
+</div>
+
+<p>正是在这三个瓶颈的交汇处，<strong>在线策略蒸馏（Online Policy Distillation, OPD）</strong>——特别是其自蒸馏变体 <strong>OPSD（On-Policy Self-Distillation）</strong>——作为解决方案迅速崛起。其核心洞见极其简单：</p>
+
+<div class="callout insight">
+<div class="title">💡 OPD 在多模态中的核心公式</div>
+<p><strong>学生用自己的策略生成轨迹 → 教师在相同轨迹上提供逐 token 密集监督 → 对齐两者的分布。</strong></p>
+<p>在多模态语境下，<strong>"教师"和"学生"通常是同一个模型的冻结副本和训练副本</strong>——区别仅在于教师看到了<strong>特权信息（privileged information）</strong>：可能是答案参考、裁剪区域、生成式视觉思维、或未来帧。</p>
+<p>数学上，这等价于在 on-policy 轨迹上的分布匹配：</p>
+<div class="math-block">$$\mathcal{L}_{\text{OPD}} = \sum_{t} D_{\text{KL}}\big(p_{\theta_{\text{old}}}(\cdot|x_{\text{priv}}, y_{&lt;t}) \;\|\; p_\theta(\cdot|x_{\text{student}}, y_{&lt;t})\big)$$</div>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第一章 ====== -->
+<h2 id="paradigm">一、多模态 OPD 范式：从文本到多模态的迁移</h2>
+
+<h3>1.1 文本 OPD vs 多模态 OPD</h3>
+
+<p>笔记 02 详细梳理了文本域 OPD 的发展（REOPOLD、PW-OPSD、GAR 等）。多模态 OPD 在此基础上引入了<strong>三个新维度</strong>：</p>
+
+<table>
+<thead><tr><th>维度</th><th>文本 OPD</th><th>多模态 OPD</th></tr></thead>
+<tbody>
+<tr><td><strong>特权信息类型</strong></td><td>参考答案、推理链（rationale）</td><td>参考答案 + 视觉裁剪 + 生成式视觉思维 + 注意力图 + 未来帧 + 音频</td></tr>
+<tr><td><strong>教师-学生差异</strong></td><td>同一模型，有无参考文本</td><td>同一模型，<strong>跨模态上下文差异</strong>（crop vs full image, text+audio vs text-only, VT vs no-VT）</td></tr>
+<tr><td><strong>核心风险</strong></td><td>答案泄漏（answer leakage）</td><td><strong>多模态 shortcut</strong>：模型用文本参考而非视觉证据来对齐分布——PALR 诊断揭示 17–26% 的 token 级监督来源于文本而非图像</td></tr>
+<tr><td><strong>散度选择</strong></td><td>Forward KL / JSD</td><td><strong>Reverse KL / JSD / Top-K JSD</strong>：防止跨模态分布差异导致的熵爆炸（Forward KL mode-covering 在视觉 token 上尤为严重）</td></tr>
+</tbody>
+</table>
+
+<h3>1.2 多模态 OPD 的四大范式</h3>
+
+<p>截至 2026 年 7 月，多模态 OPD 研究已分化出四个清晰的范式：</p>
+
+<div class="timeline">
+<div class="timeline-item">
+<div class="year">范式 1：同模型跨上下文 OPSD</div>
+<p>核心论文：Vision-OPD、Visual-OPSD、ViGOS、ViCuR。教师=冻结副本，学生=训练副本，差异仅在视觉上下文（crop vs full，VT vs no-VT）。<strong>零外部依赖，只需图文对。</strong></p>
+</div>
+<div class="timeline-item">
+<div class="year">范式 2：跨模态教师蒸馏</div>
+<p>核心论文：VOLD、X-OPD、CORD、SightSound-R1。教师和学生<strong>来自不同模态</strong>（text LLM → VLM，VLM → audio LM），通过 on-policy 轨迹对齐实现能力迁移。需要冷启动 SFT 对齐。</p>
+</div>
+<div class="timeline-item">
+<div class="year">范式 3：OPD + RL 混合</div>
+<p>核心论文：PRISM、PTD-PO、Distill-R1。OPD 作为 RL 的<strong>预对齐阶段</strong>或<strong>辅助损失</strong>，提供逐 token 的 dense signal 来补充稀疏的序列级奖励。</p>
+</div>
+<div class="timeline-item">
+<div class="year">范式 4：生成式 OPD</div>
+<p>核心论文：D-OPSD、LiveTalk、OmniOPSD。将 OPSD 扩展到扩散模型和生成任务——学生采样噪声轨迹，教师用多模态条件（text+image）提供更强的速度场/分布预测。</p>
+</div>
+</div>
+
+<h3>1.3 时间线：多模态 OPD 的爆发式增长</h3>
+
+<div class="timeline">
+<div class="timeline-item">
+<div class="year">2025.10 · 奠基</div>
+<p><strong>VOLD</strong> 首次将 on-policy distillation 引入 VLM 训练，证明文本 LLM 的推理能力可通过 GRPO + distillation 迁移到 VLM。<strong>SightSound-R1</strong> 跨模态蒸馏（视觉→音频）。</p>
+</div>
+<div class="timeline-item">
+<div class="year">2026.01–02 · 扩展</div>
+<p><strong>CORD</strong> 提出音频-文本加权 on-policy 跨模态蒸馏。<strong>Video-OPD</strong> 将 OPD 引入时序视频定位。<strong>RAL</strong> (Google) 提出注意力层级 OPD——优化"看哪里"而非"说什么"。</p>
+</div>
+<div class="timeline-item">
+<div class="year">2026.03–04 · 系统化</div>
+<p><strong>Distill-R1</strong> 首个开源 VLM RL+蒸馏框架。 <strong>PRISM</strong> 提出黑盒对抗 OPD 预对齐。<strong>VLA-OPD</strong> 将 OPD 引入机器人 VLA 模型。<strong>X-OPD</strong> (Tencent) 跨模态语音 LLM 蒸馏。</p>
+</div>
+<div class="timeline-item">
+<div class="year">2026.05 · 成熟</div>
+<p><strong>Vision-OPD</strong> 区域到全局的自蒸馏。<strong>D-OPSD</strong> (Alibaba) 将 OPSD 引入扩散模型。<strong>PeRL-VL</strong> 感知-推理解耦。</p>
+</div>
+<div class="timeline-item">
+<div class="year">2026.06 · 爆发</div>
+<p><strong>Visual-OPSD</strong> 统一多模态推理 14.3× 加速。<strong>ViGOS</strong> 感知-推理三教师解耦。<strong>PTD-PO</strong> 特权辅导蒸馏。<strong>ViCuR</strong> 视觉线索作为可恢复特权。<strong>V-Zero</strong> 无标签 OPD。<strong>HDPO</strong> 混合蒸馏策略优化。<strong>OmniOPSD</strong> 情感计算。</p>
+</div>
+<div class="timeline-item">
+<div class="year">2026.07 · 前沿</div>
+<p><strong>H-OPD</strong> 异构多教师 token 级仲裁。<strong>Nemotron Audex</strong> (NVIDIA) 统一音频智能的多域 OPD。</p>
+</div>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第二章 ====== -->
+<h2 id="ch2">二、视觉域：VLM 的 OPD/OPSD</h2>
+
+<p>这是多模态 OPD 中<strong>论文最密集、方法论最成熟</strong>的子领域。截至 2026 年 7 月，已有超过 15 篇高质量论文直接讨论 VLM 的 online policy distillation。核心脉络从"能否做"到"如何做得更好"再到"如何防止做坏"。</p>
+
+<h3>2.1 奠基之作：VOLD（CVPR 2026）</h3>
+
+<div class="callout paper">
+<div class="title">📄 VOLD: Reasoning Transfer from LLMs to Vision-Language Models via On-Policy Distillation</div>
+<p><strong>作者：</strong>Walid Bousselham, Hilde Kuehne, Cordelia Schmid (CVPR 2026, pp.26209–26218)</p>
+<p><strong>arXiv：</strong><a href="https://arxiv.org/abs/2510.23497" target="_blank">2510.23497</a>（2025.10，2026.06 更新）</p>
+<p><strong>核心问题：</strong>多模态推理数据稀缺（图文+推理链），但纯文本推理数据丰富——能否将文本 LLM 的推理能力蒸馏到 VLM？</p>
+<p><strong>方法：</strong>GRPO + on-policy distillation。VLM 学生自采样轨迹，文本 LLM 教师在相同轨迹上提供 token 级分布监督。关键发现：<strong>冷启动 SFT 对齐是必不可少的</strong>——没有它，文本教师的分布与 VLM 学生的采样分布差距过大，蒸馏完全失败。</p>
+<p><strong>基准：</strong>MMMU-Pro、MathVision、MathVista、LogicVista。</p>
+<p><strong>意义：</strong>首次在严格意义上将 on-policy distillation 范式引入 VLM 训练，被 CVPR 2026 收录，成为后续所有 VLM OPD 工作的核心参考点。</p>
+</div>
+
+<h3>2.2 同模型自蒸馏：Vision-OPD 与 Visual-OPSD</h3>
+
+<div class="callout paper">
+<div class="title">📄 Vision-OPD: Learning to See Fine Details for Multimodal LLMs via On-Policy Self-Distillation</div>
+<p><strong>作者：</strong>Qianhao Yuan 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2605.18740" target="_blank">2605.18740</a>（2026.05）</p>
+<p><strong>核心发现：</strong>区域到全局的感知差距（Regional-to-Global Perception Gap）——MLLM 在证据中心裁剪（evidence-centered crop）上回答细粒度问题的准确率显著高于全图条件。这意味着模型<strong>具备"看细节"的能力，但不具备在全图上下文中调用该能力的策略</strong>。</p>
+<p><strong>方法：</strong></p>
+<ul>
+  <li><strong>教师</strong>：相同的 MLLM，条件为裁剪后的证据区域（privileged crop）</li>
+  <li><strong>学生</strong>：相同的 MLLM，条件为完整图像（标准推理条件）</li>
+  <li><strong>损失</strong>：token 级 KL 散度，在学生的 on-policy rollout 上计算</li>
+  <li><strong>零外部依赖</strong>：无需外部教师模型、无需 ground-truth 标签、无需奖励验证器、无需推理时工具</li>
+</ul>
+<p><strong>意义：</strong>证明了"视觉放大"（visual zooming）能力可以通过自蒸馏<strong>内化</strong>到模型中，而非依赖推理时的外部工具调用。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 Visual-OPSD: Cross-Modal On-Policy Self-Distillation for Efficient Unified Multimodal Reasoning</div>
+<p><strong>作者：</strong>Pengyu Li 等（西安交通大学）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.18974" target="_blank">2606.18974</a>（2026.06）| <strong>代码：</strong><a href="https://github.com/TiezMind/Visual-OPSD" target="_blank">github.com/TiezMind/Visual-OPSD</a></p>
+<p><strong>核心发现（极具洞察力）：</strong>统一多模态模型（UMMs，如 ThinkMorph）中，生成式"视觉思维"（Visual Thoughts, VTs）通过多步扩散生成，推理成本约为纯文本的 <strong>14 倍</strong>（142.8s vs 10.0s/sample），但——<strong>移除或扰动 VTs 几乎不改变准确率</strong>。这意味着渲染的像素本身不是答案的载体，但<strong>生成路径中编码了有效的推理知识</strong>（经 KL 诊断确认）。</p>
+<p><strong>方法：</strong></p>
+<ul>
+  <li><strong>教师</strong>：UMM，条件为生成的 VTs（特权视觉思维）</li>
+  <li><strong>学生</strong>：UMM，条件仅为文本问题（无视觉思维生成步骤）</li>
+  <li><strong>损失</strong>：token 级 JSD，沿学生 on-policy 轨迹</li>
+</ul>
+<p><strong>效果：</strong>+3.40pp 超越生成式教师（即学生蒸馏后比教师本身更强），<strong>14.3× 推理加速</strong>，VSP 基准 +63.83pp 超越同规模 VLM。</p>
+<p><strong>意义：</strong>这是多模态 OPSD 最引人注目的结果之一——学生不仅追平了教师，<strong>还超越了教师</strong>，且推理速度快一个数量级。其深层启示：多模态推理中，关键信息比显式像素承载的多得多。</p>
+</div>
+
+<h3>2.3 防 Shortcut 三连：ViGOS、ViCuR、V-Zero</h3>
+
+<p>2026 年 6 月，三篇独立论文几乎同时指出多模态 OPSD 的一个核心风险：<strong>教师特权信息可能引导学生走"文本捷径"而非利用视觉证据</strong>，并各自提出了不同的解决方案。</p>
+
+<div class="callout paper">
+<div class="title">📄 ViGOS: Seeing Before Reasoning — Shortcut-Resilient Multimodal On-Policy Self-Distillation</div>
+<p><strong>作者：</strong>Sihan Wang 等（中科院）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.19120" target="_blank">2606.19120</a>（2026.06）</p>
+<p><strong>核心发现：</strong>提出 <strong>PALR（Privileged Answer Leakage Rate）</strong> 诊断指标——量化教师监督中有多大比例来自文本参考而非图像内容。跨三个基准的测量显示 17–26% 的 token 级监督是"答案驱动"而非"图像驱动"。</p>
+<p><strong>方法 — 三教师解耦：</strong></p>
+<ul>
+  <li><strong>仅图像感知教师</strong>：监督视觉描述段落（不接触参考答案）</li>
+  <li><strong>特权推理教师</strong>：监督推理/答案段落（接触参考答案，但仅作用于推理段）</li>
+  <li><strong>参考教师</strong>：回退——仅在学生 rollout 无效时介入，用于格式恢复</li>
+</ul>
+<p><strong>意义：</strong>首次量化了多模态 OPSD 的 shortcut 严重程度，并提出了解耦范式——<strong>让视觉描述由视觉监督，让推理由推理监督</strong>。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 ViCuR: Visual Cues as Recoverable Privilege for Multimodal On-Policy Distillation</div>
+<p><strong>作者：</strong>Kanghui Tian 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.05718" target="_blank">2606.05718</a>（2026.06）</p>
+<p><strong>核心洞察：</strong>在多模态 OPD 中，<strong>教师特权的设计与教师强度同等重要</strong>。如果特权信息在推理时不可获得（如参考答案），学生永远无法真正学会在没有特权时表现好。</p>
+<p><strong>方法：</strong>将教师特权从"答案侧"（参考答案）替换为<strong>"视觉线索"</strong>（输入图像中与查询相关的证据区域）——这些线索在训练时作为特权给教师，但推理时学生<strong>有可能自己恢复</strong>它们（通过更好的视觉注意力）。这建立了训练-推理之间的一致性。</p>
+<p><strong>意义：</strong>重新定义了多模态 OPD 的特权设计原则——"可恢复特权"（recoverable privilege）优于"不可恢复特权"（unrecoverable privilege）。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 V-Zero: Answer-Label-Free On-Policy Distillation with Contrastive Evidence Gating for Fine-Grained Visual Reasoning</div>
+<p><strong>作者：</strong>Haoxiang Sun 等（四川大学、北大、中国电信 TeleAI）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.25319" target="_blank">2606.25319</a>（2026.06）| <strong>代码：</strong><a href="https://github.com/eVI-group-SCU/V-Zero" target="_blank">github.com/eVI-group-SCU/V-Zero</a></p>
+<p><strong>核心突破：</strong>完全不需要文本答案标签的 OPD。这是多模态 OPD 最激进的范式——连答案都不需要。</p>
+<p><strong>方法：</strong></p>
+<ul>
+  <li><strong>正/负视觉证据视图</strong>：正视图=目标区域裁剪，负视图=无关区域下采样</li>
+  <li>教师重放在正/负视图下的相同轨迹，计算 log-prob 支持度差异 → <strong>对比证据门</strong> \( w(g) \)</li>
+  <li>门控信号按轨迹级调节蒸馏强度：良好视觉基础的轨迹被放大，差基础的被抑制</li>
+  <li>将 OPD 重新解释为<strong>"无负样本的停梯度对齐"（negative-free stop-gradient alignment）</strong></li>
+</ul>
+<p><strong>效果：</strong>Qwen3.5-4B +3.1 平均分，训练速度 <strong>5× 快于 SFT、10× 快于 RL 基线</strong>。</p>
+<p><strong>意义：</strong>如果 V-Zero 范式的有效性被进一步验证，将极大降低多模态模型后训练的数据门槛。</p>
+</div>
+
+<h3>2.4 解耦感知与推理的其他尝试</h3>
+
+<div class="callout paper">
+<div class="title">📄 PeRL-VL: Perception & Reasoning Learning for Vision-Language Models</div>
+<p><strong>作者：</strong>Yoon 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2512.12487" target="_blank">2512.12487</a>（2025.12）</p>
+<p><strong>方法：</strong>将感知与推理显式解耦为两个优化目标：(1) VLM 评判的描述奖励（faithfulness + sufficiency 打分），(2) 文本推理 SFT 叠加在 RLVR 之上。关键设计：<strong>门控奖励组合</strong>（gated reward composition）比简单聚合更有效地抑制 reward hacking。</p>
+<p><strong>效果：</strong>Qwen2.5-VL-7B 从 63.3% → 68.8% 平均 Pass@1。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 Decomposed On-Policy Distillation for Vision-Language Reasoning: Steering Gradients for Visual Grounding</div>
+<p><strong>作者：</strong>Yoon 等 | <strong>Semantic Scholar</strong>（2026）</p>
+<p><strong>方法：</strong>数学上将蒸馏损失分解为<strong>语言先验分量</strong>和<strong>视觉基础分量</strong>。提出 <strong>VGS（Visual Gradient Steering）</strong>——动态重定向更新向量以优先更新视觉子空间。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第三章 ====== -->
+<h2 id="ch3">三、视频域：时序 OPD</h2>
+
+<p>视频域的多模态 OPD 面临独特挑战：长时序依赖、稀疏关键帧、以及 GRPO 的多 rollout 训练在长视频上的计算灾难。</p>
+
+<div class="callout paper">
+<div class="title">📄 Video-OPD: Efficient Post-Training of MLLMs for Temporal Video Grounding via On-Policy Distillation</div>
+<p><strong>作者：</strong>Jiaze Li, Hao Yin 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2602.02994" target="_blank">2602.02994</a>（2026.02，2026.06 修订）</p>
+<p><strong>核心问题：</strong>GRPO 类方法（如 Time-R1）在时序视频定位（Temporal Video Grounding, TVG）上存在两个致命缺陷：</p>
+<ol>
+  <li><strong>稀疏序列级奖励</strong> → 无法对视频中间的错误进行信用分配</li>
+  <li><strong>多 rollout 训练</strong> → 长视频上计算成本 prohibitive（每步需要 8–16 个完整 rollout）</li>
+</ol>
+<p><strong>方法：</strong></p>
+<ul>
+  <li>用固定前沿教师（frontier teacher）的<strong>逐 token Reverse KL 散度</strong>替代稀疏序列级奖励</li>
+  <li>保持严格的 on-policy 优化：所有训练轨迹均由当前策略采样</li>
+  <li><strong>TVDF（Teacher-Validated Disagreement Focusing）</strong>：优先训练教师-学生分歧大的轨迹的课程策略——确保每条轨迹要么是可靠的（teacher-validated）、要么是信息量最大的（max informative）</li>
+</ul>
+<p><strong>效果：</strong>Charades-TimeLens、ActivityNet-TimeLens、QVHighlights-TimeLens 上平均 <strong>~17% 提升</strong>（vs GRPO ~12%），<strong>且收敛更快、计算成本更低</strong>。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 PF-OPSD: Privileged-Future On-Policy Self-Distillation（世界模型 + MLLM）</div>
+<p><strong>作者：</strong>Yucheng Zhou 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.03603" target="_blank">2606.03603</a>（2026.06）</p>
+<p><strong>核心概念：</strong>将世界模型（world model）与 MLLM 结合——教师看到<strong>真实未来帧</strong>作为特权上下文，学生在 on-policy rollout 中仅看到当前帧。这让学生学会在没有未来信息时进行稳健推理。</p>
+<p><strong>效果：</strong>VRQABench +10.6%、OpenWorldQA +10.9%。</p>
+<p><strong>深层含义：</strong>这一范式将 OPD 扩展到了<strong>时序预测</strong>——特权不再仅仅是"更好的视觉"，而是"未来的知识"。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第四章 ====== -->
+<h2 id="ch4">四、音频/语音域：跨模态 OPD</h2>
+
+<p>音频和语音 LLM 长期面临一个困境：端到端语音模型在推理能力上落后于文本 LLM 10–15 个百分点——这被称为<strong>"跨模态对齐差距"（cross-modal alignment gap）</strong>。OPD 正成为弥合这一差距的核心技术。</p>
+
+<h3>4.1 语音 LLM 的 OPD</h3>
+
+<div class="callout paper">
+<div class="title">📄 X-OPD: Cross-Modal On-Policy Distillation for Capability Alignment in Speech LLMs</div>
+<p><strong>作者：</strong>Tencent Hunyuan × 浙江大学 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2603.24596" target="_blank">2603.24596</a>（2026.03）</p>
+<p><strong>核心问题：</strong>端到端语音 LLM 在各种基准上的表现始终落后于其文本对应物——平均差距 11.29%（语音）和 5.51%（文本）。</p>
+<p><strong>方法：</strong>文本 LLM 教师对语音 LLM 学生的 on-policy rollout 提供逐 token 反馈。学生自己用语音条件生成，教师用文本条件在相同轨迹上提供分布监督。</p>
+<p><strong>效果：</strong>差距从 11.29% → 3.43%（语音），5.51% → 0.97%（文本），横跨 BIG Bench Audio、Audio Multi-Challenge、VoiceBench。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 CORD: Bridging the Audio-Text Reasoning Gap via Weighted On-policy Cross-modal Distillation</div>
+<p><strong>作者：</strong>（2026.01）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2601.16547" target="_blank">2601.16547</a></p>
+<p><strong>方法：</strong>在单一模型内使用<strong>文本模态作为内部教师</strong>，音频模态作为学生。结合 token 级 Reverse KL（重要性感知加权）和序列级 GRPO。仅需 <strong>80k 合成样本</strong>即可实现一致的音频条件推理提升。</p>
+<p><strong>意义：</strong>证明了 OPD 在极小数据规模下仍然有效——这对音频/语音域特别重要，因为该域的标注数据远比视觉域稀缺。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 Data-Efficient On-Policy Distillation for Automatic Speech Recognition（Ark-ASR OPD）</div>
+<p><strong>作者：</strong>AutoArk-AI | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2605.28139" target="_blank">2605.28139</a>（2025/2026）</p>
+<p><strong>核心发现：</strong>仅用 <strong>100k 小时</strong>音频（vs Qwen3-Omni 的 20M 小时），0.6B OPD 训练的学生模型在 4/5 基准上超越 Qwen3-ASR-0.6B。使用 union top-k KL 目标。</p>
+<p><strong>意义：</strong>这是 OPD 在工业级 ASR 上的重要验证——说明 OPD 可以极大降低训练数据需求。</p>
+</div>
+
+<h3>4.2 跨模态推理迁移</h3>
+
+<div class="callout paper">
+<div class="title">📄 SightSound-R1: Cross-Modal Reasoning Distillation from Vision to Audio Language Models</div>
+<p><strong>作者：</strong>Qiaolin Wang 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2509.15661" target="_blank">2509.15661</a>（2025.09）| <strong>ICASSP 2026</strong></p>
+<p><strong>三步流水线：</strong></p>
+<ol>
+  <li><strong>教师推理生成：</strong>VLM 教师从无声视频+问题生成多条音频聚焦的 CoT，仅保留所有路径答案一致的轨迹（自洽性过滤）</li>
+  <li><strong>音频基础事实验证（AGFV）：</strong>独立音频检查器（GPT-4o-audio）验证教师声学声明的真实性——过滤 VLM 教师"听不到"导致的幻觉</li>
+  <li><strong>学生训练：</strong>验证后的 CoT 做 SFT → GRPO 精炼</li>
+</ol>
+<p><strong>效果：</strong>MMAU Test-mini (Sound) 66.1%，MUSIC-AVQA 59.5%（temporal 62.7%，comparative 63.3%）。</p>
+<p><strong>局限性：</strong>语音和音乐任务上性能下降——精细声学属性缺乏视觉关联。</p>
+</div>
+
+<h3>4.3 工业级统一音频 OPD</h3>
+
+<div class="callout paper">
+<div class="title">📄 Nemotron Audex: Unified Audio Intelligence Without Regressing on Text Intelligence</div>
+<p><strong>作者：</strong>Zhifeng Kong 等（NVIDIA）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2607.05196" target="_blank">2607.05196</a>（2026.07）</p>
+<p><strong>架构：</strong>30B-A3B MoE 音频-文本 LLM。多阶段监督训练 + <strong>多域 on-policy distillation</strong>（ASR、TTS、音频生成、语音到语音等多个域各有一个 OPD 教师）。SOTA 音频理解 + ASR + TTS + 音频生成 + 语音到语音——同时保持文本推理能力不退化。</p>
+<p><strong>意义：</strong>这是第一个证明 OPD 可以在<strong>多域统一模型</strong>中同时提升所有模态（包括原始文本能力）的工业级验证。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第五章 ====== -->
+<h2 id="ch5">五、Agent 与具身智能：OPD 走向物理世界</h2>
+
+<p>机器人领域的 VLA（Vision-Language-Action）模型面临比 VLM 更严峻的挑战：稀疏环境奖励、高采样成本、以及分布漂移导致的灾难性遗忘。OPD 在这里展现出了超越传统 RL 和 SFT 的独特优势。</p>
+
+<div class="callout paper">
+<div class="title">📄 VLA-OPD: Bridging Offline SFT and Online RL for Vision-Language-Action Models via On-Policy Distillation</div>
+<p><strong>作者：</strong>Zhide Zhong 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2603.26666" target="_blank">2603.26666</a>（2026.03）</p>
+<p><strong>核心创新 — Reverse-KL 目标：</strong></p>
+<table>
+<thead><tr><th>目标</th><th>问题</th><th>VLA 中的后果</th></tr></thead>
+<tbody>
+<tr><td>Forward KL</td><td>Mode-covering（覆盖所有教师模式）</td><td>熵爆炸 → 动作过于随机</td></tr>
+<tr><td>Hard CE</td><td>确定性模仿</td><td>熵坍塌 → 丧失探索能力</td></tr>
+<tr><td><strong>Reverse KL</strong></td><td>Mode-seeking（寻求教师高概率模式）</td><td>过滤教师认知不确定性，同时保持动作多样性</td></tr>
+</tbody>
+</table>
+<p><strong>效果：</strong>LIBERO 和 RoboTwin2.0 上显著提升采样效率（vs RL）和鲁棒性（vs SFT），有效缓解灾难性遗忘。</p>
+<p><strong>意义：</strong>首次将 OPD 范式系统性地引入 VLA 模型后训练，并确立了 Reverse KL 在连续动作空间中的优势。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 M2Distill: Multi-Modal Distillation for Lifelong Imitation Learning</div>
+<p><strong>作者：</strong>Kaushik Roy 等 | <strong>发表：</strong>ICRA 2025 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2410.00064" target="_blank">2410.00064</a></p>
+<p><strong>场景：</strong>终身/持续模仿学习——机器人需要不断增加新技能而不遗忘旧技能。</p>
+<p><strong>方法：</strong>多模态蒸馏保持视觉、语言、动作分布之间<strong>一致的潜在空间</strong>，通过规范化增量步骤间的潜在表示漂移和 GMM 策略差异来防止灾难性遗忘。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 ACGD: Asymmetric Critic Guided Distillation for Visual Multitask Policy Learning</div>
+<p><strong>作者：</strong>Srinivasan 等（NVIDIA / Stanford / Georgia Tech）| <strong>发表：</strong>2025</p>
+<p><strong>方法：</strong>单任务专家策略 + 评论家（拥有特权状态信息）蒸馏到统一多任务学生（VQ-VAE + Transformer）。灵巧操作基准提升 10–15%。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第六章 ====== -->
+<h2 id="ch6">六、RL + OPD 混合系统</h2>
+
+<p>2026 年最重要的工程趋势之一是 <strong>OPD 不再作为独立范式，而是与 RLVR（GRPO/DAPO/GSPO）深度集成</strong>。OPD 提供逐 token 的密集信号，RLVR 提供序列级的稀疏目标——两者互补形成完整的监督体系。</p>
+
+<h3>6.1 三阶段 Pipeline：PRISM</h3>
+
+<div class="callout paper">
+<div class="title">📄 PRISM: Beyond SFT-to-RL — Pre-alignment via Black-Box On-Policy Distillation for Multimodal RL</div>
+<p><strong>作者：</strong>Sudong Wang 等（HKUST(GZ), 清华, NTU, 人大, 中科大）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2604.28123" target="_blank">2604.28123</a>（2026.04）| <strong>代码：</strong><a href="https://github.com/XIAO4579/PRISM" target="_blank">github.com/XIAO4579/PRISM</a></p>
+<p><strong>核心问题：</strong>SFT → RLVR 的标准 pipeline 中，SFT 引入的分布漂移会严重损害多模态模型——感知错误和推理失败在 RL 阶段<strong>复合放大</strong>。</p>
+<p><strong>三阶段流水线：</strong></p>
+<ol>
+  <li><strong>SFT（冷启动）：</strong>1.37M 演示数据（1.26M Gemini 公开数据 + 113K Gemini 3 Flash 精选高质量样本——带密集视觉基础和逐步推理）</li>
+  <li><strong>PRISM 对齐（OPD 阶段）：</strong>黑盒对抗游戏——<strong>MoE 判别器</strong>包含两个专家：
+    <ul>
+      <li>感知专家 \( D_v \)：评估视觉基础质量</li>
+      <li>推理专家 \( D_r \)：评估逻辑一致性</li>
+    </ul>
+    判别分数 \( r(x,y) = \alpha \cdot D_v(x,c) + (1-\alpha) \cdot D_r(x,t) \)——<strong>无需教师 logits，支持黑盒 API 模型</strong>。</li>
+  <li><strong>RLVR（最终优化）：</strong>GRPO/DAPO/GSPO 在已对齐策略上优化</li>
+</ol>
+<p><strong>效果（Qwen3-VL）：</strong>4B +4.4 / 8B +6.0 平均准确率提升。增益跨 RL 算法类型泛化。</p>
+<p><strong>意义：</strong>首次系统性地证明<strong>OPD 预对齐是 SFT→RLVR 的必要中间步骤</strong>，且支持黑盒教师——极大降低了实际部署门槛。</p>
+</div>
+
+<h3>6.2 特权辅导：PTD-PO 与 HDPO</h3>
+
+<div class="callout paper">
+<div class="title">📄 PTD-PO: Teaching the Way, Not the Answer — Privileged Tutoring Distillation for Multimodal Policy Optimization</div>
+<p><strong>作者：</strong>Shizhe Xiang 等（天大、北理工、新加坡管理大学、小米）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.07000" target="_blank">2606.07000</a>（2026.06）| <strong>代码：</strong><a href="https://github.com/XszNeverSleep/PTD-PO" target="_blank">github.com/XszNeverSleep/PTD-PO</a></p>
+<p><strong>核心哲学 — "教方法不教答案"：</strong>传统 OPD 的特权包含参考答案，可能导致 shortcut。PTD-PO 构造<strong>不暴露答案</strong>的特权提示（空间注意力引导 + 中间推理步骤），教师通过 in-context learning 利用这些提示生成逐步 token 分布监督。</p>
+<p><strong>关键技术：</strong></p>
+<ul>
+  <li><strong>Top-K JSD 稳定化</strong>：在引导/非引导上下文分布偏移下聚焦信息量最高的 token 概率</li>
+  <li><strong>Learning-with-Privileged-Information 范式</strong>：学生仍在原始无答案条件下优化</li>
+</ul>
+<p><strong>效果：</strong>2B–8B LVLM 上持续超越 RLVR 和蒸馏基线，<strong>有效缓解熵坍塌</strong>。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 HDPO: Hybrid Distillation Policy Optimization via Privileged Self-Distillation</div>
+<p><strong>作者：</strong>Ke Ding 等 | <strong>arXiv：</strong>2603.23871（2026.03）</p>
+<p><strong>核心发现：</strong>过滤后的特权生成在硬阈值极限下<strong>精确恢复最优 KL 正则化 RL 策略</strong>——这为 OPD+RL 混合方法提供了理论保证。</p>
+</div>
+
+<h3>6.3 开源框架：Distill-R1</h3>
+
+<div class="callout paper">
+<div class="title">📄 Distill-R1: Multi-Modality RL Training with Teacher-Student Distillation</div>
+<p><strong>作者：</strong>ByungKwan Lee 等 | <strong>代码：</strong><a href="https://github.com/ByungKwanLee/Distill-R1" target="_blank">github.com/ByungKwanLee/Distill-R1</a>（2026.03）</p>
+<p><strong>贡献：</strong>首个<strong>开源 VLM RL+在线师生蒸馏框架</strong>。教师生成自己的 rollout，学生同时训练。支持 Qwen2-VL / Qwen2.5-VL / Qwen3-VL，兼容 GRPO / DAPO / REINFORCE++ / RLOO / GSPO / CISPO / SAPO。</p>
+<p><strong>意义：</strong>标准化了 VLM OPD+RL 的实验基准和工程实践。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第七章 ====== -->
+<h2 id="ch7">七、扩散与生成：OPD 超越判别模型</h2>
+
+<p>2026 年 5–6 月，OPD 范式开始扩展到生成模型——这是 OPD 从"优化策略分布"走向"优化生成分布"的标志性跨越。</p>
+
+<div class="callout paper">
+<div class="title">📄 D-OPSD: On-Policy Self-Distillation for Continuously Tuning Step-Distilled Diffusion Models</div>
+<p><strong>作者：</strong>Dengyang Jiang 等（阿里巴巴 Z-Image × 港科大 × UCSD × 港中文）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2605.05204" target="_blank">2605.05204</a>（2026.05）| <strong>项目页：</strong><a href="https://vvvvvjdy.github.io/d-opsd/" target="_blank">vvvvvjdy.github.io/d-opsd/</a></p>
+<p><strong>核心发现：</strong>现代 LLM/VLM 编码器的扩散模型可以<strong>继承编码器的上下文学习能力</strong>——当同时输入文本提示和目标图像的多模态特征作为条件时，模型无需额外训练就能生成保留目标概念/风格的变体图像。</p>
+<p><strong>方法 — OPSD 在扩散模型中的迁移：</strong></p>
+<ul>
+  <li><strong>学生分支</strong>：仅基于文本条件进行少步采样（rollout）</li>
+  <li><strong>教师分支</strong>：基于文本+目标图像的多模态特征，提供更强的速度场预测</li>
+  <li><strong>损失</strong>：在相同 on-policy 轨迹上对齐学生的速度预测（MSE）</li>
+</ul>
+<p><strong>关键优势：</strong></p>
+<ul>
+  <li>✅ 在线策略：始终在学生自身的 rollout 上优化，消除训练-推理分布偏移</li>
+  <li>✅ 无需奖励模型：仅需图文对，无需偏好数据或 reward function</li>
+  <li>✅ 学新不忘旧：LoRA 定制 + 全量微调均保留原始少步能力</li>
+</ul>
+<p><strong>深层意义：</strong>这证明 OPSD 不是 LLM 特化的技巧，而是一种<strong>通用的分布匹配范式</strong>——只要存在"教师有更多上下文→更强预测"的信息不对称，OPSD 就可以工作。</p>
+</div>
+
+<div class="callout paper">
+<div class="title">📄 LiveTalk: Real-Time Multimodal Interactive Video Diffusion via Improved On-Policy Distillation</div>
+<p><strong>作者：</strong>（2025.12）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2512.23576" target="_blank">2512.23576</a></p>
+<p><strong>应用：</strong>实时多模态（文本、图像、音频）交互式视频生成。改进的 on-policy distillation 解决多模态条件下的视觉伪影问题。</p>
+<p><strong>效果：</strong><strong>20× 推理加速</strong>并保持质量匹配；实时化身系统在多轮一致性上超越 Sora2 和 Veo3。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第八章 ====== -->
+<h2 id="ch8">八、新兴方向</h2>
+
+<h3>8.1 多教师异构 OPD：H-OPD</h3>
+
+<div class="callout paper">
+<div class="title">📄 H-OPD: Confidence Aware Heterogeneous Multi-Teacher Multimodal On-policy Distillation</div>
+<p><strong>作者：</strong>Qixiang Yin 等（北邮、字节跳动、中科大）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2607.02592" target="_blank">2607.02592</a>（2026.07）| <strong>代码：</strong><a href="https://github.com/buptyqx/H-OPD" target="_blank">github.com/buptyqx/H-OPD</a></p>
+<p><strong>关键洞察：</strong>现有 OPD 使用<strong>静态教师路由</strong>（按模态/任务分配教师），但不同的解码步骤可能需要不同的教师专长——视觉基础步需要 VLM 教师，抽象推理步需要文本 LLM 教师。</p>
+<p><strong>方法：</strong></p>
+<ul>
+  <li><strong>Token 级教师仲裁</strong>：沿共享学生轨迹，每步动态决定哪个教师更可信</li>
+  <li><strong>视觉到语言描述迁移</strong>：让纯文本教师也能访问视觉语义</li>
+  <li><strong>置信度感知仲裁机制</strong>：动态融合 VLM 和文本教师在每个 token 的预测</li>
+</ul>
+<p><strong>评估：</strong>11 个推理基准上验证（MMFineReason-123K 数据集，过滤到 ~55K 高质量样本）。</p>
+<p><strong>意义：</strong>多教师 OPD 可能是下一阶段的核心范式——如同 MoE 中不同专家负责不同 token，未来 OPD 可能每个 token 都由最优教师组合来监督。</p>
+</div>
+
+<h3>8.2 注意力层级 OPD：RAL</h3>
+
+<div class="callout paper">
+<div class="title">📄 RAL: Reinforced Attention Learning — Optimizing Where to Look, Not What to Say</div>
+<p><strong>作者：</strong>Bangzheng Li 等（UC Davis、Princeton、Google、Google DeepMind）| <strong>arXiv：</strong><a href="https://arxiv.org/abs/2602.04884" target="_blank">2602.04884</a>（2026.02）</p>
+<p><strong>范式转变：</strong>传统 RL/OPD 优化的是<strong>"生成什么 token"</strong>，RAL 直接优化<strong>"注意力该放在哪里"</strong>——将模型内部注意力分布作为策略梯度优化的策略。</p>
+<p><strong>方法：</strong></p>
+<ul>
+  <li><strong>注意力分布策略</strong>：每个生成 token 对所有前序位置（视觉+文本）的注意力权重 = 可学习的"策略"</li>
+  <li><strong>优势加权注意力散度损失</strong>：JSD，高奖励拉近，低奖励推远</li>
+  <li><strong>联合优化</strong>：token 级 RL 损失 + 注意力级 RL 损失</li>
+</ul>
+<p><strong>惊人发现 — RAL-zero：</strong>完全去掉 &lt;think&gt; 推理文本（仅输出答案），仅靠优化注意力分布就超过了 GRPO。这证明：<strong>优化"看哪里"本身就能提升推理能力</strong>，不依赖显式 CoT。</p>
+<p><strong>On-Policy Attention Distillation：</strong>进一步提出注意力蒸馏——让学生用自己的策略采样轨迹，再用教师的注意力分布做对齐。相比传统知识蒸馏（仅对齐 logits），注意力蒸馏同时传递"答案是什么样的"<strong>和</strong>"证据该从哪里找"。</p>
+<p><strong>意义：</strong>RAL 将多模态后训练从"输出空间"推进到<strong>"内部表示空间"</strong>，为理解多模态推理的本质机制开辟了新路径。</p>
+</div>
+
+<h3>8.3 世界模型 + OPD</h3>
+
+<div class="callout paper">
+<div class="title">📄 World Models Meet Language Models: On the Complementarity of Concrete and Abstract Reasoning</div>
+<p><strong>作者：</strong>Yucheng Zhou 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.03603" target="_blank">2606.03603</a>（2026.06）</p>
+<p><strong>方法：</strong>将世界模型（生成未来视频帧）与 MLLM 的抽象推理能力结合。教师看到真实未来帧（特权），学生在 on-policy rollout 中仅基于当前观测推理。通过 OPSD 让学生学会在没有未来信息时做出稳健推理。</p>
+<p><strong>启示：</strong>这打开了 OPD + 世界模型的新维度——特权不再局限于"同一时刻的更多信息"，而是<strong>跨时间的因果信息</strong>。</p>
+</div>
+
+<h3>8.4 情感计算中的 OPD</h3>
+
+<div class="callout paper">
+<div class="title">📄 OmniOPSD: Rationale-Privileged On-Policy Self-Distillation for Affective Computing</div>
+<p><strong>作者：</strong>Zebang Cheng 等 | <strong>arXiv：</strong><a href="https://arxiv.org/abs/2606.15920" target="_blank">2606.15920</a>（2026.06）</p>
+<p><strong>方法：</strong>使用前沿模型生成的推理依据（rationale）作为教师侧特权<strong>证据</strong>——而非学生模仿目标。学生在无特权条件下自采样，教师用 rationale 提供密集监督。MER-UniBench 上 SOTA 84.19。</p>
+<p><strong>意义：</strong>将 OPSD 扩展到<strong>情感计算</strong>——一个需要细粒度跨模态理解但对 ground-truth 标签高度敏感的领域。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第九章 ====== -->
+<h2 id="ch9">九、工业落地与基准</h2>
+
+<h3>9.1 工业部署概览</h3>
+
+<table>
+<thead><tr><th>机构</th><th>系统/模型</th><th>OPD 用途</th><th>时间</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>Alibaba (Z-Image)</strong></td>
+  <td>D-OPSD</td>
+  <td>步蒸馏扩散模型持续微调</td>
+  <td>2026.05</td>
+</tr>
+<tr>
+  <td><strong>Tencent Hunyuan</strong></td>
+  <td>X-OPD</td>
+  <td>语音 LLM 跨模态能力对齐</td>
+  <td>2026.03</td>
+</tr>
+<tr>
+  <td><strong>NVIDIA</strong></td>
+  <td>Nemotron Audex</td>
+  <td>多域统一音频 OPD</td>
+  <td>2026.07</td>
+</tr>
+<tr>
+  <td><strong>Xiaomi</strong></td>
+  <td>PTD-PO</td>
+  <td>特权辅导 LVLM 策略优化</td>
+  <td>2026.06</td>
+</tr>
+<tr>
+  <td><strong>ByteDance</strong></td>
+  <td>H-OPD</td>
+  <td>异构多教师多模态推理</td>
+  <td>2026.07</td>
+</tr>
+<tr>
+  <td><strong>Google (DeepMind)</strong></td>
+  <td>RAL</td>
+  <td>注意力层级多模态后训练</td>
+  <td>2026.02</td>
+</tr>
+<tr>
+  <td><strong>AutoArk-AI</strong></td>
+  <td>Ark-ASR OPD</td>
+  <td>数据高效 ASR 蒸馏</td>
+  <td>2025/2026</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout insight">
+<div class="title">🏭 工业界共识</div>
+<p><strong>1.</strong> OPD 不再是对抗 RLVR 的替代方案，而是<strong>RLVR 的必要补充</strong>——几乎所有 2026 年工业级多模态后训练 pipeline 都包含 OPD 阶段。<br>
+<strong>2.</strong> 黑盒 OPD（如 PRISM 的 MoE 判别器）是当前工业部署的首选——不需要访问教师模型内部，兼容闭源 API。<br>
+<strong>3.</strong> 数据效率是核心卖点：CORD（80k 样本）、Ark-ASR（100k 小时）证明 OPD 可以极大降低数据需求，这对中小型团队意义重大。<br>
+<strong>4.</strong> Reverse KL / Top-K JSD 正在成为多模态 OPD 的事实标准散度选择。</p>
+</div>
+
+<h3>9.2 主要基准</h3>
+
+<p>多模态 OPD 研究使用的基准覆盖了从基础感知到复杂推理的全谱系：</p>
+
+<table>
+<thead><tr><th>基准类别</th><th>代表性基准</th><th>典型使用论文</th></tr></thead>
+<tbody>
+<tr><td><strong>通用 VLM 推理</strong></td><td>MMMU-Pro, MathVista, MathVision, LogicVista</td><td>VOLD, PRISM</td></tr>
+<tr><td><strong>细粒度视觉</strong></td><td>VStar, HR-4K, HR-8K, ZoomBench, MME-RW, MMStar</td><td>V-Zero, Vision-OPD</td></tr>
+<tr><td><strong>视觉空间推理</strong></td><td>VSP (Visual Spatial Perception)</td><td>Visual-OPSD</td></tr>
+<tr><td><strong>视频理解</strong></td><td>Charades-TimeLens, ActivityNet-TimeLens, QVHighlights-TimeLens</td><td>Video-OPD</td></tr>
+<tr><td><strong>视频问答</strong></td><td>VRQABench, OpenWorldQA</td><td>PF-OPSD</td></tr>
+<tr><td><strong>音频推理</strong></td><td>MMAU Test-mini (Sound), MUSIC-AVQA, AVQA</td><td>SightSound-R1</td></tr>
+<tr><td><strong>语音能力</strong></td><td>BIG Bench Audio, Audio Multi-Challenge, VoiceBench</td><td>X-OPD</td></tr>
+<tr><td><strong>机器人操作</strong></td><td>LIBERO, RoboTwin2.0, MyoDex, BiDex, OpDex</td><td>VLA-OPD, ACGD</td></tr>
+<tr><td><strong>通用推理</strong></td><td>11 推理基准 (MMFineReason-123K)</td><td>H-OPD</td></tr>
+</tbody>
+</table>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 第十章 ====== -->
+<h2 id="ch10">十、开放问题与未来方向</h2>
+
+<h3>10.1 理论开放问题</h3>
+
+<div class="callout warning">
+<div class="title">🔮 待解决的理论问题</div>
+<p><strong>1. 多模态 OPD 的收敛性保证：</strong>笔记 02 中 Czarnecki 2019 的 Theorem 1（梯度场不存在定理）在纯文本域已确立——多模态条件下的梯度场行为是否不同？跨模态梯度分量的相互作用尚无理论分析。</p>
+<p><strong>2. 最优特权设计：</strong>ViCuR 提出了"可恢复特权"概念，但什么样的特权在数学上是最优的？是否存在一个类似信息瓶颈（Information Bottleneck）的框架来形式化特权质量？</p>
+<p><strong>3. 多教师仲裁的最优性：</strong>H-OPD 的 token 级教师仲裁是启发式的——能否从决策论或贝叶斯模型平均的角度给出最优仲裁策略？</p>
+<p><strong>4. 视觉注意力的可优化性边界：</strong>RAL 证明了注意力分布可以通过策略梯度优化——注意力的哪些性质是可优化的？是否存在注意力的"可达集"（reachable set）概念？</p>
+</div>
+
+<h3>10.2 工程挑战</h3>
+
+<div class="callout warning">
+<div class="title">⚡ 关键工程瓶颈</div>
+<p><strong>1. 计算开销：</strong>on-policy 采样需要每步生成完整 trajectory，对于长视频和高分辨率图像，这仍然是显著的 overhead。TVDF 等课程策略是第一步，但更高效的重要性采样方法尚未开发。</p>
+<p><strong>2. 教师质量依赖性：</strong>几乎所有 OPD 方法都假设教师比学生"更好"——但当师生差距过大（如 Visual-OPSD 中 VT 生成质量差）或过小（教师没有增量信息），OPD 如何自适应调节？</p>
+<p><strong>3. 多模态多教师协调：</strong>H-OPD 引入了异构教师——但在 3+ 教师场景下，仲裁机制的计算开销和教师间的冲突如何解决？</p>
+<p><strong>4. 灾难性遗忘的持续监控：</strong>VLA-OPD 在机器人域证明了 OPD 有助于缓解遗忘——但缺乏在线遗忘检测和自动恢复的机制。</p>
+</div>
+
+<h3>10.3 前沿方向</h3>
+
+<table>
+<thead><tr><th>方向</th><th>描述</th><th>代表工作</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>无标签 OPD</strong></td>
+  <td>在没有任何 ground-truth 标签的条件下进行 OPD——仅靠视觉证据对比</td>
+  <td>V-Zero</td>
+</tr>
+<tr>
+  <td><strong>注意力 OPD</strong></td>
+  <td>将优化目标从 token 分布扩展到内部注意力分布——"教模型看哪里"</td>
+  <td>RAL</td>
+</tr>
+<tr>
+  <td><strong>多教师异构 OPD</strong></td>
+  <td>不同解码步动态切换最优教师——token 级教师组合优化</td>
+  <td>H-OPD</td>
+</tr>
+<tr>
+  <td><strong>时序 OPD</strong></td>
+  <td>特权来自未来信息——OPD 与世界模型的交叉</td>
+  <td>PF-OPSD, Video-OPD</td>
+</tr>
+<tr>
+  <td><strong>生成式 OPD</strong></td>
+  <td>将 OPSD 扩展到扩散/生成模型——从"优化离散策略"到"优化连续分布匹配"</td>
+  <td>D-OPSD, LiveTalk</td>
+</tr>
+<tr>
+  <td><strong>持续 OPD</strong></td>
+  <td>终身学习场景中的 OPD——新任务不断加入，旧能力不能遗忘</td>
+  <td>M2Distill, VLA-OPD</td>
+</tr>
+<tr>
+  <td><strong>黑盒 OPD</strong></td>
+  <td>无需教师 logits 的 OPD——通过对抗训练或对比信号替代教师分布</td>
+  <td>PRISM, V-Zero</td>
+</tr>
+</tbody>
+</table>
+
+<h3>10.4 预测与展望</h3>
+
+<div class="callout insight">
+<div class="title">🔭 2026–2027 展望</div>
+<p><strong>短期（6 个月内）：</strong>多教师 OPD 将成为标准配置；OPD + RLVR 三阶段 pipeline（SFT → OPD → RLVR）将被主流框架（TRL、verl）原生支持。</p>
+<p><strong>中期（12 个月内）：</strong>第一个"全模态统一 OPD"模型出现——同时覆盖视觉、视频、音频、语音、文本的单一 OPD 框架。Nemotron Audex 已经接近这个目标。</p>
+<p><strong>长期（18–24 个月）：</strong>OPD 可能演变为多模态模型的<strong>默认训练范式</strong>——就像当年的 ImageNet 预训练之于计算机视觉。Attention OPD 和生成式 OPD 将成为两个最活跃的子方向。</p>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- ====== 论文索引 ====== -->
+<h2 id="index">📚 完整论文索引（按时间倒序）</h2>
+
+<table>
+<thead><tr><th>论文</th><th>时间</th><th>领域</th><th>核心贡献</th><th>arXiv</th></tr></thead>
+<tbody>
+<tr>
+  <td>Nemotron Audex (NVIDIA)</td>
+  <td>2026.07</td>
+  <td><span class="tag tag-aud">音频</span></td>
+  <td>30B MoE 统一音频智能，多域 OPD 保持文本推理</td>
+  <td><a href="https://arxiv.org/abs/2607.05196" target="_blank">2607.05196</a></td>
+</tr>
+<tr>
+  <td>H-OPD (北邮/字节/中科大)</td>
+  <td>2026.07</td>
+  <td><span class="tag tag-hyb">混合</span></td>
+  <td>异构多教师 token 级仲裁 OPD</td>
+  <td><a href="https://arxiv.org/abs/2607.02592" target="_blank">2607.02592</a></td>
+</tr>
+<tr>
+  <td>V-Zero (川大/北大/TeleAI)</td>
+  <td>2026.06</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>无答案标签 OPD，对比证据门控，5× faster</td>
+  <td><a href="https://arxiv.org/abs/2606.25319" target="_blank">2606.25319</a></td>
+</tr>
+<tr>
+  <td>ViGOS (中科院)</td>
+  <td>2026.06</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>PALR 诊断 + 三教师解耦防 shortcut</td>
+  <td><a href="https://arxiv.org/abs/2606.19120" target="_blank">2606.19120</a></td>
+</tr>
+<tr>
+  <td>Visual-OPSD (西交大)</td>
+  <td>2026.06</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>VT→文本蒸馏，14.3× 加速，超越教师</td>
+  <td><a href="https://arxiv.org/abs/2606.18974" target="_blank">2606.18974</a></td>
+</tr>
+<tr>
+  <td>OmniOPSD</td>
+  <td>2026.06</td>
+  <td><span class="tag tag-aud">多模态</span></td>
+  <td>情感计算 + rationale 特权 OPSD</td>
+  <td><a href="https://arxiv.org/abs/2606.15920" target="_blank">2606.15920</a></td>
+</tr>
+<tr>
+  <td>PTD-PO (天大/小米)</td>
+  <td>2026.06</td>
+  <td><span class="tag tag-hyb">混合</span></td>
+  <td>无答案特权辅导 + Top-K JSD</td>
+  <td><a href="https://arxiv.org/abs/2606.07000" target="_blank">2606.07000</a></td>
+</tr>
+<tr>
+  <td>ViCuR</td>
+  <td>2026.06</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>可恢复视觉线索特权设计</td>
+  <td><a href="https://arxiv.org/abs/2606.05718" target="_blank">2606.05718</a></td>
+</tr>
+<tr>
+  <td>PF-OPSD</td>
+  <td>2026.06</td>
+  <td><span class="tag tag-vid">视频</span></td>
+  <td>世界模型 + 未来帧特权 OPSD</td>
+  <td><a href="https://arxiv.org/abs/2606.03603" target="_blank">2606.03603</a></td>
+</tr>
+<tr>
+  <td>Vision-OPD</td>
+  <td>2026.05</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>区域→全局视觉自蒸馏，零外部依赖</td>
+  <td><a href="https://arxiv.org/abs/2605.18740" target="_blank">2605.18740</a></td>
+</tr>
+<tr>
+  <td>Ark-ASR OPD (AutoArk)</td>
+  <td>2026.05</td>
+  <td><span class="tag tag-aud">语音</span></td>
+  <td>数据高效 ASR on-policy 蒸馏，100k 小时</td>
+  <td><a href="https://arxiv.org/abs/2605.28139" target="_blank">2605.28139</a></td>
+</tr>
+<tr>
+  <td>D-OPSD (Alibaba Z-Image)</td>
+  <td>2026.05</td>
+  <td><span class="tag tag-gen">生成</span></td>
+  <td>扩散模型 OPSD，连续微调不遗忘</td>
+  <td><a href="https://arxiv.org/abs/2605.05204" target="_blank">2605.05204</a></td>
+</tr>
+<tr>
+  <td>PRISM (HKUST(GZ)/清华)</td>
+  <td>2026.04</td>
+  <td><span class="tag tag-hyb">混合</span></td>
+  <td>黑盒对抗 OPD 预对齐 + MoE 判别器</td>
+  <td><a href="https://arxiv.org/abs/2604.28123" target="_blank">2604.28123</a></td>
+</tr>
+<tr>
+  <td>VLA-OPD</td>
+  <td>2026.03</td>
+  <td><span class="tag tag-rob">机器人</span></td>
+  <td>VLA 模型 OPD，Reverse KL 动作蒸馏</td>
+  <td><a href="https://arxiv.org/abs/2603.26666" target="_blank">2603.26666</a></td>
+</tr>
+<tr>
+  <td>X-OPD (Tencent Hunyuan)</td>
+  <td>2026.03</td>
+  <td><span class="tag tag-aud">语音</span></td>
+  <td>文本→语音跨模态 OPD 能力对齐</td>
+  <td><a href="https://arxiv.org/abs/2603.24596" target="_blank">2603.24596</a></td>
+</tr>
+<tr>
+  <td>HDPO</td>
+  <td>2026.03</td>
+  <td><span class="tag tag-hyb">混合</span></td>
+  <td>特权自蒸馏恢复最优 KL 正则化策略</td>
+  <td>2603.23871</td>
+</tr>
+<tr>
+  <td>Distill-R1</td>
+  <td>2026.03</td>
+  <td><span class="tag tag-hyb">框架</span></td>
+  <td>开源 VLM RL+蒸馏框架（7 算法兼容）</td>
+  <td><a href="https://github.com/ByungKwanLee/Distill-R1" target="_blank">GitHub</a></td>
+</tr>
+<tr>
+  <td>RAL (Google/Princeton)</td>
+  <td>2026.02</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>注意力层级 RL，RAL-zero 超 GRPO</td>
+  <td><a href="https://arxiv.org/abs/2602.04884" target="_blank">2602.04884</a></td>
+</tr>
+<tr>
+  <td>Video-OPD</td>
+  <td>2026.02</td>
+  <td><span class="tag tag-vid">视频</span></td>
+  <td>时序视频定位 OPD + TVDF 课程</td>
+  <td><a href="https://arxiv.org/abs/2602.02994" target="_blank">2602.02994</a></td>
+</tr>
+<tr>
+  <td>CORD</td>
+  <td>2026.01</td>
+  <td><span class="tag tag-aud">音频</span></td>
+  <td>加权 on-policy 跨模态蒸馏（80k 样本）</td>
+  <td><a href="https://arxiv.org/abs/2601.16547" target="_blank">2601.16547</a></td>
+</tr>
+<tr>
+  <td>PeRL-VL</td>
+  <td>2025.12</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>感知-推理解耦 + 门控奖励</td>
+  <td><a href="https://arxiv.org/abs/2512.12487" target="_blank">2512.12487</a></td>
+</tr>
+<tr>
+  <td>LiveTalk</td>
+  <td>2025.12</td>
+  <td><span class="tag tag-gen">生成</span></td>
+  <td>实时多模态交互视频 + OPD</td>
+  <td><a href="https://arxiv.org/abs/2512.23576" target="_blank">2512.23576</a></td>
+</tr>
+<tr>
+  <td>VOLD (CVPR 2026)</td>
+  <td>2025.10</td>
+  <td><span class="tag tag-vis">视觉</span></td>
+  <td>文本 LLM→VLM 推理蒸馏奠基作</td>
+  <td><a href="https://arxiv.org/abs/2510.23497" target="_blank">2510.23497</a></td>
+</tr>
+<tr>
+  <td>SightSound-R1 (ICASSP 2026)</td>
+  <td>2025.09</td>
+  <td><span class="tag tag-aud">音频</span></td>
+  <td>视觉→音频跨模态 CoT 蒸馏</td>
+  <td><a href="https://arxiv.org/abs/2509.15661" target="_blank">2509.15661</a></td>
+</tr>
+<tr>
+  <td>M2Distill (ICRA 2025)</td>
+  <td>2024.10</td>
+  <td><span class="tag tag-rob">机器人</span></td>
+  <td>终身模仿学习多模态蒸馏</td>
+  <td><a href="https://arxiv.org/abs/2410.00064" target="_blank">2410.00064</a></td>
+</tr>
+</tbody>
+</table>
+
+<p style="text-align:center;color:var(--text3);margin-top:8px;"><strong>共 24 篇核心论文</strong>，覆盖视觉/视频/音频/语音/机器人/生成/混合 7 大子领域，时间跨度 2024.10 – 2026.07</p>
+
+<div class="section-divider">◆ ◆ ◆</div>
+
+<!-- 底部导航 -->
+<div class="nav-row">
+  <a href="./04-OPD-Supplement-AwesomeOPD.html" class="nav-btn secondary">← 笔记 04：OPD 论文全景图谱</a>
+  <span style="color:var(--text3);padding:10px;">笔记 05 / OPD 系列</span>
+</div>
+
+<p style="text-align:center;color:var(--text3);margin-top:32px;font-size:0.85em;">
+  构建于 2026 年 7 月 · 基于全网最新可信学术来源<br>
+  所有论文链接均指向 arXiv / CVPR / ICRA / ICASSP 等正式学术出版物<br>
+  <em>OPD 系列笔记 · HHU × USTC · multimodel-OPD-research</em>
+</p>
+
+</main>
+</body>
+</html>
