@@ -83,13 +83,14 @@ class NeuralNetwork1D:
 # 二维输入的神经网络实现（拟合 sin(x1)*cos(x2)）
 class NeuralNetwork2D:
     def __init__(self):
-        n = 40
+        n = 50
         x1 = np.linspace(0, 2 * math.pi, n)
         x2 = np.linspace(0, 2 * math.pi, n)
         X1, X2 = np.meshgrid(x1, x2)
         xs = np.stack([X1.ravel(), X2.ravel()], axis=1)
         ys = np.sin(X1.ravel()) * np.cos(X2.ravel())
-        self.params = _fit_mlp(xs, ys)
+        # 二维函数更复杂：更大容量 + 更小学习率避免震荡 + 更多轮数
+        self.params = _fit_mlp(xs, ys, hidden=256, lr=0.005, max_epochs=12000)
 
     def predict(self, input_x1: float, input_x2: float) -> float:
         return float(_predict(np.array([[input_x1, input_x2]]), self.params)[0, 0])
