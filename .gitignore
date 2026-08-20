@@ -1,0 +1,5 @@
+# 忽略 PyCharm 配置与下载的参考材料
+.idea/
+temp/
+__pycache__/
+*.pyc
