@@ -19,8 +19,11 @@ if not os.path.isdir(DATA_DIR):
     DATA_DIR = r'F:\资源夹\科研\zzlab (preparing)\pre\2524030232_张锐寒\temp\参考材料及部分模版和数据集\参考材料及部分模版和数据集\Software_C3'
 
 # HSV 阈值（V 高=亮，S 高=颜色饱和）
+S_MIN = 80
 V_MIN = 170      # 亮度下界，分离"点亮"与"熄灭/外壳"
-S_MIN = 80       # 饱和度下界
+
+# 信号灯 ROI（摄像头固定，灯区在画面中央恒定位置）：排除车尾灯/广告牌等画面边缘干扰
+ROI = (0.26, 0.72, 0.18, 0.50)   # (x0, x1, y0, y1) 比例
 # 各颜色判决的亮色像素阈值（经数据集统计：点亮灯约 950~1900，未点亮底色约 0~740）
 THRESH = {'red': 500, 'green': 500, 'yellow': 800}
 # 颜色对应 HSV 色相区间（红色在色环上跨 0 与 180 两侧，需两段）
@@ -34,11 +37,11 @@ LABEL = {'red': 'RED', 'yellow': 'YELLOW', 'green': 'GREEN', 'off': 'OFF'}
 COLOR_BGR = {'red': (0, 0, 255), 'yellow': (0, 215, 255), 'green': (0, 200, 0), 'off': (180, 180, 180)}
 
 
-def bright_count(hsv, hue_ranges):
+def bright_count(hsv, hue_ranges, v_min):
     """统计指定色相区间内"高亮+高饱和"像素数"""
     total = 0
     for lo, hi in hue_ranges:
-        m = cv2.inRange(hsv, np.array([lo, S_MIN, V_MIN]), np.array([hi, 255, 255]))
+        m = cv2.inRange(hsv, np.array([lo, S_MIN, v_min]), np.array([hi, 255, 255]))
         total += cv2.countNonZero(m)
     return total
 
@@ -53,9 +56,15 @@ def largest_blob(mask):
 
 
 def classify_state(img):
-    """识别信号灯状态，返回 (状态, 各颜色亮像素数, 点亮灯框)"""
+    """识别信号灯状态，返回 (状态, 各颜色亮像素数, 点亮灯框)。
+    仅在信号灯 ROI 内统计，规避画面边缘的车尾灯/广告牌等干扰；亮度阈值自适应夜间。"""
+    h, w = img.shape[:2]
+    x0, x1, y0, y1 = int(ROI[0] * w), int(ROI[1] * w), int(ROI[2] * h), int(ROI[3] * h)
+    roi = img[y0:y1, x0:x1]
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    counts = {c: bright_count(hsv, HUE_RANGES[c]) for c in ('red', 'green', 'yellow')}
+    roi_hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+
+    counts = {c: bright_count(roi_hsv, HUE_RANGES[c], V_MIN) for c in ('red', 'green', 'yellow')}
 
     # 决策：点亮灯颜色 -> 红灯/绿灯/黄灯；否则熄灭
     state = 'off'
@@ -64,14 +73,15 @@ def classify_state(img):
             state = c
             break
 
-    # 画点亮灯的框：取该颜色高亮像素的最大连通域
+    # 画点亮灯的框：取该颜色高亮像素的最大连通域（相对全图坐标）
     box = (0, 0, 0, 0)
     if state != 'off':
-        mask = np.zeros(img.shape[:2], dtype=np.uint8)
+        mask = np.zeros(roi.shape[:2], dtype=np.uint8)
         for lo, hi in HUE_RANGES[state]:
-            mask |= cv2.inRange(hsv, np.array([lo, S_MIN, V_MIN]), np.array([hi, 255, 255]))
+            mask |= cv2.inRange(roi_hsv, np.array([lo, S_MIN, V_MIN]), np.array([hi, 255, 255]))
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))  # 去噪
-        _, box = largest_blob(mask)
+        _, (bx, by, bw, bh) = largest_blob(mask)
+        box = (bx + x0, by + y0, bw, bh)
     return state, counts, box
 
 
